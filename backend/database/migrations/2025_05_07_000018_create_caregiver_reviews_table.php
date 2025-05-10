@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('caregiver_reviews', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('reviewer_id');
+            $table->unsignedBigInteger('caregiver_id');
+            $table->smallInteger('rating');
+            $table->timestamp('reviewed_at')->useCurrent()->useCurrentOnUpdate();
+            $table->unique(['reviewer_id','caregiver_id']);
+            $table->foreign('reviewer_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('caregiver_id')->references('id')->on('caregivers')->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('caregiver_reviews');
+    }
+};
