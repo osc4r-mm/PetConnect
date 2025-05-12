@@ -359,100 +359,85 @@ export default function Home() {
       </div>
 
       {/* cards grid */}
-      {loading ? (
-        // Efecto de carga mucho más molón con pulgitas y todo 🐾
-        <div className="relative min-h-[300px] flex items-center justify-center">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="flex flex-col items-center">
-              <div className="relative w-16 h-16">
-                {/* Huellitas girando */}
-                <div className="absolute w-16 h-16 animate-spin">
-                  <PawPrint className="absolute top-0 text-blue-600 animate-bounce" size={16} />
-                  <PawPrint className="absolute top-0 right-0 text-red-500 animate-bounce" size={16} style={{ animationDelay: "0.2s" }} />
-                  <PawPrint className="absolute bottom-0 text-green-500 animate-bounce" size={16} style={{ animationDelay: "0.4s" }} />
-                  <PawPrint className="absolute bottom-0 right-0 text-purple-500 animate-bounce" size={16} style={{ animationDelay: "0.6s" }} />
-                </div>
-              </div>
-              <p className="mt-4 text-lg font-medium text-blue-700">Buscando peluditos...</p>
-              <div className="mt-2 w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full animate-loadingBar"></div>
-              </div>
-            </div>
-          </div>
-      ) : (
+            {loading ? (
+        <LoadingPlaceholder />
+      ) : pets.length > 0 ? (
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-500 ${animatingCards ? 'opacity-20 blur-sm' : 'opacity-100 blur-0'}`}>
-          {pets.map(pet => (
-            <div key={pet.id} className="bg-white rounded-lg shadow-md overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:z-10">
-              {/* Iconos de adopción y cuidado */}
-              <div className="absolute top-2 right-2 flex space-x-2">
-                {pet.for_adoption && (
-                  <div 
-                    className="bg-red-500 p-1 rounded-full transform transition-all duration-500 hover:rotate-12 hover:scale-110 hover:shadow-lg" 
-                    title="Disponible para adopción">
-                    <Heart size={20} className="text-white" />
-                  </div>
-                )}
-                {pet.for_sitting && (
-                  <div 
-                    className="bg-blue-500 p-1 rounded-full transform transition-all duration-500 hover:rotate-12 hover:scale-110 hover:shadow-lg" 
-                    title="Disponible para cuidado">
-                    <PawPrint size={20} className="text-white" />
-                  </div>
-                )}
-              </div>
-
-              <div className="overflow-hidden">
-                <img 
-                  src={pet.profile_path} 
-                  alt={pet.name} 
-                  className="w-full h-48 object-cover transition-all duration-700 hover:scale-110 hover:rotate-1" />
-              </div>
-              <div className="p-4">
-                <h2 className="font-bold text-lg">{pet.name} <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{GENDERS[pet.gender_id]}</span></h2>
-                <div className="flex flex-wrap gap-1 mb-2">
-                    <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{pet.breed_id}</span>
-                    <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{pet.age} años</span>
-                  </div>
-                  <p className="text-gray-600 text-sm">
-                    {pet.description}
-                  </p>
-              </div>
-            </div>
-          ))}
+          {pets.map(pet => <PetCard key={pet.id} pet={pet} />)}
         </div>
       ) : (
-        {/* Si no hay resultados */}
-          <div className="text-center py-8">
-            <p className="text-gray-500 text-lg">No se encontraron mascotas que coincidan con los filtros</p>
-            <button 
-              onClick={() => setFilters({
-                name: '',
-                ageMin: '',
-                ageMax: '',
-                weightMin: '',
-                weightMax: '',
-                gender_id: '',
-                for_adoption: false,
-                for_sitting: false,
-                species_id: '',
-                breed_id: '',
-                size_id: '',
-                activity_level_id: '',
-                noise_level_id: '',
-              })}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Limpiar filtros
-            </button>
-          </div>
-      )
+        <NoResults onReset={() => setFilters({
+          name: '', ageMin: '', ageMax: '', weightMin: '', weightMax: '',
+          for_adoption: false, for_sitting: false,
+          species_id: '', breed_id: '', size_id: '', activity_level_id: '', noise_level_id: ''
+        })} />
+      )}
 
-      {/* pagination */}
+      {/* Pagination */}
       <div className="flex justify-center mt-6">
-        <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="px-4 py-2 bg-gray-200 rounded mr-2">Anterior</button>
+        <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-gray-200 rounded mr-2">Anterior</button>
         <span className="px-4 py-2">{page} / {lastPage}</span>
-        <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page===lastPage} className="px-4 py-2 bg-gray-200 rounded ml-2">Siguiente</button>
+        <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-gray-200 rounded ml-2">Siguiente</button>
       </div>
     </div>
   );
 }
+
+// ----- Componentes auxiliares ----- //
+function PetCard({ pet }) {
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:z-10">
+      <div className="absolute top-2 right-2 flex space-x-2">
+        {pet.for_adoption && <div className="bg-red-500 p-1 rounded-full"><Heart size={20} className="text-white" /></div>}
+        {pet.for_sitting && <div className="bg-blue-500 p-1 rounded-full"><PawPrint size={20} className="text-white" /></div>}
+      </div>
+      <img src={pet.profile_path} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:scale-110 hover:rotate-1" />
+      <div className="p-4">
+        <h2 className="font-bold text-lg">
+          {pet.name}{' '}
+          <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
+            {pet.gender.name}
+          </span>
+        </h2>
+        <div className="flex flex-wrap gap-1 mb-2">
+          <Tag label={pet.breed.name} />
+          <Tag label={`${pet.age} años`} />
+          <Tag label={pet.size.name} />
+          <Tag label={pet.activityLevel.name} />
+          <Tag label={pet.noiseLevel.name} />
+        </div>
+        <p className="text-gray-600 text-sm">{pet.description}</p>
+      </div>
+    </div>
+  );
+}
+
+function Tag({ label }) {
+  return <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{label}</span>;
+}
+
+const LoadingPlaceholder = () => (
+  <div className="relative min-h-[300px] flex items-center justify-center">
+    <div className="flex flex-col items-center">
+      <div className="relative w-16 h-16 animate-spin">
+        <PawPrint className="absolute top-0 animate-bounce" size={16} />
+        <PawPrint className="absolute top-0 right-0 animate-bounce" size={16} style={{ animationDelay: '0.2s' }} />
+        <PawPrint className="absolute bottom-0 animate-bounce" size={16} style={{ animationDelay: '0.4s' }} />
+        <PawPrint className="absolute bottom-0 right-0 animate-bounce" size={16} style={{ animationDelay: '0.6s' }} />
+      </div>
+      <p className="mt-4 text-lg font-medium text-blue-700">Buscando peluditos...</p>
+      <div className="mt-2 w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-full bg-blue-600 rounded-full animate-loadingBar"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const NoResults = ({ onReset }) => (
+  <div className="text-center py-8">
+    <p className="text-gray-500 text-lg">No se encontraron mascotas que coincidan con los filtros</p>
+    <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      Limpiar filtros
+    </button>
+  </div>
+);
