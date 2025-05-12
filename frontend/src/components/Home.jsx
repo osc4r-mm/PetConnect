@@ -359,7 +359,27 @@ export default function Home() {
       </div>
 
       {/* cards grid */}
-      {!loading ? (
+      {loading ? (
+        // Efecto de carga mucho más molón con pulgitas y todo 🐾
+        <div className="relative min-h-[300px] flex items-center justify-center">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="flex flex-col items-center">
+              <div className="relative w-16 h-16">
+                {/* Huellitas girando */}
+                <div className="absolute w-16 h-16 animate-spin">
+                  <PawPrint className="absolute top-0 text-blue-600 animate-bounce" size={16} />
+                  <PawPrint className="absolute top-0 right-0 text-red-500 animate-bounce" size={16} style={{ animationDelay: "0.2s" }} />
+                  <PawPrint className="absolute bottom-0 text-green-500 animate-bounce" size={16} style={{ animationDelay: "0.4s" }} />
+                  <PawPrint className="absolute bottom-0 right-0 text-purple-500 animate-bounce" size={16} style={{ animationDelay: "0.6s" }} />
+                </div>
+              </div>
+              <p className="mt-4 text-lg font-medium text-blue-700">Buscando peluditos...</p>
+              <div className="mt-2 w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-600 rounded-full animate-loadingBar"></div>
+              </div>
+            </div>
+          </div>
+      ) : (
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-500 ${animatingCards ? 'opacity-20 blur-sm' : 'opacity-100 blur-0'}`}>
           {pets.map(pet => (
             <div key={pet.id} className="bg-white rounded-lg shadow-md overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:z-10">
@@ -401,8 +421,31 @@ export default function Home() {
           ))}
         </div>
       ) : (
-        <p>Cargando...</p>
-      )}
+        {/* Si no hay resultados */}
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-lg">No se encontraron mascotas que coincidan con los filtros</p>
+            <button 
+              onClick={() => setFilters({
+                name: '',
+                ageMin: '',
+                ageMax: '',
+                weightMin: '',
+                weightMax: '',
+                gender_id: '',
+                for_adoption: false,
+                for_sitting: false,
+                species_id: '',
+                breed_id: '',
+                size_id: '',
+                activity_level_id: '',
+                noise_level_id: '',
+              })}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+      )
 
       {/* pagination */}
       <div className="flex justify-center mt-6">
