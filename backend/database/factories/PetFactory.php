@@ -11,6 +11,13 @@ class PetFactory extends Factory
 
     public function definition(): array
     {
+        // Generamos aquí el profile_path (o lo dejamos null)
+        $profilePath = null;
+        if ($this->faker->boolean(80)) { // 80% de probabilidad de tener imagen
+            $id = $this->faker->numberBetween(1, 100);
+            $profilePath = "https://placedog.net/400/300?id={$id}";
+        }
+
         return [
             // Campos obligatorios
             'name'               => $this->faker->firstName(),
@@ -20,7 +27,7 @@ class PetFactory extends Factory
 
             // Campos opcionales en la migración
             'description'        => $this->faker->optional()->paragraph(),
-            'profile_path'       => $this->faker->optional()->imageUrl(400, 300, 'animals'),
+            'profile_path'       => $profilePath,
 
             // Booleans con default
             'for_adoption'       => $this->faker->boolean(20),
