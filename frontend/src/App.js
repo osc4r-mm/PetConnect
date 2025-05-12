@@ -33,8 +33,9 @@ export default function App() {
 
           {/* Rutas de invitado: sólo si NO hay sesión */}
           <Route element={<GuestRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* Rutas sin navbar */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
           </Route>
 
           {/* Rutas privadas: sólo si HAY sesión */}
@@ -48,6 +49,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
-
-// hola

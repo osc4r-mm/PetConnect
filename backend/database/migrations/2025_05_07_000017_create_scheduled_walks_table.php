@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('request_id');
             $table->unsignedBigInteger('caregiver_id');
-            $table->unsignedBigInteger('animal_id');
+            $table->unsignedBigInteger('pet_id');
             $table->smallInteger('day_of_week');
             $table->time('time_slot');
             $table->foreign('request_id')->references('id')->on('requests')->onDelete('cascade');
             $table->foreign('caregiver_id')->references('id')->on('caregivers')->onDelete('cascade');
-            $table->foreign('animal_id')->references('id')->on('animals')->onDelete('cascade');
+            $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade');
+            $table->unique(['request_id', 'caregiver_id', 'pet_id', 'day_of_week', 'time_slot']);
         });
     }
 

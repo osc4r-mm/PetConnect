@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NoiseLevel extends Model
+class Size extends Model
 {
-    protected $table = 'noise_levels';
+    protected $table = 'sizes';
     public $timestamps = false;
     protected $fillable = ['name'];
 }

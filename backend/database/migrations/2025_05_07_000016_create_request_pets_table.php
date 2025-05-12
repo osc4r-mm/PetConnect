@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('request_animals', function (Blueprint $table) {
+        Schema::create('request_pets', function (Blueprint $table) {
             $table->unsignedBigInteger('request_id');
-            $table->unsignedBigInteger('animal_id');
-            $table->primary(['request_id','animal_id']);
+            $table->unsignedBigInteger('pet_id');
+            $table->primary(['request_id','pet_id']);
             $table->foreign('request_id')->references('id')->on('requests')->onDelete('cascade');
-            $table->foreign('animal_id')->references('id')->on('animals')->onDelete('cascade');
+            $table->foreign('pet_id')->references('id')->on('pets')->onDelete('cascade');
             
-            $table->index('animal_id');
+            $table->index('pet_id');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('request_animals');
+        Schema::dropIfExists('request_pets');
     }
 };

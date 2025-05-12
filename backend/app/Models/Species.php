@@ -4,4 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Species extends Model { protected $fillable=['name']; public $timestamps=false; public function breeds(){return $this->hasMany(Breed::class);} }
+class Species extends Model
+{
+    protected $table = 'species';
+    public $timestamps = false;
+    protected $fillable = ['name'];
+
+    public function breeds()
+    {
+        return $this->hasMany(Breed::class);
+    }
+}

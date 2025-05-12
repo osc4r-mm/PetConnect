@@ -48,24 +48,6 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
-
-        /*
-            // Crear un nuevo token
-            $token = $employee->createToken($validated['device_name'], [
-            $employee->role
-            ], now()->addHours(12));
-
-            // Disparar evento de login
-            event(new Login('sanctum', $employee, false));
-            
-            return response()->json([
-            'success' => true,
-            'message' => 'Inicio de sesión exitoso',
-            'data' => [
-            'employee' => $employee->only(['id', 'first_name', 'last_name', 'email', 'role']), 'token' => $token->plainTextToken,
-            'token_expires_at' => Carbon::parse($token->accessToken->expires_at)->toDateTimeString(),
-            ]);
-        */
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

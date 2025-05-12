@@ -6,8 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Debt extends Model
 {
+    protected $table = 'debts';
     public $timestamps = false;
-    protected $fillable=['owner_id','caregiver_id','amount_due'];
-    public function owner(){return $this->belongsTo(User::class,'owner_id');}
-    public function caregiver(){return $this->belongsTo(Caregiver::class);}    
+    protected $fillable = ['owner_id', 'caregiver_id', 'amount_due'];
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function caregiver()
+    {
+        return $this->belongsTo(Caregiver::class);
+    }
 }

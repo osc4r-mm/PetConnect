@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Breed extends Model
 {
-    protected $fillable=['species_id','name'];
-    public function species(){return $this->belongsTo(Species::class);}
+    protected $table = 'breeds';
+    public $timestamps = false;
+    protected $fillable = ['species_id', 'name'];
+
+    public function species()
+    {
+        return $this->belongsTo(Species::class);
+    }
 }
