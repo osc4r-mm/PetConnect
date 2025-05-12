@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name',100);
             $table->integer('age')->unsigned();
             $table->unsignedBigInteger('gender_id');
-            $table->decimal('weight',5,2)->unsigned();
+            $table->decimal('weight',5,1)->unsigned();
             $table->text('description')->nullable();
             $table->string('profile_path',255)->nullable();
             $table->boolean('for_adoption')->default(false);

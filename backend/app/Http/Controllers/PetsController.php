@@ -46,6 +46,8 @@ class PetsController extends Controller
             $query->where('for_adoption', true);
         } elseif ($forSitting) {
             $query->where('for_sitting', true);
+        } else {
+            $query->where('for_adoption', false)->where('for_sitting', false);
         }
 
         // Relaciones adicionales
