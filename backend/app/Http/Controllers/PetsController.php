@@ -59,7 +59,7 @@ class PetsController extends Controller
 
         // Orden y paginación
         $pets = $query->orderBy($request->input('sort_key', 'id'), $request->input('sort_direction', 'asc'))
-                      ->paginate(12);
+                      ->paginate(16);
 
         return response()->json($pets);
     }

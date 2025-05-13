@@ -28,6 +28,10 @@ class PetFactory extends Factory
 
             // Campos opcionales en la migración
             'description'        => $this->faker->optional()->paragraph(),
+            'breed_id'           => $this->faker->optional()->numberBetween(1, 71),
+            'size_id'            => $this->faker->optional()->numberBetween(1, 3),
+            'activity_level_id'  => $this->faker->optional()->numberBetween(1, 3),
+            'noise_level_id'     => $this->faker->optional()->numberBetween(1, 3),
 
             // Booleans con default
             'for_adoption'       => $this->faker->boolean(50),
@@ -35,12 +39,6 @@ class PetFactory extends Factory
 
             // Relaciones
             'species_id'         => $this->faker->numberBetween(1, 9),
-            'breed_id'           => $this->faker->numberBetween(1, 71),
-            'size_id'            => $this->faker->numberBetween(1, 3),
-            'activity_level_id'  => $this->faker->numberBetween(1, 3),
-            'noise_level_id'     => $this->faker->numberBetween(1, 3),
-
-            // registered_at usa CURRENT_TIMESTAMP por defecto en la migración, no es necesario definirlo aquí
         ];
     }
 }

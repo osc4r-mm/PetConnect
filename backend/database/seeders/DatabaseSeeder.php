@@ -18,6 +18,6 @@ class DatabaseSeeder extends Seeder
             NoiseLevelsSeeder::class
         ]);
 
-        Pet::factory()->count(20)->create();
+        Pet::factory()->count(500)->create();
     }
 }
