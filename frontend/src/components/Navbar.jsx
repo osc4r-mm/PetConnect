@@ -14,6 +14,31 @@ export default function Navbar() {
 
   // Cierra menú móvil al cambiar de ruta
   useEffect(() => setIsOpen(false), [location.pathname]);
+  
+  // Cerrar dropdown al hacer clic fuera de él
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdownElement = document.getElementById('user-dropdown');
+      const avatarButton = document.getElementById('avatar-button');
+      
+      if (
+        dropdownElement &&
+        avatarButton &&
+        !dropdownElement.contains(event.target) &&
+        !avatarButton.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleLogout = async () => {
     await logout();
@@ -41,7 +66,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow z-10">
+    <nav className="bg-white shadow relative z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo + enlaces desktop */}
@@ -75,6 +100,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="relative">
                 <button
+                  id="avatar-button"
                   onClick={() => setIsDropdownOpen(o => !o)}
                   className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
                 >
@@ -83,7 +109,11 @@ export default function Navbar() {
                   <ChevronDown size={16} className="text-gray-500" />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+                  <div 
+                    id="user-dropdown"
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50"
+                    style={{ filter: 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))' }}
+                  >
                     <Link
                       to="/profile"
                       onClick={() => setIsDropdownOpen(false)}

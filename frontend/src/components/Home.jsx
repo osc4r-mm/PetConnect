@@ -44,6 +44,32 @@ export default function Home() {
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
+    
+    if (name === 'species_id') {
+      // Si estamos cambiando de especie
+      const newSpeciesId = value;
+      
+      if (filters.breed_id) {
+        // Verifica si la raza actual pertenece a la nueva especie seleccionada
+        const currentBreed = breedList.find(b => b.id === Number(filters.breed_id));
+        
+        // Si hay una raza seleccionada y la nueva especie está vacía O la raza no pertenece a la nueva especie
+        if (newSpeciesId === '' || (currentBreed && currentBreed.species_id !== Number(newSpeciesId))) {
+          // Resetea la raza
+          setAnimatingCards(true);
+          setFilters(prev => ({ 
+            ...prev, 
+            [name]: value,
+            breed_id: '' // Limpiamos la raza
+          }));
+          setPage(1);
+          setTimeout(() => setAnimatingCards(false), 300);
+          return;
+        }
+      }
+    }
+    
+    // Comportamiento normal para todos los demás casos
     setAnimatingCards(true);
     setFilters(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     setPage(1);
@@ -70,7 +96,6 @@ export default function Home() {
   const filteredBreeds = filters.species_id
     ? breedList.filter(b => b.species_id === Number(filters.species_id))
     : breedList;
-
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
