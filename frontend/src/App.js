@@ -2,10 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-import Navbar from './components/Navbar';
-import Home from './components/Home';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
+import PetDetail from './components/PetDetail';
 
 // Guard para rutas privadas
 function PrivateRoute() {
@@ -30,6 +31,7 @@ export default function App() {
         <Routes>
           {/* Rutas neutrales: accesibles siempre */}
             <Route path="/" element={<Home />} />
+            <Route path="/pet/:id" element={<PetDetail />} />
 
           {/* Rutas de invitado: sólo si NO hay sesión */}
           <Route element={<GuestRoute />}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, SortAsc, SortDesc, Heart, PawPrint, Award, VolumeX, Zap, Volume2, Ruler, Mars, Venus } from 'lucide-react';
 import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels } from '../services/petService';
 
@@ -359,6 +360,7 @@ export default function Home() {
 // ----- Componentes auxiliares ----- //
 function PetCard({ pet }) {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const formatAge = (age) => {
     if (age === null || age === undefined) return null;
@@ -371,10 +373,15 @@ function PetCard({ pet }) {
     return `${valueStr} kg`;
   };
 
+  const handleCardClick = () => {
+    navigate(`/pet/${pet.id}`);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:z-10"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}>
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}>
       
       <div className="relative">
         <div className="absolute top-2 right-2 flex space-x-2">
