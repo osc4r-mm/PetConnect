@@ -26,7 +26,9 @@ return new class extends Migration
             $table->unsignedBigInteger('size_id')->nullable();
             $table->unsignedBigInteger('activity_level_id')->nullable();
             $table->unsignedBigInteger('noise_level_id')->nullable();
+            $table->unsignedBigInteger('user_id'); // Añadida columna user_id
             $table->timestamp('registered_at')->useCurrent();
+            $table->timestamps();
             
             $table->foreign('gender_id')->references('id')->on('genders')->onDelete('restrict');
             $table->foreign('species_id')->references('id')->on('species')->onDelete('restrict');
@@ -34,7 +36,8 @@ return new class extends Migration
             $table->foreign('size_id')->references('id')->on('sizes')->onDelete('set null');
             $table->foreign('activity_level_id')->references('id')->on('activity_levels')->onDelete('set null');
             $table->foreign('noise_level_id')->references('id')->on('noise_levels')->onDelete('set null');
-
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Foreign key para user_id
+            
             $table->index('for_adoption');
             $table->index('for_sitting');
             $table->index('species_id');
@@ -42,6 +45,7 @@ return new class extends Migration
             $table->index('size_id');
             $table->index('activity_level_id');
             $table->index('noise_level_id');
+            $table->index('user_id'); // Índice para user_id
         });
     }
 

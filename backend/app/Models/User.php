@@ -20,6 +20,7 @@ class User extends Authenticatable
         'password',
         'wallet_balance',
         'image',
+        'role_id',
     ];
 
     protected $hidden = [
@@ -36,14 +37,35 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::created(function ($user) {
-            $role = Role::where('name', 'user')->first();
-            $user->roles()->attach($role);
+            // Si no se asignó un rol, asignar por defecto el rol de usuario
+            if (!$user->role_id) {
+                $role = Role::where('name', 'user')->first();
+                if ($role) {
+                    $user->role_id = $role->id;
+                    $user->save();
+                }
+            }
         });
     }
 
-    public function roles()
+    public function role()
     {
-        return $this->belongsToMany(Role::class, 'user_roles');
+        return $this->belongsTo(Role::class);
+    }
+
+    public function hasRole($roleName)
+    {
+        return $this->role && $this->role->name === $roleName;
+    }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isCaregiver()
+    {
+        return $this->hasRole('caregiver');
     }
 
     public function caregiver()
@@ -74,7 +96,6 @@ class User extends Authenticatable
     public function reviewsWritten()
     {
         return $this->hasMany(CaregiverReview::class, 'reviewer_id');
-
     }
 
     public function chatsAsUser1()

@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Pet;
+use App\Models\Role;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,9 +17,15 @@ class DatabaseSeeder extends Seeder
             BreedsSeeder::class,
             SizesSeeder::class,
             ActivityLevelsSeeder::class,
-            NoiseLevelsSeeder::class
+            NoiseLevelsSeeder::class,
+            RoleSeeder::class,
         ]);
 
-        Pet::factory()->count(500)->create();
+        // Create 1 admin user
+        User::factory()->shelter()->create();
+        // Create 500 pets with random data 
+        Pet::factory()->count(500)->create([
+            'user_id' => User::where('role_id', Role::where('name', 'admin')->first()->id)->first()->id,
+        ]);
     }
 }
