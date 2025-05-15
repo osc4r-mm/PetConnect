@@ -8,18 +8,18 @@ export default {
     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     return data;
   },
+  
+  register: async creds => {
+    const { data } = await api.post('/register', creds);
+    localStorage.setItem('token', data.token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    return data;
+  },
 
   logout: async () => {
     await api.post('/logout');
     localStorage.removeItem('token');
   },
 
-  fetchUser: () => {
-    return api.get('/user').then(res => res.data);
-  },
-
-  register: async info => {
-    const { data } = await api.post('/register', info);
-    return data;
-  },
-};
+  fetchUser: () => { return api.get('/user').then(res => res.data); },
+}

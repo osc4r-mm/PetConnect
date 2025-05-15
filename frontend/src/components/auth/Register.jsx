@@ -18,16 +18,24 @@ const Register = () => {
   const navigate = useNavigate();
 
   const evaluatePasswordStrength = (password) => {
-    let score = 0;
-    if (!password) return score;
-    if (password.length >= 8) score += 1;
-    if (/[A-Z]/.test(password)) score += 1;
-    if (/[0-9]/.test(password)) score += 1;
-    if (/[^A-Za-z0-9]/.test(password)) score += 1;
-    return score;
+    const requirements = {
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      symbol: /[^A-Za-z0-9]/.test(password),
+    };
+
+    const score = Object.values(requirements).filter(Boolean).length-1;
+
+    return {
+      score,
+      requirements
+    };
   };
 
-  const strength = useMemo(() => evaluatePasswordStrength(formData.password), [formData.password]);
+
+  const { score: strength, requirements } = useMemo( () => evaluatePasswordStrength(formData.password), [formData.password]);
   const strengthLabels = ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Muy fuerte'];
   const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
   const strengthLabel = strengthLabels[strength];
@@ -55,6 +63,7 @@ const Register = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        password_confirmation: formData.password_confirmation,
       });
       navigate('/');
     } catch (err) {
@@ -148,6 +157,16 @@ const Register = () => {
                 <p className="text-xs mt-1 text-gray-600">
                   Seguridad: <span className={`font-medium ${strength === 0 ? 'text-red-500' : strength < 3 ? 'text-yellow-600' : 'text-green-600'}`}>{strengthLabel}</span>
                 </p>
+                {formData.password && (
+                <ul className="text-xs mt-1 text-gray-600 space-y-1">
+                  {!requirements.length && <li>❌ Mínimo 8 caracteres</li>}
+                  {!requirements.lowercase && <li>❌ Al menos una letra minúscula</li>}
+                  {!requirements.uppercase && <li>❌ Al menos una letra mayúscula</li>}
+                  {!requirements.number && <li>❌ Al menos un número</li>}
+                  {!requirements.symbol && <li>❌ Al menos un carácter especial</li>}
+                </ul>
+              )}
+
               </div>
             )}
           </div>
