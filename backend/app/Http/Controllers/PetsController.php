@@ -78,7 +78,7 @@ class PetsController extends Controller
     public function show($id)
     {
         $pet = Pet::with([
-            'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel'
+            'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel', 'photos'
         ])->findOrFail($id);
 
         return response()->json($pet);

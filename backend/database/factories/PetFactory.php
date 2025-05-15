@@ -33,7 +33,7 @@ class PetFactory extends Factory
         return [
             // Campos obligatorios
             'name'               => $this->faker->firstName(),
-            'age'                => $this->faker->numberBetween(1, 15),
+            'age'                => $this->faker->numberBetween(1, 20),
             'gender_id'          => $this->faker->numberBetween(1, 2),
             'weight'             => $this->faker->randomFloat(2, 1, 40),
             'profile_path'       => $profilePath,

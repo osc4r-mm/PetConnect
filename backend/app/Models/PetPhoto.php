@@ -8,7 +8,7 @@ class PetPhoto extends Model
 {
     protected $table = 'pet_photos';
     public $timestamps = false;
-    protected $fillable = ['pet_id', 'image_path'];
+    protected $fillable = ['pet_id', 'image_path', 'uploaded_at'];
 
     public function pet()
     {

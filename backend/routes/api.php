@@ -9,6 +9,10 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\ActivityLevelController;
 use App\Http\Controllers\NoiseLevelController;
 use App\Http\Controllers\GenderController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PetRequestController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,11 +20,16 @@ use App\Http\Controllers\GenderController;
 |--------------------------------------------------------------------------
 */
 
-// Rutas públicas
+// Rutas de autenticación
+Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+
+// Rutas públicas
 Route::get('/pets', [PetsController::class, 'index']);
-Route::get('/pets/{id}', [PetsController::class, 'show']);
+Route::get('/pet/{id}', [PetsController::class, 'show']);
+Route::get('/pet/{id}/owner', [UserController::class, 'show']);
 
 // Rutas complementarias
 Route::get('/species', [SpeciesController::class, 'getSpecies']);
@@ -32,6 +41,10 @@ Route::get('/genders', [GenderController::class, 'getGenders']);
 
 // Rutas protegidas (requieren autenticación con Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
+    // Rutas de administración
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Rutas de usuario
+    Route::post('/pet/{id}/request', [PetRequestController::class, 'request']);
 });

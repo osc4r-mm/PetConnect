@@ -15,7 +15,7 @@ class Pet extends Model
     protected $fillable = [
         'name', 'age', 'gender_id', 'weight', 'description', 'profile_path',
         'for_adoption', 'for_sitting', 'species_id', 'breed_id',
-        'size_id', 'activity_level_id', 'noise_level_id', 'registered_at'
+        'size_id', 'activity_level_id', 'noise_level_id', 'registered_at', 'user_id'
     ];
 
     protected $casts = [

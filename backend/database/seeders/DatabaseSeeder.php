@@ -27,5 +27,9 @@ class DatabaseSeeder extends Seeder
         Pet::factory()->count(500)->create([
             'user_id' => User::where('role_id', Role::where('name', 'admin')->first()->id)->first()->id,
         ]);
+
+        $this->call([
+            PetPhotoSeeder::class,
+        ]);
     }
 }

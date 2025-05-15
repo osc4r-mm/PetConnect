@@ -19,6 +19,8 @@ class User extends Authenticatable
         'email',
         'password',
         'wallet_balance',
+        'latitude',
+        'longitude',
         'image',
         'role_id',
     ];

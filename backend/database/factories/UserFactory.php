@@ -29,6 +29,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
             'wallet_balance' => $this->faker->randomFloat(2, 0, 1000),
+            'latitude' => $this->faker->latitude(),
+            'longitude' => $this->faker->longitude(),
             'image' => $this->faker->imageUrl(200, 200, 'people'),
             'remember_token' => Str::random(10),
         ];

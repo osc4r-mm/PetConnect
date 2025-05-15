@@ -10,19 +10,17 @@ export const getPet = async (id) => {
   return response.data;
 };
 
-// Función para solicitar la adopción de una mascota
-export const adoptPet = async (petId, formData) => {
-  const response = await api.post(`/pet/${petId}/adopt`, formData);
+export const getOwner = async (id) => {
+  const response = await api.get(`/pet/${id}/owner`);
   return response.data;
 };
 
-// Función para solicitar el cuidado de una mascota
-export const requestPetSitting = async (petId, formData) => {
-  const response = await api.post(`/pet/${petId}/sitting-request`, formData);
+export const request = async (petId, formData) => {
+  const response = await api.post(`/pet/${petId}/request`, formData);
   return response.data;
 };
 
-// Funciones existentes
+// Pet data
 export const getSpecies = async () => {
   const response = await api.get('/species');
   return response.data;
