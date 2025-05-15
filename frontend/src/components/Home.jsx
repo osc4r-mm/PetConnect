@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, SortAsc, SortDesc, Heart, PawPrint, Award, VolumeX, Zap, Volume2, Ruler, Mars, Venus } from 'lucide-react';
 import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels } from '../services/petService';
-import { LoadingScreen } from './Util';
+import { LoadingScreen, NotFoundData } from './Util';
 
 export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [animatingCards, setAnimatingCards] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [pets, setPets] = useState([]);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -39,8 +40,14 @@ export default function Home() {
   useEffect(() => {
     setLoading(true);
     getPets(page, { ...filters, sort_key: sortConfig.key, sort_direction: sortConfig.direction })
-      .then(data => { setPets(data.data); setLastPage(data.last_page); })
-      .catch(console.error)
+      .then(data => { 
+        setPets(data.data); 
+        setLastPage(data.last_page); 
+      })
+      .catch(err => {
+        console.error('Error fetching pets:', err);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, [page, filters, sortConfig]);
 
@@ -48,21 +55,15 @@ export default function Home() {
     const { name, value, type, checked } = e.target;
     
     if (name === 'species_id') {
-      // Si estamos cambiando de especie
       const newSpeciesId = value;
-      
       if (filters.breed_id) {
-        // Verifica si la raza actual pertenece a la nueva especie seleccionada
         const currentBreed = breedList.find(b => b.id === Number(filters.breed_id));
-        
-        // Si hay una raza seleccionada y la nueva especie está vacía O la raza no pertenece a la nueva especie
         if (newSpeciesId === '' || (currentBreed && currentBreed.species_id !== Number(newSpeciesId))) {
-          // Resetea la raza
           setAnimatingCards(true);
           setFilters(prev => ({ 
             ...prev, 
             [name]: value,
-            breed_id: '' // Limpiamos la raza
+            breed_id: ''
           }));
           setPage(1);
           setTimeout(() => setAnimatingCards(false), 300);
@@ -71,7 +72,6 @@ export default function Home() {
       }
     }
     
-    // Comportamiento normal para todos los demás casos
     setAnimatingCards(true);
     setFilters(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     setPage(1);
@@ -100,7 +100,7 @@ export default function Home() {
     : breedList;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="h-full p-6">
       <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
         Encuentra tu compañero
       </h1>
@@ -326,8 +326,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+      if (loading) return <LoadingScreen message="Cargando mascotas..." />;
       {/* cards grid */}
-      {loading ? <LoadingScreen message={'cargando mascotas...'} /> : pets.length > 0 ? (
+      { pets.length > 0 ? (
         <div>
           {/* Pagination */}
           <div className="flex justify-center m-6">
@@ -435,23 +436,10 @@ function Tag({ label }) {
   return <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{label}</span>;
 }
 
-const LoadingPlaceholder = () => (
-  <div className="relative min-h-[300px] flex items-center justify-center">
-    <div className="flex flex-col items-center">
-      <div className="relative w-16 h-16 animate-spin">
-        <PawPrint className="absolute top-0 animate-bounce text-blue-900" size={20} />
-        <PawPrint className="absolute top-0 right-0 animate-bounce text-red-900" size={20} />
-        <PawPrint className="absolute bottom-0 animate-bounce text-yellow-900" size={20} />
-        <PawPrint className="absolute bottom-0 right-0 animate-bounce text-green-900" size={20} />
-      </div>
-      <p className="mt-4 text-lg font-medium text-blue-700">Buscando peluditos...</p>
-    </div>
-  </div>
-);
-
 const NoResults = ({ onReset }) => (
   <div className="text-center py-8">
-    <p className="text-gray-500 text-lg">No se encontraron mascotas que coincidan con los filtros</p>
+    <p className="text-gray-500 text-lg">No se encontraron mascotas.</p>
+    <p className="text-gray-500 text-md">Prueba a limpiar los filtros</p>
     <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
   </div>
 );

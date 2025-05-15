@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPet, request, getOwner } from '../../services/petService';
-import { LoadingScreen } from '../Util';
+import { LoadingScreen, NotFoundData } from '../Util';
 
 // Componentes más pequeños y reutilizables
 const CharacteristicItem = ({ icon, title, value }) => {
@@ -250,7 +250,7 @@ const NotFound = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="flex-1 items-center justify-center bg-gray-100 p-4">
       <div className="text-center">
         <PawPrint size={64} className="mx-auto text-gray-400" />
         <h2 className="mt-4 text-2xl font-bold text-gray-700">Mascota no encontrada</h2>
@@ -290,7 +290,8 @@ export default function PetDetail() {
   const [pet, setPet] = useState(null);
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestType, setRequestType] = useState('adopt');
 
@@ -310,7 +311,11 @@ export default function PetDetail() {
         document.title = `${petData.name} | Mascotitas`;
       } catch (err) {
         console.error('Error cargando datos:', err);
-        setError(err);
+          if (err.response?.status === 404) {
+          setNotFound(true);
+        } else {
+          setHasError(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -325,9 +330,29 @@ export default function PetDetail() {
     setShowRequestModal(true);
   };
 
-  if (loading) return <LoadingScreen message={'Cargando informacion de la mascota...'} />;
-  if (error || !pet) return <NotFound />;
-  
+  if (loading) 
+    return <LoadingScreen 
+      message={'Cargando informacion de la mascota...'} />;
+  if (notFound) 
+    return (
+      <NotFoundData
+        message1="Mascota no encontrada"
+        message2="Lo sentimos, esa mascota no existe."
+        icon={PawPrint}
+        redirectUrl="/"
+      />
+    );
+  if (hasError)
+    return (
+      <NotFoundData
+        message1="Error cargando mascota"
+        message2="Ha ocurrido un error. Inténtalo de nuevo más tarde."
+        icon={Zap}
+        redirectUrl="/"
+        redirectMessage="Volver al inicio"
+      />
+    );
+
   // Determinar ícono de género
   const genderIsMale = pet.gender?.name?.toLowerCase()?.includes('macho');
   const genderIcon = genderIsMale ? 
@@ -342,7 +367,7 @@ export default function PetDetail() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen pb-12">
+    <div className="pb-12">
       {/* Navegación */}
       <div className="container mx-auto px-4 pt-6">
         <button 

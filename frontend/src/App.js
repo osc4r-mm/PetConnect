@@ -12,15 +12,13 @@ import Profile   from './components/UserProfile/Profile';
 
 // Guard de rutas privadas
 function PrivateRoute() {
-  const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  const { user } = useAuth();
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 // Guard de rutas de invitados
 function GuestRoute() {
-  const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  const { user } = useAuth();
   return !user ? <Outlet /> : <Navigate to="/" replace />;
 }
 
@@ -28,30 +26,33 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
+        <div className="flex flex-col h-screen bg-gray-100">
+          <Navbar />
+          <main className="flex-1 overflow-auto">
+          <Routes>
+            {/* Públicas */}
+            <Route path="/" element={<Home />} />
+            <Route path="/pet/:id" element={<PetDetail />} />
 
-        <Routes>
-          {/* Públicas */}
-          <Route path="/" element={<Home />} />
-          <Route path="/pet/:id" element={<PetDetail />} />
+            {/* Invitados */}
+            <Route element={<GuestRoute />}>
+              <Route path="/login"    element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
 
-          {/* Invitados */}
-          <Route element={<GuestRoute />}>
-            <Route path="/login"    element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Route>
+            {/* Privadas */}
+            <Route element={<PrivateRoute />}>
+              {/* Aquí tus rutas que requieren login, por ejemplo: */}
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/user/:id" element={<Profile />} />
+              {/* ... */}
+            </Route>
 
-          {/* Privadas */}
-          <Route element={<PrivateRoute />}>
-            {/* Aquí tus rutas que requieren login, por ejemplo: */}
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/user/:id" element={<Profile />} />
-            {/* ... */}
-          </Route>
-
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          </main>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );
