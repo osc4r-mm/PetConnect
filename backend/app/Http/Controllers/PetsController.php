@@ -10,7 +10,7 @@ class PetsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function getPets(Request $request)
     {
         $query = Pet::with(['species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel']);
 
@@ -67,7 +67,7 @@ class PetsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function putPet(Request $request)
     {
         //
     }
@@ -75,7 +75,7 @@ class PetsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function getPet($id)
     {
         $pet = Pet::with([
             'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel', 'photos'
@@ -87,7 +87,7 @@ class PetsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pet $pet)
+    public function updatePet(Request $request, Pet $pet)
     {
         //
     }
@@ -95,7 +95,7 @@ class PetsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Pet $pet)
+    public function deletePet(Pet $pet)
     {
         //
     }

@@ -21,5 +21,5 @@ export default {
     localStorage.removeItem('token');
   },
 
-  fetchUser: () => { return api.get('/user').then(res => res.data); },
+  fetchUser: async () => { return api.get('/profile').then(res => res.data); },
 }

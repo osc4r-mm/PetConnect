@@ -8,7 +8,7 @@ export default function Badge({ text, color }) {
 
 // Componente para cuando carga la pagina (con mensaje personalizado)
 export const LoadingScreen = ({ message }) => (
-    <div className="h-full flex flex-col items-center justify-center">
+    <div className="h-full flex flex-1 flex-col items-center justify-center">
             <div className="relative w-16 h-16 animate-spin">
             <PawPrint className="absolute top-0 animate-bounce text-blue-900" size={20} />
             <PawPrint className="absolute top-0 right-0 animate-bounce text-red-900" size={20} />

@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index()
+    public function getUsers()
     {
         $users = User::with('role')->get();
         return response()->json($users);
     }
 
-    public function show($id)
+    public function getUser($id)
     {
-        $user = User::with(['role', 'pets'])->findOrFail($id);
+        $user = User::with(['role'])->findOrFail($id);
         return response()->json($user);
     }
 
-    public function update(Request $request, $id)
+    public function updateUser(Request $request, $id)
     {
         // Verificar permisos
         $authenticatedUser = Auth::user();
@@ -41,7 +41,7 @@ class UserController extends Controller
     }
 
     // Método específico para actualizar solo la ubicación
-    public function updateLocation(Request $request, $id)
+    public function updateUserLocation(Request $request, $id)
     {
         // Verificar si el usuario autenticado es el mismo que se está actualizando
         $authenticatedUser = Auth::user();
@@ -65,7 +65,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function destroy($id)
+    public function deleteUser($id)
     {
         // También deberíamos verificar permisos aquí
         $authenticatedUser = Auth::user();

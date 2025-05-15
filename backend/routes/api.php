@@ -25,13 +25,13 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 // Rutas públicas
-Route::get('/pets', [PetsController::class, 'index']);
-Route::get('/pet/{id}', [PetsController::class, 'show']);
-Route::get('/pet/{id}/owner', [UserController::class, 'show']);
+Route::get('/pets', [PetsController::class, 'getPets']);
+Route::get('/pet/{id}', [PetsController::class, 'getPet']);
+Route::get('/pet/{id}/owner', [UserController::class, 'getUser']);
 
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/user/{id}', [UserController::class, 'show']);
-Route::delete('/user/{id}', [UserController::class, 'destroy']);
+Route::get('/users', [UserController::class, 'getUsers']);
+Route::get('/user/{id}', [UserController::class, 'getUser']);
+Route::delete('/user/{id}', [UserController::class, 'deleteUser']);
 
 // Rutas complementarias
 Route::get('/species', [SpeciesController::class, 'getSpecies']);
@@ -45,10 +45,10 @@ Route::get('/genders', [GenderController::class, 'getGenders']);
 Route::middleware('auth:sanctum')->group(function () {
     // Rutas de administración
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/profile', [AuthController::class, 'user']);
 
     // Rutas de usuario
     Route::post('/pet/{id}/request', [PetRequestController::class, 'request']);
-    Route::put('/user/{id}/location', [UserController::class, 'updateLocation']);
-    Route::put('/user/{id}', [UserController::class, 'update']);
+    Route::put('/user/{id}/location', [UserController::class, 'updateUserLocation']);
+    Route::put('/user/{id}', [UserController::class, 'updateUser']);
 });

@@ -308,7 +308,6 @@ export default function PetDetail() {
         }
         
         setPet(petData);
-        document.title = `${petData.name} | Mascotitas`;
       } catch (err) {
         console.error('Error cargando datos:', err);
           if (err.response?.status === 404) {

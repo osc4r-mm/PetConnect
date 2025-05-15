@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login     from './components/auth/Login';
 import Register  from './components/auth/Register';
 import Navbar    from './components/Navbar';
-import Home      from './components/Home';
+import Home      from './components/home/Home';
 import PetDetail from './components/pets/PetDetail';
 import Profile   from './components/UserProfile/Profile';
 
@@ -33,6 +33,7 @@ export default function App() {
             {/* Públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/pet/:id" element={<PetDetail />} />
+              <Route path="/user/:id" element={<Profile />} />
 
             {/* Invitados */}
             <Route element={<GuestRoute />}>
@@ -44,7 +45,6 @@ export default function App() {
             <Route element={<PrivateRoute />}>
               {/* Aquí tus rutas que requieren login, por ejemplo: */}
               <Route path="/profile" element={<Profile />} />
-              <Route path="/user/:id" element={<Profile />} />
               {/* ... */}
             </Route>
 
