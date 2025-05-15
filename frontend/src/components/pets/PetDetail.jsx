@@ -168,8 +168,12 @@ const RequestModal = ({ pet, onClose, isOpen, initialType }) => {
                   onChange={handleInputChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
-                  <option value="adopt">Adoptar</option>
-                  <option value="care">Cuidar</option>
+                  {pet.for_adoption && (
+                    <option value="adopt">Adoptar</option>
+                  )}
+                  {pet.for_sitting && (
+                    <option value="care">Cuidar</option>
+                )}
                 </select>
               </div>
               

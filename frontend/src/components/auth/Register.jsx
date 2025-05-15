@@ -11,7 +11,7 @@ const Register = () => {
     password: '',
     password_confirmation: '',
   });
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,11 +49,11 @@ const Register = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
+    setErrors([]);
     setIsSubmitting(true);
 
     if (formData.password !== formData.password_confirmation) {
-      setErrorMessage('Las contraseñas no coinciden');
+      setErrors(['Las contraseñas no coinciden']);
       setIsSubmitting(false);
       return;
     }
@@ -67,8 +67,12 @@ const Register = () => {
       });
       navigate('/');
     } catch (err) {
-      const apiError = err?.message || 'Error al registrar';
-      setErrorMessage(apiError);
+        if (err.response?.status === 422 && err.response.data.errors) {
+        const fieldErrors = Object.values(err.response.data.errors).flat();
+        setErrors(fieldErrors);
+      } else {
+        setErrors([err.message || 'Error al registrar']);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -79,9 +83,13 @@ const Register = () => {
       <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">Crear Cuenta</h2>
 
-        {errorMessage && (
+        {errorMessage.length > 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {errorMessage}
+            <ul className="list-disc list-inside space-y-1">
+              {errorMessage.map((msg, i) => (
+                <li key={i}>{msg}</li>
+              ))}
+            </ul>
           </div>
         )}
 

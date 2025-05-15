@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('sender_id');
             $table->unsignedBigInteger('receiver_id');
-            $table->enum('type',['adoption','sitting']);
+            $table->enum('type',['adopt','care']);
             $table->text('message')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');

@@ -26,6 +26,21 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function updateLocation(Request $request, $id)
+    {
+        $data = $request->validate([
+            'latitude'  => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->latitude  = $data['latitude'];
+        $user->longitude = $data['longitude'];
+        $user->save();
+
+        return response()->json($user);
+    }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);

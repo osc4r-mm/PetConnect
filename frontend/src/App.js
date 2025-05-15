@@ -3,11 +3,12 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import Login     from './components/auth/Login';
+import Register  from './components/auth/Register';
 import Navbar    from './components/Navbar';
 import Home      from './components/Home';
 import PetDetail from './components/pets/PetDetail';
-import Login     from './components/auth/Login';
-import Register  from './components/auth/Register';
+import Profile   from './components/Profile';
 
 // Guard de rutas privadas
 function PrivateRoute() {
@@ -43,7 +44,8 @@ export default function App() {
           {/* Privadas */}
           <Route element={<PrivateRoute />}>
             {/* Aquí tus rutas que requieren login, por ejemplo: */}
-            
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:id" element={<Profile />} />
             {/* ... */}
           </Route>
 

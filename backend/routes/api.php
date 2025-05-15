@@ -29,6 +29,12 @@ Route::get('/pets', [PetsController::class, 'index']);
 Route::get('/pet/{id}', [PetsController::class, 'show']);
 Route::get('/pet/{id}/owner', [UserController::class, 'show']);
 
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/user/{id}', [UserController::class, 'show']);
+Route::put('/user/{id}/location', [UserController::class, 'updateLocation']);
+Route::put('/user/{id}', [UserController::class, 'update']);
+Route::delete('/user/{id}', [UserController::class, 'destroy']);
+
 // Rutas complementarias
 Route::get('/species', [SpeciesController::class, 'getSpecies']);
 Route::get('/breeds', [BreedController::class, 'getBreeds']);

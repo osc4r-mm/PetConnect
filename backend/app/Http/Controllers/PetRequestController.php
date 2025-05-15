@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 class PetRequestController extends Controller
 {
-    public function store(Request $httpRequest, Pet $pet)
+    public function request(Request $httpRequest, $id)
     {
+        $pet = Pet::findOrFail($id);
+
         // 1) Valida la petición
         $data = $httpRequest->validate([
             'type'    => 'required|in:adopt,care',
@@ -19,7 +21,14 @@ class PetRequestController extends Controller
 
         // 2) Determina sender y receiver
         $senderId   = Auth::id();
-        $receiverId = $pet->user_id;  // asumo que la mascota tiene user_id === owner
+        $receiverId = $pet->user_id;
+
+        if (is_null($receiverId)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Esta mascota no tiene un propietario asignado.'
+            ], 400);
+        }
 
         // 3) Crea la solicitud
         $request = RequestModel::create([
