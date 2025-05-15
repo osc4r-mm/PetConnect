@@ -11,7 +11,6 @@ use App\Http\Controllers\NoiseLevelController;
 use App\Http\Controllers\GenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetRequestController;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 
 /*
@@ -21,7 +20,6 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 */
 
 // Rutas de autenticación
-Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

@@ -1,36 +1,25 @@
-// src/services/authService.js
 import api from './api';
 
-const authService = {
-  // Obtiene la cookie CSRF de Sanctum (ruta sin /api)
-  getCsrfCookie: () => {
-    const base = (process.env.REACT_APP_API_URL || 'http://localhost:8000').replace(/\/api$/, '');
-    return fetch(`${base}/sanctum/csrf-cookie`, {
-      credentials: 'include'
-    });
+export default {
+  login: async creds => {
+    const { data } = await api.post('/login', creds);
+    // data.token es el personal access token que te devuelve Laravel
+    localStorage.setItem('token', data.token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    return data;
   },
 
-  login: async creds => {
-    // 1) Pido la cookie CSRF
-    await authService.getCsrfCookie();
+  logout: async () => {
+    await api.post('/logout');
+    localStorage.removeItem('token');
+  },
 
-    // 2) Hago login con axios (que ya envía cookies)
-    const { data } = await api.post('/login', creds);
-    return data;
+  fetchUser: () => {
+    return api.get('/user').then(res => res.data);
   },
 
   register: async info => {
-    // 1) Pido la cookie CSRF
-    await authService.getCsrfCookie();
-
-    // 2) Registro
     const { data } = await api.post('/register', info);
     return data;
   },
-
-  fetchUser: () => api.get('/user').then(res => res.data),
-
-  logout: () => api.post('/logout'),
 };
-
-export default authService;
