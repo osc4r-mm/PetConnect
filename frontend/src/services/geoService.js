@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GEOAPIFY_API_KEY = 'TU_API_KEY_AQUI';
+const GEOAPIFY_API_KEY = 'e85af178730a46fc866762af6f129fd3';
 
 export const searchCities = async (query) => {
   if (!query) return [];

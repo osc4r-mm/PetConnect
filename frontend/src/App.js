@@ -8,7 +8,7 @@ import Register  from './components/auth/Register';
 import Navbar    from './components/Navbar';
 import Home      from './components/Home';
 import PetDetail from './components/pets/PetDetail';
-import Profile   from './components/Profile';
+import Profile   from './components/UserProfile/Profile';
 
 // Guard de rutas privadas
 function PrivateRoute() {

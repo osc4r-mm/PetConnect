@@ -31,8 +31,6 @@ Route::get('/pet/{id}/owner', [UserController::class, 'show']);
 
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/user/{id}', [UserController::class, 'show']);
-Route::put('/user/{id}/location', [UserController::class, 'updateLocation']);
-Route::put('/user/{id}', [UserController::class, 'update']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
 // Rutas complementarias
@@ -51,4 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas de usuario
     Route::post('/pet/{id}/request', [PetRequestController::class, 'request']);
+    Route::put('/user/{id}/location', [UserController::class, 'updateLocation']);
+    Route::put('/user/{id}', [UserController::class, 'update']);
 });

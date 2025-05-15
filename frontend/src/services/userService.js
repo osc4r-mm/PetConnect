@@ -1,31 +1,52 @@
 import api from './api';
 
-export const getUsers = async (page = 1, filters = {}) => {
-  const response = await api.get('/users', { params: { page, ...filters } });
-  return response.data;
-}
+export const getUsers = async () => {
+  try {
+    const response = await api.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo usuarios:', error);
+    throw error;
+  }
+};
 
 export const getUserById = async (id) => {
-  const response = await api.get(`/user/${id}`);
-  return response.data;
+  try {
+    const response = await api.get(`/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error obteniendo usuario #${id}:`, error);
+    throw error;
+  }
 };
 
-export const updateUser = async (id, formData) => {
-  const response = await api.put(`/user/${id}`, formData);
-  return response.data;
+export const updateUserLocation = async (id, locationData) => {
+  try {
+    // Usamos el endpoint específico para ubicación
+    const response = await api.put(`/user/${id}/location`, locationData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error actualizando ubicación del usuario #${id}:`, error);
+    throw error;
+  }
 };
 
-export const updateUserLocation = async (id, formData) => {
-  const response = await api.put(`/user/${id}/location`, formData);
-  return response.data;
-}
+export const updateUser = async (id, userData) => {
+  try {
+    const response = await api.put(`/user/${id}`, userData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error actualizando usuario #${id}:`, error);
+    throw error;
+  }
+};
 
 export const deleteUser = async (id) => {
-  const response = await api.delete(`/user/${id}`);
-  return response.data;
-};
-
-export const getUserPets = async (id) => {
-  const response = await api.get(`/user/${id}/pets`);
-  return response.data;
+  try {
+    const response = await api.delete(`/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error eliminando usuario #${id}:`, error);
+    throw error;
+  }
 };
