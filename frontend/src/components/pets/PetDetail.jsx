@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPet, request, getOwner } from '../../services/petService';
+import { LoadingScreen } from '../Util';
 
 // Componentes más pequeños y reutilizables
 const CharacteristicItem = ({ icon, title, value }) => {
@@ -245,21 +246,6 @@ const ContactCard = ({ owner }) => {
   );
 };
 
-// Componentes para estados de carga y error
-const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-100">
-    <div className="flex flex-col items-center">
-      <div className="relative w-16 h-16 animate-spin">
-        <PawPrint className="absolute top-0 animate-bounce text-blue-900" size={20} />
-        <PawPrint className="absolute top-0 right-0 animate-bounce text-red-900" size={20} />
-        <PawPrint className="absolute bottom-0 animate-bounce text-yellow-900" size={20} />
-        <PawPrint className="absolute bottom-0 right-0 animate-bounce text-green-900" size={20} />
-      </div>
-      <p className="mt-4 text-lg font-medium text-blue-700">Cargando información de la mascota...</p>
-    </div>
-  </div>
-);
-
 const NotFound = () => {
   const navigate = useNavigate();
   
@@ -339,7 +325,7 @@ export default function PetDetail() {
     setShowRequestModal(true);
   };
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <LoadingScreen message={'Cargando informacion de la mascota...'} />;
   if (error || !pet) return <NotFound />;
   
   // Determinar ícono de género

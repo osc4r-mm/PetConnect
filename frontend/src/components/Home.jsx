@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, SortAsc, SortDesc, Heart, PawPrint, Award, VolumeX, Zap, Volume2, Ruler, Mars, Venus } from 'lucide-react';
 import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels } from '../services/petService';
+import { LoadingScreen } from './Util';
 
 export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
@@ -326,7 +327,7 @@ export default function Home() {
         </div>
       </div>
       {/* cards grid */}
-      {loading ? <LoadingPlaceholder /> : pets.length > 0 ? (
+      {loading ? <LoadingScreen message={'cargando mascotas...'} /> : pets.length > 0 ? (
         <div>
           {/* Pagination */}
           <div className="flex justify-center m-6">
