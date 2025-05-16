@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -78,6 +79,10 @@ class UserController extends Controller
         ]);
 
         $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado'], 401);
+        }
 
         // Eliminar imagen anterior si no es la default
         if ($user->image && $user->image !== 'user_profile/default.jpg') {
