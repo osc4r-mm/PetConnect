@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getUser, updateUser, getPetsFromUser } from '../../services/userService';
+import { getUser, updateUserLocation, getPetsFromUser } from '../../services/userService';
+import { isCaregiverActive } from '../../services/caregiverService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import UserInfoSection from './partials/UserInfoSection';
 import MapSection from './partials/MapSection';
@@ -46,12 +47,15 @@ export default function Profile() {
   const handleUpdateLocation = async (lat, lng) => {
     if (!isOwnProfile) return;
     try {
-      const updated = await updateUser(currentUser.id, { latitude: lat, longitude: lng });
+      const updated = await updateUserLocation(currentUser.id, { latitude: lat, longitude: lng });
       setUser(prev => ({ ...prev, latitude: updated.latitude, longitude: updated.longitude }));
     } catch (err) {
       console.error(err);
     }
   };
+
+  // Verificar si el usuario es cuidador activo
+  const isUserCaregiverActive = isCaregiverActive(user);
 
   if (authLoading || loading) return <LoadingScreen message={'Verificando sesión...'} />;
   if (!currentUser) return <Navigate to="/login" replace />;
@@ -73,7 +77,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {user.role?.name === 'caregiver' && <ScheduleSection />}
+      {/* Mostrar el calendario SOLO si el usuario es cuidador ACTIVO */}
+      {isUserCaregiverActive && <ScheduleSection />}
 
       <PetsSection
         pets={pets || []}

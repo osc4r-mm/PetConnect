@@ -1,8 +1,9 @@
 import api from './api';
 
+// Convertirse en cuidador
 export const becomeCaregiver = async (userId) => {
   try {
-    const response = await api.post(`/caregiver/${userId}/activate`);
+    const response = await api.post(`/caregivers/${userId}/become`);
     return response.data;
   } catch (error) {
     console.error('Error al convertirse en cuidador:', error);
@@ -10,16 +11,56 @@ export const becomeCaregiver = async (userId) => {
   }
 };
 
-export const deactivateCaregiver = async (userId) => {
+// Darse de baja como cuidador (vuelve a rol de usuario)
+export const quitCaregiver = async (userId) => {
   try {
-    const response = await api.post(`/caregiver/${userId}/deactivate`);
+    const response = await api.post(`/caregivers/${userId}/quit`);
     return response.data;
   } catch (error) {
-    console.error('Error al dar de baja como cuidador:', error);
+    console.error('Error al darse de baja como cuidador:', error);
     throw error;
   }
 };
 
+// Pausar temporalmente el rol de cuidador (active = false)
+export const pauseCaregiver = async (userId) => {
+  try {
+    const response = await api.post(`/caregivers/${userId}/pause`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al pausar temporalmente como cuidador:', error);
+    throw error;
+  }
+};
+
+// Reactivar el rol de cuidador después de una pausa
+export const resumeCaregiver = async (userId) => {
+  try {
+    const response = await api.post(`/caregivers/${userId}/resume`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al reactivar como cuidador:', error);
+    throw error;
+  }
+};
+
+// Verificar si un usuario es cuidador activo
+export const isCaregiverActive = (user) => {
+  return user && 
+         user.role?.name === 'caregiver' && 
+         user.caregiver && 
+         user.caregiver.active === true;
+};
+
+// Verificar si un usuario es cuidador inactivo
+export const isCaregiverInactive = (user) => {
+  return user && 
+         user.role?.name === 'caregiver' && 
+         user.caregiver && 
+         user.caregiver.active === false;
+};
+
+// Obtener cuidadores disponibles por horario
 export const getCaregiversBySchedule = async (date, location) => {
   try {
     const response = await api.get('/caregivers/available', {

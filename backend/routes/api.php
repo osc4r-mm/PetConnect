@@ -57,9 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/{userId}/location', [UserController::class, 'updateUserLocation']);
     Route::put('/user/{userId}', [UserController::class, 'update']);
     Route::post('/user/{id}/upload-image', [UserController::class, 'uploadProfileImage']);
-    Route::post('/user/{id}/become-caregiver', [UserController::class, 'becomeCaregiver']);
-    Route::post('/caregiver/{userId}/activate', [CaregiverController::class, 'activate']);
-    Route::post('/caregiver/{userId}/deactivate', [CaregiverController::class, 'deactivate']);
-    Route::get('/caregivers/available', [CaregiverController::class, 'getAvailable']);
+    
+    // Rutas de cuidadores
+    Route::post('/caregivers/{userId}/become', [CaregiverController::class, 'become']);
+    Route::post('/caregivers/{userId}/quit', [CaregiverController::class, 'quit']);
+    Route::post('/caregivers/{userId}/pause', [CaregiverController::class, 'pause']);
+    Route::post('/caregivers/{userId}/resume', [CaregiverController::class, 'resume']);
 
 });

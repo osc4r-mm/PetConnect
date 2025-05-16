@@ -1,22 +1,32 @@
 <?php
+
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+
 use App\Models\User;
-use App\Models\Caregiver;
 use App\Models\Role;
+use App\Models\Caregiver;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CaregiverController extends Controller
 {
-    public function activate($userId)
+    /**
+     * Convertirse en cuidador
+     */
+    public function become($userId)
     {
         // Verificar permisos
         $authenticatedUser = Auth::user();
         if (!$authenticatedUser || $authenticatedUser->id != $userId) {
             return response()->json(['message' => 'No tienes permiso'], 403);
         }
-
+        
         $user = User::with(['role', 'caregiver'])->findOrFail($userId);
+        
+        // Si ya es cuidador, devolvemos mensaje
+        if ($user->isCaregiver()) {
+            return response()->json(['message' => 'El usuario ya es cuidador'], 400);
+        }
         
         // Buscar el rol de cuidador
         $caregiverRole = Role::where('name', 'caregiver')->first();
@@ -25,91 +35,125 @@ class CaregiverController extends Controller
             return response()->json(['message' => 'Rol de cuidador no encontrado'], 404);
         }
         
-        // Comprobar si el usuario ya tiene un registro de cuidador
-        $caregiver = Caregiver::where('user_id', $user->id)->first();
-        
-        if ($caregiver) {
-            // Si ya existe, activarlo
-            $caregiver->active = true;
-            $caregiver->save();
-        } else {
-            // Crear un nuevo registro de cuidador
-            Caregiver::create([
-                'user_id' => $user->id,
-                'active' => true,
-                'hourly_rate' => 0 // Valor por defecto
-            ]);
-        }
-        
-        // Actualizar el rol del usuario
+        // Cambiar rol a cuidador
         $user->role_id = $caregiverRole->id;
         $user->save();
         
-        // Recargar el usuario con las relaciones actualizadas
-        $user->load(['role', 'caregiver']);
+        // Crear registro de cuidador (siempre activo por defecto)
+        $caregiver = Caregiver::create([
+            'user_id' => $user->id,
+            'active' => true, // Activo por defecto
+            'hourly_rate' => 10.00 // Valor predeterminado
+        ]);
         
-        return response()->json($user);
+        return response()->json([
+            'message' => 'Ahora eres cuidador',
+            'user' => $user->load('role', 'caregiver')
+        ]);
     }
     
-    public function deactivate($userId)
+    /**
+     * Darse de baja como cuidador (volver a ser usuario normal)
+     */
+    public function quit($userId)
     {
         // Verificar permisos
         $authenticatedUser = Auth::user();
         if (!$authenticatedUser || $authenticatedUser->id != $userId) {
             return response()->json(['message' => 'No tienes permiso'], 403);
         }
-
         $user = User::with(['role', 'caregiver'])->findOrFail($userId);
         
-        // Comprobar si el usuario es un cuidador
-        $caregiver = Caregiver::where('user_id', $user->id)->first();
+        // Verificar que el usuario es cuidador
+        if (!$user->isCaregiver()) {
+            return response()->json(['message' => 'El usuario no es un cuidador'], 400);
+        }
+        
+        // Buscar el rol de usuario
+        $userRole = Role::where('name', 'user')->first();
+        
+        if (!$userRole) {
+            return response()->json(['message' => 'Rol de usuario no encontrado'], 404);
+        }
+        
+        // Eliminar registro de cuidador
+        $user->caregiver()->delete();
+        
+        // Cambiar rol a usuario
+        $user->role_id = $userRole->id;
+        $user->save();
+        
+        return response()->json([
+            'message' => 'Has dejado de ser cuidador',
+            'user' => $user->load('role')
+        ]);
+    }
+    
+    /**
+     * Poner en pausa el rol de cuidador (active = false)
+     */
+    public function pause($userId)
+    {
+        // Verificar permisos
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
+            return response()->json(['message' => 'No tienes permiso'], 403);
+        }
+        $user = User::with(['role', 'caregiver'])->findOrFail($userId);
+        
+        // Verificar que el usuario es cuidador
+        if (!$user->isCaregiver()) {
+            return response()->json(['message' => 'El usuario no es un cuidador'], 400);
+        }
+        
+        // Buscar el registro de cuidador
+        $caregiver = $user->caregiver;
         
         if (!$caregiver) {
-            return response()->json(['message' => 'El usuario no es un cuidador'], 404);
+            return response()->json(['message' => 'Información de cuidador no encontrada'], 404);
         }
         
         // Desactivar el cuidador
         $caregiver->active = false;
         $caregiver->save();
         
-        // Recargar el usuario con las relaciones actualizadas
-        $user->load(['role', 'caregiver']);
-        
-        return response()->json($user);
+        return response()->json([
+            'message' => 'Cuenta de cuidador pausada temporalmente',
+            'user' => $user->load('role', 'caregiver')
+        ]);
     }
     
-    public function getAvailable(Request $request)
+    /**
+     * Reactivar rol de cuidador (active = true)
+     */
+    public function resume($userId)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'distance' => 'sometimes|numeric|min:1|max:100',
+        // Verificar permisos
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
+            return response()->json(['message' => 'No tienes permiso'], 403);
+        }
+        $user = User::with(['role', 'caregiver'])->findOrFail($userId);
+        
+        // Verificar que el usuario es cuidador
+        if (!$user->isCaregiver()) {
+            return response()->json(['message' => 'El usuario no es un cuidador'], 400);
+        }
+        
+        // Buscar el registro de cuidador
+        $caregiver = $user->caregiver;
+        
+        if (!$caregiver) {
+            return response()->json(['message' => 'Información de cuidador no encontrada'], 404);
+        }
+        
+        // Reactivar el cuidador
+        $caregiver->active = true;
+        $caregiver->save();
+        
+        return response()->json([
+            'message' => 'Cuenta de cuidador reactivada',
+            'user' => $user->load('role', 'caregiver')
         ]);
-        
-        // Lógica para buscar cuidadores disponibles
-        // Este es un ejemplo, la implementación dependerá de tu base de datos
-        // y cómo quieras filtrar por disponibilidad, distancia, etc.
-        
-        $distance = $request->input('distance', 10); // 10km por defecto
-        $date = $request->input('date');
-        $latitude = $request->input('latitude');
-        $longitude = $request->input('longitude');
-        
-        // Buscar cuidadores activos dentro de la distancia especificada
-        // que tengan disponibilidad en la fecha dada
-        
-        // Esta consulta es un ejemplo y debe adaptarse a tu esquema de base de datos
-        $caregivers = User::with(['role', 'caregiver'])
-            ->whereHas('caregiver', function($query) {
-                $query->where('active', true);
-            })
-            ->whereHas('role', function($query) {
-                $query->where('name', 'caregiver');
-            })
-            // Aquí podrías añadir filtros por disponibilidad según tu esquema
-            ->get();
-        
-        return response()->json($caregivers);
     }
 }

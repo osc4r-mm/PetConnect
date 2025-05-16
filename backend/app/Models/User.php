@@ -73,6 +73,10 @@ class User extends Authenticatable
         return $this->hasOne(Caregiver::class);
     }
 
+    public function isCaregiverActive() {
+        return $this->isCaregiver() && $this->caregiver && $this->caregiver->active;
+    }
+
     public function sentRequests() {
         return $this->hasMany(Request::class, 'sender_id');
     }
