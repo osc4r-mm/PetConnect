@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Heart, PawPrint, Mars, Venus, ArrowLeft,
-  Mail, Check, X, Award, Briefcase, Calendar
+  Heart, PawPrint, Mars, Venus, ArrowLeft, Briefcase, Calendar
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getPet, request, getOwner } from '../../services/petService';
+import { getPet, getOwner } from '../../services/petService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import { useAuth } from '../../context/AuthContext';
 
 // Importar componentes parciales
-import PhotoGallery from './partials/PhotoGallery';
+import GallerySection from './partials/GallerySection';
 import OwnerCard from './partials/OwnerCard';
 import PetCharacteristics from './partials/PetCharacteristics';
 import RequestForm from './partials/RequestForm';
@@ -156,7 +155,7 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen">
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
@@ -179,7 +178,7 @@ const PetDetail = () => {
           </button>
         </div>
         
-        {/* Encabezado con el fondo de color - CAMBIADO A MORADO PARA MEJOR CONTRASTE */}
+        {/* Encabezado */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
           {/* Iconos de disponibilidad en posición absoluta */}
           <div className="absolute top-4 right-4 flex space-x-2">
@@ -228,10 +227,10 @@ const PetDetail = () => {
         </div>
         
         {/* Contenido principal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8 bg-white shadow-md rounded-b-xl">
           {/* Columna izquierda: fotos y descripción */}
           <div className="md:col-span-2">
-            <PhotoGallery 
+            <GallerySection 
               profilePath={pet.profile_path} 
               photos={pet.photos} 
               name={pet.name}

@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Caregiver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,41 +37,47 @@ class UserController extends Controller
             return response()->json(['message' => 'No tienes permiso'], 403);
         }
 
-        $user = User::findOrFail($userId);
+        $user = User::with(['role', 'caregiver'])->findOrFail($userId);
         
-        $data = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email',
-            'latitude' => 'sometimes|numeric',
-            'longitude' => 'sometimes|numeric',
-            'role_id' => 'sometimes|exists:roles,id',
-        ]);
-
-        $user->update($data);
-        return response()->json($user);
-    }
-
-    // Método específico para actualizar solo la ubicación
-    public function updateUserLocation(Request $request, $userId) {
-        // Verificar si el usuario autenticado es el mismo que se está actualizando
-        $authenticatedUser = Auth::user();
-        
-        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
-            return response()->json(['message' => 'No tienes permiso para actualizar la ubicación de este usuario'], 403);
+        // Procesar datos básicos del usuario
+        if ($request->has('name') || $request->has('email') || $request->has('latitude') || 
+            $request->has('longitude') || $request->has('description')) {
+            
+            $validatedData = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email',
+                'latitude' => 'sometimes|numeric',
+                'longitude' => 'sometimes|numeric',
+                'description' => 'sometimes|string|nullable',
+            ]);
+            
+            $user->update($validatedData);
         }
-
-        $user = User::findOrFail($userId);
         
-        $data = $request->validate([
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
-
-        $user->update([
-            'latitude' => $data['latitude'],
-            'longitude' => $data['longitude']
-        ]);
-
+        // Procesar subida de imagen
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => 'required|image|max:2048',
+            ]);
+            
+            // Eliminar la imagen anterior si existe y no es la default
+            if ($user->image && !str_contains($user->image, 'default')) {
+                $oldPath = str_replace(asset('storage/'), '', $user->image);
+                if ($oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+            
+            $path = $request->file('image')->store("users/{$userId}", 'public');
+            $fullPath = asset("storage/{$path}");
+            
+            $user->image = $fullPath;
+            $user->save();
+        }
+        
+        // Recargar el usuario con las relaciones
+        $user->load(['role', 'caregiver']);
+        
         return response()->json($user);
     }
 

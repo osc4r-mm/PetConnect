@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getUserById, updateUserLocation, getPetsFromUser } from '../../services/userService';
+import { getUser, updateUser, getPetsFromUser } from '../../services/userService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import UserInfoSection from './partials/UserInfoSection';
 import MapSection from './partials/MapSection';
@@ -27,7 +27,7 @@ export default function Profile() {
     if (!currentUser) return;
 
     setLoading(true);
-    getUserById(targetId)
+    getUser(targetId)
       .then(data => {
         setUser(data);
         // 2) Tras usuario, cargamos mascotas
@@ -46,7 +46,7 @@ export default function Profile() {
   const handleUpdateLocation = async (lat, lng) => {
     if (!isOwnProfile) return;
     try {
-      const updated = await updateUserLocation(currentUser.id, { latitude: lat, longitude: lng });
+      const updated = await updateUser(currentUser.id, { latitude: lat, longitude: lng });
       setUser(prev => ({ ...prev, latitude: updated.latitude, longitude: updated.longitude }));
     } catch (err) {
       console.error(err);

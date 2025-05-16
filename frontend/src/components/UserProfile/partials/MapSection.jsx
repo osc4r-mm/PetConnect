@@ -111,7 +111,6 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Buscar ciudad..."
             className="border p-2 rounded-l-md w-full pr-8"
-            disabled={!editable}
           />
           {isSearching && (
             <span className="absolute right-2 top-2 animate-spin text-gray-400">

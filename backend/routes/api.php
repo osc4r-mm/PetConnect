@@ -6,6 +6,7 @@ use App\Http\Controllers\PetsController;
 use App\Http\Controllers\PetDataController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetRequestController;
+use App\Http\Controllers\CaregiverController;
 
 
 /*
@@ -56,5 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/{userId}/location', [UserController::class, 'updateUserLocation']);
     Route::put('/user/{userId}', [UserController::class, 'update']);
     Route::post('/user/{id}/upload-image', [UserController::class, 'uploadProfileImage']);
+    Route::post('/user/{id}/become-caregiver', [UserController::class, 'becomeCaregiver']);
+    Route::post('/caregiver/{userId}/activate', [CaregiverController::class, 'activate']);
+    Route::post('/caregiver/{userId}/deactivate', [CaregiverController::class, 'deactivate']);
+    Route::get('/caregivers/available', [CaregiverController::class, 'getAvailable']);
 
 });

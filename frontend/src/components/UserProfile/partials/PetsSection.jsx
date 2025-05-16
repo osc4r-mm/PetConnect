@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, PawPrint, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getPetImageUrl } from '../../../services/petService';
 
 export default function PetsSection({ pets, onAdd, editable }) {
     return (
@@ -25,7 +26,7 @@ export default function PetsSection({ pets, onAdd, editable }) {
                             className="block relative group rounded-lg overflow-hidden shadow-md cursor-pointer h-32 transition transform hover:scale-105"
                         >
                             <img
-                                src={pet.profile_path || 'https://via.placeholder.com/150'}
+                                src={getPetImageUrl(pet.profile_path) || 'https://via.placeholder.com/150'}
                                 alt={pet.name}
                                 className="object-cover w-full h-full"
                             />

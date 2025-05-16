@@ -24,12 +24,12 @@ export const getPet = async (id) => {
 };
 
 // Obtener el dueño de una mascota
-export const getOwner = async (id) => {
+export const getOwner = async (petId) => {
   try {
-    const response = await api.get(`/pet/${id}/owner`);
+    const response = await api.get(`/pet/${petId}/owner`);
     return response.data;
   } catch (error) {
-    console.error(`Error al obtener dueño con ID ${id}:`, error);
+    console.error(`Error al obtener el dueño de la mascota ${petId}:`, error);
     throw error;
   }
 };
@@ -124,6 +124,25 @@ export const deletePet = async (id) => {
 export const request = async (petId, formData) => {
   const response = await api.post(`/pet/${petId}/request`, formData);
   return response.data;
+};
+
+// Función para obtener la URL de imagen predeterminada para mascota
+export const getDefaultPetImageUrl = () => {
+  return 'http://localhost:8000/storage/default/default_pet.jpg';
+};
+
+// Función para verificar si una URL es válida
+export const isValidImageUrl = (url) => {
+  if (!url) return false;
+  return url.startsWith('http://') || url.startsWith('https://');
+};
+
+// Función para obtener la URL de imagen para una mascota (con fallback)
+export const getPetImageUrl = (imagePath) => {
+  if (isValidImageUrl(imagePath)) {
+    return imagePath;
+  }
+  return getDefaultPetImageUrl();
 };
 
 // Obtener datos para formularios de selección

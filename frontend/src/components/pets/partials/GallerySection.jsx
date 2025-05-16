@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { ImagePlus, Camera, Trash, Plus } from 'lucide-react';
 import { uploadPetThumbnail, uploadPetExtraPhoto, deletePetPhoto } from '../../../services/petImageService';
 
-const PhotoGallery = ({ profilePath, photos, name, editable, petId, onPhotosUpdate }) => {
+const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUpdate }) => {
   const [activePhoto, setActivePhoto] = useState(0);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [isUploadingExtra, setIsUploadingExtra] = useState(false);
@@ -208,4 +208,4 @@ const PhotoGallery = ({ profilePath, photos, name, editable, petId, onPhotosUpda
   );
 };
 
-export default PhotoGallery;
+export default GallerySection;

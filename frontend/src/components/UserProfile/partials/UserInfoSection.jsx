@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Mail, Camera } from 'lucide-react';
+import { Mail, Camera, Heart, XCircle } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { uploadUserProfileImage } from '../../../services/userService';
+import { updateUser } from '../../../services/userService';
 
 const UserInfoSection = ({ user }) => {
   const { user: currentUser, updateUserData } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
+  const [isProcessingCaregiverRequest, setIsProcessingCaregiverRequest] = useState(false);
   
   const isOwnProfile = currentUser && user.id === currentUser.id;
 
@@ -27,16 +28,17 @@ const UserInfoSection = ({ user }) => {
     setIsUploading(true);
     
     try {
-      const response = await uploadUserProfileImage(user.id, file);
+      const formData = new FormData();
+      formData.append('image', file);
       
-      if (response && response.path) {
-        // Actualizar el usuario en el contexto
-        if (updateUserData) {
-          updateUserData({
-            ...user,
-            image: response.path
-          });
+      const updatedUser = await updateUser(user.id, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
+      });
+      
+      if (updatedUser && updateUserData) {
+        updateUserData(updatedUser);
       }
     } catch (error) {
       console.error('Error al subir la imagen de perfil:', error);
@@ -45,6 +47,51 @@ const UserInfoSection = ({ user }) => {
       setIsUploading(false);
     }
   };
+
+  const handleBecomeCaregiver = async () => {
+    if (!isOwnProfile) return;
+    
+    setIsProcessingCaregiverRequest(true);
+    try {
+      const updatedUser = await updateUser(user.id, { 
+        becomeCaregiver: true 
+      });
+      
+      if (updatedUser && updateUserData) {
+        updateUserData(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error al convertirse en cuidador:', error);
+      alert('No se pudo procesar la solicitud para ser cuidador');
+    } finally {
+      setIsProcessingCaregiverRequest(false);
+    }
+  };
+
+  const handleDeactivateCaregiver = async () => {
+    if (!isOwnProfile) return;
+    
+    setIsProcessingCaregiverRequest(true);
+    try {
+      const updatedUser = await updateUser(user.id, { 
+        deactivateCaregiver: true 
+      });
+      
+      if (updatedUser && updateUserData) {
+        updateUserData(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error al dar de baja como cuidador:', error);
+      alert('No se pudo procesar la solicitud para dar de baja como cuidador');
+    } finally {
+      setIsProcessingCaregiverRequest(false);
+    }
+  };
+
+  // Verificar si el usuario es un cuidador activo
+  const isActiveCaregiver = user.role?.name === 'caregiver' && user.caregiver?.active;
+  // Verificar si el usuario es un cuidador inactivo
+  const isInactiveCaregiver = user.role?.name === 'caregiver' && !user.caregiver?.active;
 
   return (
     <div className="p-4">
@@ -76,11 +123,19 @@ const UserInfoSection = ({ user }) => {
         </div>
 
         <h2 className="text-2xl font-bold mt-4">{user.name}</h2>
-        {user.role?.name && (
-          <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full mt-2`}>
-            {user.role.name}
-          </span>
-        )}
+        <div className="flex flex-col items-center gap-1">
+          {user.role?.name && (
+            <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full mt-2`}>
+              {user.role.name}
+            </span>
+          )}
+          
+          {isInactiveCaregiver && (
+            <span className="bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">
+              Inactivo
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-6 space-y-3">
@@ -98,6 +153,40 @@ const UserInfoSection = ({ user }) => {
           {user.description || 'Sin descripción disponible.'}
         </p>
       </div>
+
+      {/* Botones para cuidador */}
+      {isOwnProfile && (
+        <div className="mt-6 flex justify-center">
+          {!user.role || (user.role?.name !== 'caregiver') ? (
+            <button
+              onClick={handleBecomeCaregiver}
+              disabled={isProcessingCaregiverRequest}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Heart className="mr-2" size={18} />
+              {isProcessingCaregiverRequest ? 'Procesando...' : 'Convertirme en cuidador'}
+            </button>
+          ) : isActiveCaregiver ? (
+            <button
+              onClick={handleDeactivateCaregiver}
+              disabled={isProcessingCaregiverRequest}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <XCircle className="mr-2" size={18} />
+              {isProcessingCaregiverRequest ? 'Procesando...' : 'Dar de baja como cuidador'}
+            </button>
+          ) : isInactiveCaregiver ? (
+            <button
+              onClick={handleBecomeCaregiver}
+              disabled={isProcessingCaregiverRequest}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Heart className="mr-2" size={18} />
+              {isProcessingCaregiverRequest ? 'Procesando...' : 'Reactivar como cuidador'}
+            </button>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 };

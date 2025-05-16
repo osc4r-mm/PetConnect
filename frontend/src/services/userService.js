@@ -10,7 +10,7 @@ export const getUsers = async () => {
   }
 };
 
-export const getUserById = async (id) => {
+export const getUser = async (id) => {
   try {
     const response = await api.get(`/user/${id}`);
     return response.data;
@@ -64,6 +64,16 @@ export const updateUser = async (id, userData) => {
     return response.data;
   } catch (error) {
     console.error(`Error actualizando usuario #${id}:`, error);
+    throw error;
+  }
+};
+
+export const becomeCaregiver = async (userId) => {
+  try {
+    const response = await api.post(`/user/${userId}/become-caregiver`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al convertirse en cuidador:', error);
     throw error;
   }
 };
