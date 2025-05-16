@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import { LoadingScreen } from './components/Util';
 import Login     from './components/auth/Login';
 import Register  from './components/auth/Register';
 import Navbar    from './components/Navbar';
@@ -12,7 +13,12 @@ import Profile   from './components/UserProfile/Profile';
 
 // Guard de rutas privadas
 function PrivateRoute() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return <LoadingScreen message="Verificando sesión…" />;
+  }
+  
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 

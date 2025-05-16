@@ -12,10 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('gender_id');
+            $table->unsignedTinyInteger('age')->nullable();
+            $table->string('description', 255)->nullable();
             $table->decimal('wallet_balance',10,2)->default(0);
             $table->decimal('latitude', 10, 6)->nullable();
             $table->decimal('longitude', 10, 6)->nullable();
             $table->string('image')->after('id')->default('user_profile/default.jpg');
+
+            $table->foreign('gender_id')->references('id')->on('genders')->onDelete('restrict');
         });
     }
 
@@ -25,6 +30,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('gender_id');
+            $table->dropColumn('age');
+            $table->dropColumn('description');
             $table->dropColumn('wallet_balance');
             $table->dropColumn('latitude');
             $table->dropColumn('longitude');

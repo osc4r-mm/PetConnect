@@ -1,7 +1,7 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
 
-export default function PetsSection({ pets, onAddPet, editable }) {
+export default function PetsSection({ pets, onAdd, editable }) {
     return (
         <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4 flex items-center">
@@ -11,7 +11,7 @@ export default function PetsSection({ pets, onAddPet, editable }) {
             {editable && (
             <div
             className="flex items-center justify-center border-2 border-dashed border-blue-400 rounded-lg h-32 cursor-pointer hover:bg-blue-50 transition"
-            onClick={onAddPet}
+            onClick={onAdd}
             >
                 <Plus className="w-6 h-6 text-blue-600" />
             </div>

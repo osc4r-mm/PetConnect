@@ -36,8 +36,7 @@ class User extends Authenticatable
         'wallet_balance' => 'decimal:2',
     ];
 
-    protected static function booted()
-    {
+    protected static function booted() {
         static::created(function ($user) {
             // Si no se asignó un rol, asignar por defecto el rol de usuario
             if (!$user->role_id) {
@@ -50,73 +49,63 @@ class User extends Authenticatable
         });
     }
 
-    public function role()
-    {
+    public function pets() {
+        return $this->hasMany(Pet::class, 'user_id');
+    }
+
+    public function role() {
         return $this->belongsTo(Role::class);
     }
 
-    public function hasRole($roleName)
-    {
+    public function hasRole($roleName) {
         return $this->role && $this->role->name === $roleName;
     }
 
-    public function isAdmin()
-    {
+    public function isAdmin() {
         return $this->hasRole('admin');
     }
 
-    public function isCaregiver()
-    {
+    public function isCaregiver() {
         return $this->hasRole('caregiver');
     }
 
-    public function caregiver()
-    {
+    public function caregiver() {
         return $this->hasOne(Caregiver::class);
     }
 
-    public function sentRequests()
-    {
+    public function sentRequests() {
         return $this->hasMany(Request::class, 'sender_id');
     }
 
-    public function receivedRequests()
-    {
+    public function receivedRequests() {
         return $this->hasMany(Request::class, 'receiver_id');
     }
 
-    public function paymentsAsOwner()
-    {
+    public function paymentsAsOwner() {
         return $this->hasMany(Payment::class, 'owner_id');
     }
 
-    public function debtsOwed()
-    {
+    public function debtsOwed() {
         return $this->hasMany(Debt::class, 'owner_id');
     }
 
-    public function reviewsWritten()
-    {
+    public function reviewsWritten() {
         return $this->hasMany(CaregiverReview::class, 'reviewer_id');
     }
 
-    public function chatsAsUser1()
-    {
+    public function chatsAsUser1() {
         return $this->hasMany(Chat::class, 'user1_id');
     }
 
-    public function chatsAsUser2()
-    {
+    public function chatsAsUser2() {
         return $this->hasMany(Chat::class, 'user2_id');
     }
 
-    public function messages()
-    {
+    public function messages() {
         return $this->hasMany(Message::class, 'sender_id');
     }
 
-    public function chats()
-    {
+    public function chats() {
         return $this->chatsAsUser1()->union($this->chatsAsUser2());
     }
 }

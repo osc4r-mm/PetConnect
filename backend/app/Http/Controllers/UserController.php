@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function getUsers()
-    {
+    public function getUsers() {
         $users = User::with('role')->get();
         return response()->json($users);
     }
@@ -18,8 +17,17 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function updateUser(Request $request, $id)
-    {
+    public function getPetsFromUser($id) {
+        $user = User::findOrFail($id);
+
+        // Cargamos las mascotas mediante la relación Eloquent
+        $pets = $user->pets()->get();
+
+        // Devolvemos las mascotas en JSON
+        return response()->json($pets);
+    }
+
+    public function updateUser(Request $request, $id) {
         // Verificar permisos
         $authenticatedUser = Auth::user();
         if (!$authenticatedUser || $authenticatedUser->id != $id) {
@@ -41,8 +49,7 @@ class UserController extends Controller
     }
 
     // Método específico para actualizar solo la ubicación
-    public function updateUserLocation(Request $request, $id)
-    {
+    public function updateUserLocation(Request $request, $id) {
         // Verificar si el usuario autenticado es el mismo que se está actualizando
         $authenticatedUser = Auth::user();
         
@@ -65,8 +72,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function deleteUser($id)
-    {
+    public function deleteUser($id) {
         // También deberíamos verificar permisos aquí
         $authenticatedUser = Auth::user();
         

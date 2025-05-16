@@ -20,6 +20,16 @@ export const getUserById = async (id) => {
   }
 };
 
+export const getPetsFromUser = async (id) => {
+  try {
+    const response = await api.get(`/user/${id}/pets`)
+    return response.data;
+  } catch (error) {
+    console.error(`Error obteniendo las mascotas del usuario #${id}:`, error)
+    throw error;
+  }
+}
+
 export const updateUserLocation = async (id, locationData) => {
   try {
     // Usamos el endpoint específico para ubicación

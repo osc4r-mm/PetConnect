@@ -23,12 +23,27 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
   const dropdownRef = useRef(null);
   let debounce;
 
+  // Cada vez que cambie `position`, movemos el mapa
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setView(viewPosition);
+      mapRef.current.setView(viewPosition, mapRef.current.getZoom());
     }
   }, [viewPosition]);
 
+  // Cerrar el dropdown al hacer clic fuera
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Busqueda
   useEffect(() => {
     clearTimeout(debounce);
     if (searchTerm.length >= 2) {
@@ -67,8 +82,21 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     setViewPosition([lat, lng]);
     mapRef.current?.setView([lat, lng], 13);
     setSearchTerm('');
+    setSearchResults([]);
     setShowDropdown(false);
   };
+
+   useEffect(() => {
+      // Actualizar posición cuando cambian las props
+      if (latitude && longitude) {
+        setViewPosition([latitude, longitude]);
+        
+        // Centrar el mapa en la nueva posición si el mapa está inicializado
+        if (mapRef.current) {
+          mapRef.current.setView([latitude, longitude], mapRef.current.getZoom());
+        }
+      }
+    }, [latitude, longitude]);
 
   return (
     <section>
@@ -76,22 +104,23 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
         <Search className="mr-2 text-blue-600" /> Ubicación en el mapa
       </h2>
       <div className="flex mb-2 relative" ref={dropdownRef}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          placeholder="Buscar ciudad..."
-          className="border p-2 rounded-l-md flex-1"
-          disabled={!editable}
-        />
-        <button
-          onClick={() => searchResults[0] && handleSelectCity(searchResults[0])}
-          className={`px-4 py-2 rounded-r-md ${editable ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-500'}`}
-          disabled={!editable}
-        >Buscar</button>
-        {isSearching && <span className="absolute right-12 top-2 animate-spin">⟳</span>}
+        <div className='relative flex-1'>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            placeholder="Buscar ciudad..."
+            className="border p-2 rounded-l-md w-full pr-8"
+            disabled={!editable}
+          />
+          {isSearching && (
+            <span className="absolute right-2 top-2 animate-spin text-gray-400">
+              ⟳
+            </span>
+          )}
+        </div>
         {showDropdown && (
-          <ul className="absolute z-20 w-full bg-white border rounded-md mt-1 max-h-60 overflow-auto">
+          <ul className="absolute z-20 w-full top-10 bg-white border rounded-md mt-1 max-h-60 overflow-auto">
             {searchResults.map((city,i) => (
               <li key={i} className="p-2 hover:bg-blue-50 cursor-pointer flex items-center"
                   onClick={() => handleSelectCity(city)}>
@@ -104,10 +133,12 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
       </div>
       <div className="relative" style={{ zIndex: 0 }}>
         <MapContainer
+        key={viewPosition.join(',')}
           center={viewPosition}
           zoom={13}
-          whenCreated={map => (mapRef.current = map)}
+          scrollWheelZoom={true}
           className="h-64 w-full rounded-lg mb-2"
+          whenCreated={map => (mapRef.current = map)}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {editable && <MapEventsHandler />}
@@ -125,8 +156,8 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
       </div>
       <p className="text-sm text-gray-500">
         {editable
-          ? 'Arrastra el marcador o haz doble clic para actualizar.'
-          : 'Esta ubicación no es editable.'}
+          ? 'Puedes acercar/alejar con la rueda del ratón y actualizar la ubicación arrastrando el marcador o haciendo doble clic.'
+          : 'Solo puedes ver la ubicación.'}
       </p>
     </section>
   );

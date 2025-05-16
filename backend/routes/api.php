@@ -31,6 +31,7 @@ Route::get('/pet/{id}/owner', [UserController::class, 'getUser']);
 
 Route::get('/users', [UserController::class, 'getUsers']);
 Route::get('/user/{id}', [UserController::class, 'getUser']);
+Route::get('/user/{id}/pets', [UserController::class, 'getPetsFromUser']);
 Route::delete('/user/{id}', [UserController::class, 'deleteUser']);
 
 // Rutas complementarias
