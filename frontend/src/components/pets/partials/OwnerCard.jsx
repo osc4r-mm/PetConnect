@@ -22,7 +22,7 @@ const OwnerCard = ({ owner }) => {
       
       {/* Información del dueño */}
       <div className="flex-1 min-w-0">
-        <Link to={`/profile/${owner.id}`}>
+        <Link to={`/user/${owner.id}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate">{owner.name}</h3>
         </Link>
         <p className="text-xs text-gray-500 truncate">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Heart, PawPrint, Mars, Venus, ArrowLeft,
-  Mail, Check, X, Award, Briefcase, Camera, Calendar
+  Mail, Check, X, Award, Briefcase, Calendar
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPet, request, getOwner } from '../../services/petService';
@@ -16,16 +16,27 @@ import RequestForm from './partials/RequestForm';
 
 // Helpers para formatear datos
 const formatHelpers = {
-  age: (months) => {
-    if (!months) return null;
-    const years = Math.floor(months / 12);
-    const remainingMonths = months % 12;
-    if (years > 0) {
-      return remainingMonths > 0 
-        ? `${years} año${years > 1 ? 's' : ''} y ${remainingMonths} mes${remainingMonths > 1 ? 'es' : ''}`
-        : `${years} año${years > 1 ? 's' : ''}`;
+  age: (age) => {
+    if (!age) return null;
+    
+    // Si es un número entero o decimal, asumimos que son años
+    if (!isNaN(age)) {
+      const years = parseInt(age);
+      const remainingMonths = Math.round((age - years) * 12);
+      
+      if (years > 0) {
+        return remainingMonths > 0 
+          ? `${years} año${years > 1 ? 's' : ''} y ${remainingMonths} mes${remainingMonths > 1 ? 'es' : ''}`
+          : `${years} año${years > 1 ? 's' : ''}`;
+      } else if (remainingMonths > 0) {
+        return `${remainingMonths} mes${remainingMonths > 1 ? 'es' : ''}`;
+      }
+      
+      // Si llegamos aquí, es solo un año
+      return `${years} año${years > 1 ? 's' : ''}`;
     }
-    return `${months} mes${months > 1 ? 'es' : ''}`;
+    
+    return `${age}`;
   },
   date: (dateString) => {
     if (!dateString) return null;
@@ -140,7 +151,7 @@ const PetDetail = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Modal de adopción/cuidado */}
-      <RequestModal 
+      <RequestForm 
         pet={pet}
         onClose={() => setShowRequestModal(false)}
         isOpen={showRequestModal}
@@ -222,7 +233,7 @@ const PetDetail = () => {
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Acerca de {pet.name}</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {pet.description || `¡Hola! Soy ${pet.name} ${genderIsMale ? 'y estoy buscando' : 'y estoy buscando'} un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Quieres conocerme?`}
+                {pet.description || `¡Hola! Soy ${pet.name} ${genderIsMale ? 'y estoy buscando' : 'y estoy buscando'} un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme mejor?`}
               </p>
             </div>
           </div>
@@ -234,7 +245,7 @@ const PetDetail = () => {
             
             {/* Botones de acción */}
             <div className="mt-8 space-y-4">
-              {!isOwner && (
+              {!isOwner && currentUser && (
                 <>
                   {pet.for_adoption && (
                     <button
