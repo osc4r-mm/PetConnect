@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Check, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, PawPrint, Check, X } from 'lucide-react';
 import { request } from '../../../services/petService';
 
 const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
@@ -27,69 +27,102 @@ const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
         setTimeout(() => {
           onClose();
           setFormSuccess(false);
+          setFormData({ message: '', type: initialType });
         }, 2000);
       })
-      .catch(err => {
-        console.error("Error al enviar solicitud:", err);
-        setFormErrors({...formErrors, submit: 'Ocurrió un error al enviar la solicitud'});
+      .catch(error => {
+        console.error('Error al enviar solicitud:', error);
+        setFormErrors({ submit: 'Ha ocurrido un error. Inténtalo de nuevo.' });
       })
       .finally(() => setFormSubmitting(false));
   };
 
+  // Resetear el formulario cuando se abre
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({ message: '', type: initialType });
+      setFormErrors({});
+    }
+  }, [isOpen, initialType]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <X size={24} />
-        </button>
-        
-        <h2 className="text-xl font-bold mb-4">
-          {formData.type === 'adoption' ? 'Solicitar adopción' : 'Solicitar cuidado'}
-        </h2>
-        
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            {formData.type === 'adoption' ? (
+              <Heart size={24} className="text-red-500" />
+            ) : (
+              <PawPrint size={24} className="text-blue-500" />
+            )}
+            <h3 className="text-xl font-bold ml-2">Nueva solicitud</h3>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X size={20} />
+          </button>
+        </div>
+
         {formSuccess ? (
-          <div className="flex flex-col items-center py-8">
-            <div className="mb-4 p-2 rounded-full bg-green-100">
-              <Check size={32} className="text-green-600" />
+          <div className="text-center py-8">
+            <div className="mx-auto h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+              <Check className="h-6 w-6 text-green-600" />
             </div>
-            <p className="text-center text-green-600 font-medium">¡Solicitud enviada con éxito!</p>
-            <p className="text-center text-gray-500 mt-1">El propietario revisará tu solicitud pronto.</p>
+            <h3 className="mt-3 text-lg font-medium">¡Solicitud enviada!</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Gracias por tu interés en {pet.name}. El dueño se pondrá en contacto contigo pronto.
+            </p>
           </div>
         ) : (
           <>
-            <p className="text-gray-500 mb-6">
-              Estás por solicitar {formData.type === 'adoption' ? 'la adopción' : 'el cuidado'} de <strong>{pet.name}</strong>. 
-              Escribe un mensaje para el dueño explicando por qué estás interesado.
+            <p className="text-gray-600 mb-4">
+              Para solicitar a {pet.name}, completa el siguiente formulario:
             </p>
-
-            <form className="space-y-4">
+            <form onSubmit={e => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
+              {/* Selector de tipo */}
               <div>
-                <label className="block text-sm font-medium mb-1">Mensaje (opcional)</label>
-                <textarea
-                  name="message"
-                  rows={4}
-                  className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={formData.message}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de solicitud</label>
+                <select
+                  name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
-                  placeholder={`Hola, me interesa ${formData.type === 'adoption' ? 'adoptar' : 'cuidar'} a ${pet.name}...`}
-                ></textarea>
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="adopt">Adoptar</option>
+                  <option value="care">Cuidar</option>
+                </select>
               </div>
               
-              {formErrors.submit && (
-                <p className="text-sm text-red-500">{formErrors.submit}</p>
-              )}
-              
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
+              {/* Mensaje opcional */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mensaje (opcional)
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows="4"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder={`Cuéntanos por qué te gustaría ${formData.type === 'adoption' ? 'adoptar' : 'cuidar'} a ${pet.name}`}
+                />
+              </div>
+
+              {formErrors.submit && <p className="text-red-500 text-sm">{formErrors.submit}</p>}
+
+              <div className="flex justify-end pt-3 space-x-2">
+                <button type="button" onClick={onClose} className="py-2 px-4 border rounded-md text-gray-700 hover:bg-gray-50">
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
                   disabled={formSubmitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-70"
+                  className={`py-2 px-4 text-white rounded-md ${
+                    formData.type === 'adoption' 
+                      ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500' 
+                      : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'
+                  }`}
                 >
                   {formSubmitting ? 'Enviando...' : 'Enviar solicitud'}
                 </button>
