@@ -72,7 +72,7 @@ const PetDetail = () => {
         setPet(petData);
         
         // Luego de obtener la mascota, obtenemos su dueño
-        const ownerData = await getOwner(petData.user_id);
+        const ownerData = await getOwner(petData.id);
         console.log("Owner data:", ownerData);
         setOwner(ownerData);
       } catch (err) {

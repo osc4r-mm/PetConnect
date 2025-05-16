@@ -3,12 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetsController;
-use App\Http\Controllers\SpeciesController;
-use App\Http\Controllers\BreedController;
-use App\Http\Controllers\SizeController;
-use App\Http\Controllers\ActivityLevelController;
-use App\Http\Controllers\NoiseLevelController;
-use App\Http\Controllers\GenderController;
+use App\Http\Controllers\PetDataController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetRequestController;
 
@@ -35,12 +30,12 @@ Route::get('/user/{userId}/pets', [UserController::class, 'getPetsFromUser']);
 Route::delete('/user/{userId}', [UserController::class, 'delete']);
 
 // Rutas complementarias
-Route::get('/species', [SpeciesController::class, 'getAll']);
-Route::get('/breeds', [BreedController::class, 'getAll']);
-Route::get('/sizes', [SizeController::class, 'getAll']);
-Route::get('/activity-levels', [ActivityLevelController::class, 'getAll']);
-Route::get('/noise-levels', [NoiseLevelController::class, 'getAll']);
-Route::get('/genders', [GenderController::class, 'getAll']);
+Route::get('/species', [PetDataController::class, 'getSpecies']);
+Route::get('/breeds', [PetDataController::class, 'getBreeds']);
+Route::get('/sizes', [PetDataController::class, 'getSizes']);
+Route::get('/activity-levels', [PetDataController::class, 'getActivityLevels']);
+Route::get('/noise-levels', [PetDataController::class, 'getNoiseLevels']);
+Route::get('/genders', [PetDataController::class, 'getGenders']);
 
 // Rutas protegidas (requieren autenticación con Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
