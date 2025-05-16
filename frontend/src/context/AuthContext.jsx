@@ -1,72 +1,80 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
 import api from '../services/api';
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [user, setUser]     = useState(null);
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Al montar, intentamos recuperar sesión
+  // Cargar usuario del localStorage al inicio
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('auth') || 'null');
-    if (!stored) {
-      setLoading(false);
-      return;
+    const storedAuth = localStorage.getItem('auth');
+    if (storedAuth) {
+      const authData = JSON.parse(storedAuth);
+      if (authData.token && authData.user) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${authData.token}`;
+        setUser(authData.user);
+      }
     }
-
-    const { token, user, expiresAt } = stored;
-    if (Date.now() > expiresAt) {
-      localStorage.removeItem('auth');
-      setLoading(false);
-      return;
-    }
-
-    // Renovamos expiración
-    const newExpiresAt = Date.now() + 7*24*60*60*1000;
-    localStorage.setItem('auth', JSON.stringify({ token, user, expiresAt: newExpiresAt }));
-
-    // Inyectamos el token en axios
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    setUser(user);
     setLoading(false);
   }, []);
 
-  const login = async credentials => {
-    const { token, user } = await authService.login(credentials);
-    const expiresAt = Date.now() + 7*24*60*60*1000;
-
-    localStorage.setItem('auth', JSON.stringify({ token, user, expiresAt }));
+  // Función para iniciar sesión
+  const login = async (credentials) => {
+    const response = await api.post('/login', credentials);
+    const { token, user } = response.data;
+    
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     setUser(user);
+    
+    // Guardar en localStorage
+    localStorage.setItem('auth', JSON.stringify({ token, user }));
+    
     return user;
   };
 
-  const register = async data => {
-    const { token, user } = await authService.register(data);
-    const expiresAt = Date.now() + 7*24*60*60*1000;
-
-    localStorage.setItem('auth', JSON.stringify({ token, user, expiresAt }));
+  // Función para registrarse
+  const register = async (userData) => {
+    const response = await api.post('/register', userData);
+    const { token, user } = response.data;
+    
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     setUser(user);
+    
+    // Guardar en localStorage
+    localStorage.setItem('auth', JSON.stringify({ token, user }));
+    
     return user;
   };
 
-  const logout = async () => {
-    await authService.logout();
-    localStorage.removeItem('auth');
+  // Función para cerrar sesión
+  const logout = () => {
+    api.defaults.headers.common['Authorization'] = '';
     setUser(null);
+    localStorage.removeItem('auth');
+  };
+
+  // Nueva función para actualizar datos del usuario
+  const updateUserData = (updatedUser) => {
+    setUser(updatedUser);
+    
+    // Actualizar localStorage
+    const storedAuth = localStorage.getItem('auth');
+    if (storedAuth) {
+      const authData = JSON.parse(storedAuth);
+      localStorage.setItem('auth', JSON.stringify({
+        ...authData,
+        user: updatedUser
+      }));
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUserData }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
+};

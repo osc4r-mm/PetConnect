@@ -46,10 +46,16 @@ Route::get('/genders', [GenderController::class, 'getGenders']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'user']);
+   
+    // Rutas de mascotas
     Route::post('/pet/{petId}/request', [PetRequestController::class, 'request']);
-    Route::put('/user/{userId}/location', [UserController::class, 'updateUserLocation']);
-    Route::put('/user/{userId}', [UserController::class, 'updateUser']);
     Route::post('/pet/upload-thumbnail', [PetsController::class, 'uploadThumbnail']);
     Route::post('/pet/{petId}/upload-extra-photo', [PetsController::class, 'uploadExtraPhoto']);
     Route::delete('/pet-photos/{photoId}', [PetsController::class, 'deleteExtraPhoto']);
+    
+    // Rutas de usuario
+    Route::put('/user/{userId}/location', [UserController::class, 'updateUserLocation']);
+    Route::put('/user/{userId}', [UserController::class, 'updateUser']);
+    Route::post('/user/{id}/upload-image', [UserController::class, 'uploadProfileImage']);
+
 });

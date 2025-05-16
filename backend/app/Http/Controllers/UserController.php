@@ -73,28 +73,33 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function uploadProfileImage(Request $request) {
+    public function uploadProfileImage(Request $request, $id) {
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
 
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Usuario no autenticado'], 401);
+        // Verificar que el usuario actual es el mismo que está siendo actualizado
+        if (Auth::id() != $id) {
+            return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        // Eliminar imagen anterior si no es la default
-        if ($user->image && $user->image !== 'user_profile/default.jpg') {
-            Storage::disk('public')->delete($user->image);
+        $user = User::findOrFail($id);
+
+        // Eliminar la imagen anterior si existe y no es la default
+        if ($user->image && !str_contains($user->image, 'default')) {
+            $oldPath = str_replace(asset('storage/'), '', $user->image);
+            if ($oldPath) {
+                Storage::disk('public')->delete($oldPath);
+            }
         }
 
-        $path = $request->file('image')->store("users/{$user->id}", 'public');
-
-        $user->image = $path;
+        $path = $request->file('image')->store("users/{$id}", 'public');
+        $fullPath = asset("storage/{$path}");
+        
+        $user->image = $fullPath;
         $user->save();
 
-        return response()->json(['path' => asset("storage/{$path}")]);
+        return response()->json(['message' => 'Imagen actualizada', 'path' => $fullPath]);
     }
 
 

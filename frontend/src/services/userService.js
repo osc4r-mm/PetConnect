@@ -41,6 +41,23 @@ export const updateUserLocation = async (id, locationData) => {
   }
 };
 
+export const uploadUserProfileImage = async (userId, imageFile) => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  
+  try {
+    const response = await api.post(`/user/${userId}/upload-image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al subir la imagen de perfil:', error);
+    throw error;
+  }
+};
+
 export const updateUser = async (id, userData) => {
   try {
     const response = await api.put(`/user/${id}`, userData);
