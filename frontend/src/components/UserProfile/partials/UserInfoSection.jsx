@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import { Mail, Camera, UserPlus, UserMinus, Pause, Play } from 'lucide-react';
+import { Mail, Camera, UserPlus, UserMinus } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { updateUser } from '../../../services/userService';
-import { 
-  becomeCaregiver, 
-  quitCaregiver, 
-  pauseCaregiver, 
-  resumeCaregiver,
-  isCaregiverActive,
-  isCaregiverInactive
-} from '../../../services/caregiverService';
+import { becomeCaregiver, quitCaregiver, isCaregiver} from '../../../services/caregiverService';
 
 const UserInfoSection = ({ user }) => {
   const { user: currentUser, updateUserData } = useAuth();
@@ -18,18 +11,14 @@ const UserInfoSection = ({ user }) => {
   
   const isOwnProfile = currentUser && user.id === currentUser.id;
   
-  // Funciones de ayuda para verificar el estado del cuidador
-  const isCaregiver = user && user.role?.name === 'caregiver';
-  const isUserCaregiverActive = isCaregiverActive(user);
-  const isUserCaregiverInactive = isCaregiverInactive(user);
+  // Verificar si el usuario es cuidador
+  const userIsCaregiver = isCaregiver(user);
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
 
     const role = roleName.toLowerCase();
-    if (role === 'caregiver') {
-      return isUserCaregiverActive ? 'bg-green-500' : 'bg-yellow-500';
-    }
+    if (role === 'caregiver') return 'bg-green-500';
     if (role === 'user') return 'bg-blue-500';
     if (role === 'admin') return 'bg-red-500';
     
@@ -65,7 +54,7 @@ const UserInfoSection = ({ user }) => {
   const handleBecomeCaregiver = async () => {
     setIsProcessing(true);
     try {
-      const result = await becomeCaregiver(user.id);
+      const result = await becomeCaregiver();
       if (result && result.user) {
         updateUserData(result.user);
       }
@@ -79,10 +68,10 @@ const UserInfoSection = ({ user }) => {
   
   // Darse de baja como cuidador
   const handleQuitCaregiver = async () => {
-    if (window.confirm('¿Estás seguro de que quieres dejar de ser cuidador? Esta acción no se puede deshacer.')) {
+    if (window.confirm('¿Estás seguro de que quieres dejar de ser cuidador?')) {
       setIsProcessing(true);
       try {
-        const result = await quitCaregiver(user.id);
+        const result = await quitCaregiver();
         if (result && result.user) {
           updateUserData(result.user);
         }
@@ -92,38 +81,6 @@ const UserInfoSection = ({ user }) => {
       } finally {
         setIsProcessing(false);
       }
-    }
-  };
-  
-  // Pausar rol de cuidador
-  const handlePauseCaregiver = async () => {
-    setIsProcessing(true);
-    try {
-      const result = await pauseCaregiver(user.id);
-      if (result && result.user) {
-        updateUserData(result.user);
-      }
-    } catch (error) {
-      console.error('Error al pausar rol de cuidador:', error);
-      alert('No se pudo pausar el rol de cuidador');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-  
-  // Reactivar rol de cuidador
-  const handleResumeCaregiver = async () => {
-    setIsProcessing(true);
-    try {
-      const result = await resumeCaregiver(user.id);
-      if (result && result.user) {
-        updateUserData(result.user);
-      }
-    } catch (error) {
-      console.error('Error al reactivar rol de cuidador:', error);
-      alert('No se pudo reactivar el rol de cuidador');
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -158,26 +115,18 @@ const UserInfoSection = ({ user }) => {
 
         <h2 className="text-2xl font-bold mt-4">{user.name}</h2>
         
-        {/* Mostrar rol y estado */}
+        {/* Mostrar rol */}
         {user.role?.name && (
           <div className="mt-2 flex flex-col items-center">
-            <div className="flex flex-col items-center">
-              <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
-                {user.role.name}
-              </span>
-              {/* Mostrar "inactive" debajo del rol si es cuidador inactivo */}
-              {isUserCaregiverInactive && (
-                <span className="text-xs text-red-500 font-semibold mt-1">
-                  inactive
-                </span>
-              )}
-            </div>
+            <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
+              {user.role.name}
+            </span>
             
             {/* Botones de acción para el propio perfil */}
             {isOwnProfile && (
               <div className="mt-4 space-y-2 w-full">
                 {/* Si no es cuidador, mostrar botón para convertirse en cuidador */}
-                {!isCaregiver && (
+                {!userIsCaregiver && (
                   <button
                     onClick={handleBecomeCaregiver}
                     disabled={isProcessing}
@@ -188,43 +137,16 @@ const UserInfoSection = ({ user }) => {
                   </button>
                 )}
                 
-                {/* Si es cuidador, mostrar botones para gestionar el rol */}
-                {isCaregiver && (
-                  <div className="space-y-2">
-                    {/* Botón para darse de baja como cuidador */}
-                    <button
-                      onClick={handleQuitCaregiver}
-                      disabled={isProcessing}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
-                    >
-                      <UserMinus size={18} />
-                      {isProcessing ? 'Procesando...' : 'Darse de baja como cuidador'}
-                    </button>
-                    
-                    {/* Si está activo, mostrar botón para pausar */}
-                    {isUserCaregiverActive && (
-                      <button
-                        onClick={handlePauseCaregiver}
-                        disabled={isProcessing}
-                        className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
-                      >
-                        <Pause size={18} />
-                        {isProcessing ? 'Procesando...' : 'Paro temporal'}
-                      </button>
-                    )}
-                    
-                    {/* Si está inactivo, mostrar botón para reactivar */}
-                    {isUserCaregiverInactive && (
-                      <button
-                        onClick={handleResumeCaregiver}
-                        disabled={isProcessing}
-                        className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
-                      >
-                        <Play size={18} />
-                        {isProcessing ? 'Procesando...' : 'Reactivar'}
-                      </button>
-                    )}
-                  </div>
+                {/* Si es cuidador, mostrar botón para darse de baja */}
+                {userIsCaregiver && (
+                  <button
+                    onClick={handleQuitCaregiver}
+                    disabled={isProcessing}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+                  >
+                    <UserMinus size={18} />
+                    {isProcessing ? 'Procesando...' : 'Darse de baja como cuidador'}
+                  </button>
                 )}
               </div>
             )}

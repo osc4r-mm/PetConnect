@@ -22,42 +22,9 @@ export const quitCaregiver = async (userId) => {
   }
 };
 
-// Pausar temporalmente el rol de cuidador (active = false)
-export const pauseCaregiver = async (userId) => {
-  try {
-    const response = await api.post(`/caregivers/${userId}/pause`);
-    return response.data;
-  } catch (error) {
-    console.error('Error al pausar temporalmente como cuidador:', error);
-    throw error;
-  }
-};
-
-// Reactivar el rol de cuidador después de una pausa
-export const resumeCaregiver = async (userId) => {
-  try {
-    const response = await api.post(`/caregivers/${userId}/resume`);
-    return response.data;
-  } catch (error) {
-    console.error('Error al reactivar como cuidador:', error);
-    throw error;
-  }
-};
-
-// Verificar si un usuario es cuidador activo
-export const isCaregiverActive = (user) => {
-  return user && 
-         user.role?.name === 'caregiver' && 
-         user.caregiver && 
-         user.caregiver.active === true;
-};
-
-// Verificar si un usuario es cuidador inactivo
-export const isCaregiverInactive = (user) => {
-  return user && 
-         user.role?.name === 'caregiver' && 
-         user.caregiver && 
-         user.caregiver.active === false;
+// Verificar si un usuario es cuidador
+export const isCaregiver = (user) => {
+  return user && user.role?.name === 'caregiver';
 };
 
 // Obtener cuidadores disponibles por horario

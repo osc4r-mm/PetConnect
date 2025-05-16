@@ -8,7 +8,7 @@ class Caregiver extends Model
 {
     protected $table = 'caregivers';
     public $timestamps = false;
-    protected $fillable = ['user_id', 'active', 'hourly_rate'];
+    protected $fillable = ['user_id', 'hourly_rate'];
 
     public function user()
     {

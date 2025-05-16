@@ -37,47 +37,17 @@ class UserController extends Controller
             return response()->json(['message' => 'No tienes permiso'], 403);
         }
 
-        $user = User::with(['role', 'caregiver'])->findOrFail($userId);
+        $user = User::findOrFail($userId);
         
-        // Procesar datos básicos del usuario
-        if ($request->has('name') || $request->has('email') || $request->has('latitude') || 
-            $request->has('longitude') || $request->has('description')) {
-            
-            $validatedData = $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'email' => 'sometimes|email',
-                'latitude' => 'sometimes|numeric',
-                'longitude' => 'sometimes|numeric',
-                'description' => 'sometimes|string|nullable',
-            ]);
-            
-            $user->update($validatedData);
-        }
-        
-        // Procesar subida de imagen
-        if ($request->hasFile('image')) {
-            $request->validate([
-                'image' => 'required|image|max:2048',
-            ]);
-            
-            // Eliminar la imagen anterior si existe y no es la default
-            if ($user->image && !str_contains($user->image, 'default')) {
-                $oldPath = str_replace(asset('storage/'), '', $user->image);
-                if ($oldPath) {
-                    Storage::disk('public')->delete($oldPath);
-                }
-            }
-            
-            $path = $request->file('image')->store("users/{$userId}", 'public');
-            $fullPath = asset("storage/{$path}");
-            
-            $user->image = $fullPath;
-            $user->save();
-        }
-        
-        // Recargar el usuario con las relaciones
-        $user->load(['role', 'caregiver']);
-        
+        $data = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email',
+            'latitude' => 'sometimes|numeric',
+            'longitude' => 'sometimes|numeric',
+            'role_id' => 'sometimes|exists:roles,id',
+        ]);
+
+        $user->update($data);
         return response()->json($user);
     }
 
@@ -109,6 +79,43 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Imagen actualizada', 'path' => $fullPath]);
     }
+
+     public function becomeCaregiver($userId) {
+        // Verificar permisos
+        $authenticatedUser = Auth::user();
+        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
+            return response()->json(['message' => 'No tienes permiso'], 403);
+        }
+
+        $user = User::findOrFail($userId);
+        
+        // Buscar el rol de cuidador
+        $caregiverRole = Role::where('name', 'caregiver')->first();
+        
+        if (!$caregiverRole) {
+            return response()->json(['message' => 'Rol de cuidador no encontrado'], 404);
+        }
+        
+        // Comprobar si el usuario ya es un cuidador
+        if ($user->role_id === $caregiverRole->id) {
+            return response()->json(['message' => 'El usuario ya es un cuidador'], 400);
+        }
+        
+        // Crear un nuevo registro de cuidador
+        Caregiver::create([
+            'user_id' => $user->id
+        ]);
+        
+        // Actualizar el rol del usuario
+        $user->role_id = $caregiverRole->id;
+        $user->save();
+        
+        // Cargar la relación de rol actualizada
+        $user->load('role');
+        
+        return response()->json($user);
+    }
+
 
 
     public function delete($userId) {

@@ -252,7 +252,7 @@ export default function AddPetModal({ onClose, onAdd }) {
           {/* Información básica */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre <span className='text-red-600'>*</span></label>
               <input
                 type="text"
                 name="name"
@@ -280,7 +280,7 @@ export default function AddPetModal({ onClose, onAdd }) {
           {/* Características físicas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Edad (años) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Edad (años) <span className='text-red-600'>*</span></label>
               <input
                 type="number"
                 name="age"
@@ -289,13 +289,13 @@ export default function AddPetModal({ onClose, onAdd }) {
                 step="0.1"
                 min="0"
                 className={`w-full border ${errors.age ? 'border-red-500' : 'border-gray-300'} p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition`}
-                placeholder="Ej: 2.5"
+                placeholder="Ej: 2"
               />
               {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Peso (kg) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Peso (kg) <span className='text-red-600'>*</span></label>
               <input
                 type="number"
                 name="weight"
@@ -310,7 +310,7 @@ export default function AddPetModal({ onClose, onAdd }) {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Género *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Género <span className='text-red-600'>*</span></label>
               <select
                 name="gender_id"
                 value={formData.gender_id}
@@ -329,7 +329,7 @@ export default function AddPetModal({ onClose, onAdd }) {
           {/* Especie y raza */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Especie *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Especie <span className='text-red-600'>*</span></label>
               <select
                 name="species_id"
                 value={formData.species_id}
