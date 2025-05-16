@@ -72,11 +72,114 @@ class PetsController extends Controller
     }
 
     public function putPet(Request $request) {
-        //
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'age' => 'required|integer|min:0',
+            'gender_id' => 'required|exists:genders,id',
+            'weight' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'for_adoption' => 'boolean',
+            'for_sitting' => 'boolean',
+            'species_id' => 'required|exists:species,id',
+            'breed_id' => 'nullable|exists:breeds,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'activity_level_id' => 'nullable|exists:activity_levels,id',
+            'noise_level_id' => 'nullable|exists:noise_levels,id',
+            'profile_image' => 'nullable|image|max:2048',
+            'additional_photos.*' => 'nullable|image|max:2048',
+        ]);
+        
+        // Create pet with user ID
+        $petData = $request->except('profile_image', 'additional_photos');
+        $petData['user_id'] = Auth::id();
+        $petData['registered_at'] = now();
+        
+        // Handle profile image if provided
+        if ($request->hasFile('profile_image')) {
+            $profileImage = $request->file('profile_image');
+            $profilePath = $profileImage->store('pets/profiles', 'public');
+            $petData['profile_path'] = $profilePath;
+        }
+        
+        $pet = Pet::create($petData);
+        
+        // Handle additional photos if provided
+        if ($request->hasFile('additional_photos')) {
+            foreach ($request->file('additional_photos') as $photo) {
+                $path = $photo->store('pets/photos', 'public');
+                
+                PetPhoto::create([
+                    'pet_id' => $pet->id,
+                    'image_path' => $path,
+                    'uploaded_at' => now()
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'message' => 'Mascota creada exitosamente',
+            'pet' => $pet->load(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel', 'photos'])
+        ], 201);
     }
 
-    public function updatePet(Request $request, Pet $pet) {
-        //
+    public function updatePet(Request $request, Pet $petId) {
+        $pet = Pet::findOrFail($petId);
+        
+        // Check if user owns this pet
+        if ($pet->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+        
+        $request->validate([
+            'name' => 'sometimes|string|max:100',
+            'age' => 'sometimes|integer|min:0',
+            'gender_id' => 'sometimes|exists:genders,id',
+            'weight' => 'sometimes|numeric|min:0',
+            'description' => 'nullable|string',
+            'for_adoption' => 'boolean',
+            'for_sitting' => 'boolean',
+            'species_id' => 'sometimes|exists:species,id',
+            'breed_id' => 'nullable|exists:breeds,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'activity_level_id' => 'nullable|exists:activity_levels,id',
+            'noise_level_id' => 'nullable|exists:noise_levels,id',
+            'profile_image' => 'nullable|image|max:2048',
+            'additional_photos.*' => 'nullable|image|max:2048',
+        ]);
+        
+        $petData = $request->except('profile_image', 'additional_photos');
+        
+        // Handle profile image if provided
+        if ($request->hasFile('profile_image')) {
+            // Delete old profile image if exists
+            if ($pet->profile_path) {
+                Storage::disk('public')->delete($pet->profile_path);
+            }
+            
+            $profileImage = $request->file('profile_image');
+            $profilePath = $profileImage->store('pets/profiles', 'public');
+            $petData['profile_path'] = $profilePath;
+        }
+        
+        $pet->update($petData);
+        
+        // Handle additional photos if provided
+        if ($request->hasFile('additional_photos')) {
+            foreach ($request->file('additional_photos') as $photo) {
+                $path = $photo->store('pets/photos', 'public');
+                
+                PetPhoto::create([
+                    'pet_id' => $pet->id,
+                    'image_path' => $path,
+                    'uploaded_at' => now()
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'message' => 'Mascota actualizada exitosamente',
+            'pet' => $pet->fresh(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel', 'photos'])
+        ]);
     }
 
     public function uploadThumbnail(Request $request) {
@@ -159,7 +262,27 @@ class PetsController extends Controller
         return response()->json(['message' => 'Photo deleted successfully']);
     }
 
-    public function deletePet(Pet $pet) {
-        //
+    public function deletePet(Pet $petId) {
+        $pet = Pet::findOrFail($petId);
+        
+        // Check if user owns this pet
+        if ($pet->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+        
+        // Delete profile image if exists
+        if ($pet->profile_path) {
+            Storage::disk('public')->delete($pet->profile_path);
+        }
+        
+        // Delete all pet photos
+        foreach ($pet->photos as $photo) {
+            Storage::disk('public')->delete($photo->image_path);
+            $photo->delete();
+        }
+        
+        $pet->delete();
+        
+        return response()->json(['message' => 'Mascota eliminada exitosamente']);
     }
 }

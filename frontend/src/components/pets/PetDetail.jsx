@@ -156,7 +156,15 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
 
   return (
-    <div className="bg-white min-h-screen">      
+    <div className="bg-white min-h-screen">
+      {/* Añadido: Debug de las variables importantes */}
+      <div className="hidden">
+        For adoption: {JSON.stringify(isForAdoption)}
+        For sitting: {JSON.stringify(isForSitting)}
+        Is Owner: {JSON.stringify(isOwner)}
+        Current User: {JSON.stringify(currentUser ? true : false)}
+      </div>
+      
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
@@ -173,29 +181,31 @@ const PetDetail = () => {
         <div className="p-4">
           <button 
             onClick={() => navigate(-1)} 
-            className="flex items-center text-blue-600 hover:text-blue-800"
+            className="flex items-center text-purple-600 hover:text-purple-800"
           >
             <ArrowLeft size={20} className="mr-1" /> Volver
           </button>
         </div>
         
-        {/* Encabezado con el fondo de color */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 md:p-8 rounded-t-xl shadow-md">
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-2">
-              {isForAdoption && (
-                <div className="bg-red-500 bg-opacity-80 p-2 rounded-full" title="Disponible para adopción">
-                  <Heart size={24} className="text-white" />
-                </div>
-              )}
-              {isForSitting && (
-                <div className="bg-blue-500 bg-opacity-80 p-2 rounded-full" title="Disponible para cuidado">
-                  <PawPrint size={24} className="text-white" />
-                </div>
-              )}
-            </div>
-            
-            <div className="flex items-center">
+        {/* Encabezado con el fondo de color - CAMBIADO A MORADO PARA MEJOR CONTRASTE */}
+        <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
+          {/* Iconos de disponibilidad en posición absoluta */}
+          <div className="absolute top-4 right-4 flex space-x-2">
+            {isForAdoption && (
+              <div className="bg-red-500 p-2 rounded-full shadow-md" title="Disponible para adopción">
+                <Heart size={24} className="text-white" />
+              </div>
+            )}
+            {isForSitting && (
+              <div className="bg-blue-500 p-2 rounded-full shadow-md" title="Disponible para cuidado">
+                <PawPrint size={24} className="text-white" />
+              </div>
+            )}
+          </div>
+
+          {/* Contenido reorganizado del encabezado */}
+          <div className="flex flex-col">
+            <div className="flex items-center mb-3">
               <h1 className="text-3xl md:text-4xl font-bold mr-3">{pet.name}</h1>
               {pet.gender && (
                 <div className={`p-1.5 rounded-full ${genderIsMale ? 'bg-blue-400' : 'bg-pink-400'}`}>
@@ -204,7 +214,7 @@ const PetDetail = () => {
               )}
             </div>
             
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="flex flex-wrap gap-2">
               {pet.species?.name && (
                 <span className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">
                   {pet.species.name}
