@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pet;
-use App\Models\Request as RequestModel;  // alias para no colisionar con Request de Http
+use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\Auth;
 
 class PetRequestController extends Controller
 {
-    public function request(Request $httpRequest, $id)
+    public function put(Request $httpRequest, $id)
     {
         $pet = Pet::findOrFail($id);
 

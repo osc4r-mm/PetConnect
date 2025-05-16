@@ -6,7 +6,7 @@ use App\Models\Size;
 
 class SizeController extends Controller
 {
-    public function getSizes()
+    public function getAll()
     {
         // Devuelve todos los tamaños
         return response()->json(Size::all());

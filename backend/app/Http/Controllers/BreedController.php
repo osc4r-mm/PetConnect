@@ -6,7 +6,7 @@ use App\Models\Breed;
 
 class BreedController extends Controller
 {
-    public function getBreeds()
+    public function getAll()
     {
         // Devuelve todas las razas con su species_id
         return response()->json(Breed::all());

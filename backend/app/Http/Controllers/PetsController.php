@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PetsController extends Controller
 {
-    public function getPets(Request $request) {
+    public function getAll(Request $request) {
         $query = Pet::with(['species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel']);
 
         // Filtros básicos
@@ -63,7 +63,7 @@ class PetsController extends Controller
         return response()->json($pets);
     }
 
-    public function getPet($petId) {
+    public function getOne($petId) {
         $pet = Pet::with([
             'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel', 'photos'
         ])->findOrFail($petId);
@@ -71,7 +71,7 @@ class PetsController extends Controller
         return response()->json($pet);
     }
 
-    public function putPet(Request $request) {
+    public function put(Request $request) {
         $request->validate([
             'name' => 'required|string|max:100',
             'age' => 'required|integer|min:0',
@@ -262,7 +262,7 @@ class PetsController extends Controller
         return response()->json(['message' => 'Photo deleted successfully']);
     }
 
-    public function deletePet(Pet $petId) {
+    public function delete(Pet $petId) {
         $pet = Pet::findOrFail($petId);
         
         // Check if user owns this pet
@@ -284,5 +284,13 @@ class PetsController extends Controller
         $pet->delete();
         
         return response()->json(['message' => 'Mascota eliminada exitosamente']);
+    }
+
+    public function getOwner($petId)
+    {
+        $pet = Pet::findOrFail($petId);
+        $owner = $pet->user;
+        
+        return response()->json($owner);
     }
 }

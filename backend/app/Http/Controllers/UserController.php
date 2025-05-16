@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function getUsers() {
+    public function getAll() {
         $users = User::with('role')->get();
         return response()->json($users);
     }
 
-    public function getUser($userId)
+    public function getOne($userId)
     {
         $user = User::with(['role'])->findOrFail($userId);
         return response()->json($user);
@@ -28,7 +28,7 @@ class UserController extends Controller
         return response()->json($pets);
     }
 
-    public function updateUser(Request $request, $userId) {
+    public function update(Request $request, $userId) {
         // Verificar permisos
         $authenticatedUser = Auth::user();
         if (!$authenticatedUser || $authenticatedUser->id != $userId) {
@@ -103,7 +103,7 @@ class UserController extends Controller
     }
 
 
-    public function deleteUser($userId) {
+    public function delete($userId) {
         // También deberíamos verificar permisos aquí
         $authenticatedUser = Auth::user();
         

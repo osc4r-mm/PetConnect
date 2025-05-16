@@ -157,14 +157,6 @@ const PetDetail = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Añadido: Debug de las variables importantes */}
-      <div className="hidden">
-        For adoption: {JSON.stringify(isForAdoption)}
-        For sitting: {JSON.stringify(isForSitting)}
-        Is Owner: {JSON.stringify(isOwner)}
-        Current User: {JSON.stringify(currentUser ? true : false)}
-      </div>
-      
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
