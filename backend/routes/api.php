@@ -26,13 +26,13 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Rutas públicas
 Route::get('/pets', [PetsController::class, 'getPets']);
-Route::get('/pet/{id}', [PetsController::class, 'getPet']);
-Route::get('/pet/{id}/owner', [UserController::class, 'getUser']);
+Route::get('/pet/{petId}', [PetsController::class, 'getPet']);
+Route::get('/pet/{petId}/owner', [UserController::class, 'getUser']);
 
 Route::get('/users', [UserController::class, 'getUsers']);
-Route::get('/user/{id}', [UserController::class, 'getUser']);
-Route::get('/user/{id}/pets', [UserController::class, 'getPetsFromUser']);
-Route::delete('/user/{id}', [UserController::class, 'deleteUser']);
+Route::get('/user/{userId}', [UserController::class, 'getUser']);
+Route::get('/user/{userId}/pets', [UserController::class, 'getPetsFromUser']);
+Route::delete('/user/{userId}', [UserController::class, 'deleteUser']);
 
 // Rutas complementarias
 Route::get('/species', [SpeciesController::class, 'getSpecies']);
@@ -44,12 +44,12 @@ Route::get('/genders', [GenderController::class, 'getGenders']);
 
 // Rutas protegidas (requieren autenticación con Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
-    // Rutas de administración
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'user']);
-
-    // Rutas de usuario
-    Route::post('/pet/{id}/request', [PetRequestController::class, 'request']);
-    Route::put('/user/{id}/location', [UserController::class, 'updateUserLocation']);
-    Route::put('/user/{id}', [UserController::class, 'updateUser']);
+    Route::post('/pet/{petId}/request', [PetRequestController::class, 'request']);
+    Route::put('/user/{userId}/location', [UserController::class, 'updateUserLocation']);
+    Route::put('/user/{userId}', [UserController::class, 'updateUser']);
+    Route::post('/pet/upload-thumbnail', [PetsController::class, 'uploadThumbnail']);
+    Route::post('/pet/{petId}/upload-extra-photo', [PetsController::class, 'uploadExtraPhoto']);
+    Route::delete('/pet-photos/{photoId}', [PetsController::class, 'deleteExtraPhoto']);
 });

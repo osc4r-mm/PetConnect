@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getUserById, updateUserLocation, getPetsFromUser } from '../../services/userService';
 import { LoadingScreen, NotFoundData } from '../Util';

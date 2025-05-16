@@ -12,14 +12,14 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function getUser($id)
+    public function getUser($userId)
     {
-        $user = User::with(['role'])->findOrFail($id);
+        $user = User::with(['role'])->findOrFail($userId);
         return response()->json($user);
     }
 
-    public function getPetsFromUser($id) {
-        $user = User::findOrFail($id);
+    public function getPetsFromUser($userId) {
+        $user = User::findOrFail($userId);
 
         // Cargamos las mascotas mediante la relación Eloquent
         $pets = $user->pets()->get();
@@ -28,14 +28,14 @@ class UserController extends Controller
         return response()->json($pets);
     }
 
-    public function updateUser(Request $request, $id) {
+    public function updateUser(Request $request, $userId) {
         // Verificar permisos
         $authenticatedUser = Auth::user();
-        if (!$authenticatedUser || $authenticatedUser->id != $id) {
+        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
             return response()->json(['message' => 'No tienes permiso'], 403);
         }
 
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($userId);
         
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -50,15 +50,15 @@ class UserController extends Controller
     }
 
     // Método específico para actualizar solo la ubicación
-    public function updateUserLocation(Request $request, $id) {
+    public function updateUserLocation(Request $request, $userId) {
         // Verificar si el usuario autenticado es el mismo que se está actualizando
         $authenticatedUser = Auth::user();
         
-        if (!$authenticatedUser || $authenticatedUser->id != $id) {
+        if (!$authenticatedUser || $authenticatedUser->id != $userId) {
             return response()->json(['message' => 'No tienes permiso para actualizar la ubicación de este usuario'], 403);
         }
 
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($userId);
         
         $data = $request->validate([
             'latitude' => 'required|numeric',
@@ -98,15 +98,15 @@ class UserController extends Controller
     }
 
 
-    public function deleteUser($id) {
+    public function deleteUser($userId) {
         // También deberíamos verificar permisos aquí
         $authenticatedUser = Auth::user();
         
-        if (!$authenticatedUser || ($authenticatedUser->id != $id && !$authenticatedUser->isAdmin())) {
+        if (!$authenticatedUser || ($authenticatedUser->id != $userId && !$authenticatedUser->isAdmin())) {
             return response()->json(['message' => 'No tienes permiso para eliminar este usuario'], 403);
         }
         
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($userId);
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado exitosamente']);
     }

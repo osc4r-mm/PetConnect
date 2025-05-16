@@ -10,6 +10,8 @@ class PetPhoto extends Model
     public $timestamps = false;
     protected $fillable = ['pet_id', 'image_path', 'uploaded_at'];
 
+    protected $dates = ['uploaded_at'];
+
     public function pet()
     {
         return $this->belongsTo(Pet::class);

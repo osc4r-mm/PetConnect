@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pet;
+use App\Models\PetPhoto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PetsController extends Controller
 {
@@ -60,10 +63,10 @@ class PetsController extends Controller
         return response()->json($pets);
     }
 
-    public function getPet($id) {
+    public function getPet($petId) {
         $pet = Pet::with([
             'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel', 'photos'
-        ])->findOrFail($id);
+        ])->findOrFail($petId);
 
         return response()->json($pet);
     }
@@ -82,27 +85,79 @@ class PetsController extends Controller
             'image' => 'required|image|max:2048',
         ]);
 
-        $path = $request->file('image')->store("pets/{$request->pet_id}", 'public');
+        // Verificar que el usuario actual es el dueño de la mascota
+        $pet = Pet::findOrFail($request->pet_id);
+        if (Auth::id() !== $pet->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
 
-        $pet = Pet::find($request->pet_id);
-        $pet->thumbnail = $path;
+        // Eliminar la imagen anterior si existe y no es la default
+        if ($pet->profile_path && !str_contains($pet->profile_path, 'placeholder')) {
+            // Extraer la ruta relativa de la URL completa
+            $oldPath = str_replace(asset('storage/'), '', $pet->profile_path);
+            if ($oldPath) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
+
+        $path = $request->file('image')->store("pets/{$request->pet_id}", 'public');
+        
+        // Actualizar la mascota solo con el campo profile_path
+        $pet->profile_path = asset("storage/{$path}");
         $pet->save();
 
         return response()->json(['message' => 'Thumbnail uploaded', 'path' => asset("storage/{$path}")]);
     }
 
-    public function uploadExtraPhoto(Request $request, Pet $pet){
+    public function uploadExtraPhoto(Request $request, $petId) {
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
 
-        $path = $request->file('image')->store("pets/{$pet->id}/extras", 'public');
+        // Verificar que el usuario actual es el dueño de la mascota
+        $pet = Pet::findOrFail($petId);
+        if (Auth::id() !== $pet->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
 
-        $pet->photos()->create(['url' => $path]);
+        $path = $request->file('image')->store("pets/{$petId}/extras", 'public');
+        
+        // Crear registro de la nueva foto
+        $photo = new PetPhoto();
+        $photo->pet_id = $petId;
+        $photo->image_path = asset("storage/{$path}");
+        $photo->uploaded_at = now();
+        $photo->save();
 
-        return response()->json(['message' => 'Extra photo uploaded', 'path' => asset("storage/{$path}")]);
+        return response()->json([
+            'message' => 'Extra photo uploaded', 
+            'path' => asset("storage/{$path}"),
+            'photo_id' => $photo->id
+        ]);
     }
 
+    public function deleteExtraPhoto($photoId) {
+        $photo = PetPhoto::findOrFail($photoId);
+        
+        // Verificar que el usuario actual es el dueño de la mascota
+        $pet = Pet::findOrFail($photo->pet_id);
+        if (Auth::id() !== $pet->user_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+        
+        // Extraer la ruta del archivo para eliminar del storage
+        $path = str_replace(asset('storage/'), '', $photo->image_path);
+        
+        // Eliminar el archivo del almacenamiento
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+        
+        // Eliminar el registro de la base de datos
+        $photo->delete();
+        
+        return response()->json(['message' => 'Photo deleted successfully']);
+    }
 
     public function deletePet(Pet $pet) {
         //
