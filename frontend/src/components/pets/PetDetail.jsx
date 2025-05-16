@@ -63,18 +63,17 @@ const PetDetail = () => {
   const [notFound, setNotFound] = useState(false);
   const [hasError, setHasError] = useState(false);
   
-  // Verificar si el usuario actual es el dueño
-  const isOwner = currentUser && owner && currentUser.id === owner.id;
-  
   // Obtener mascota y su dueño al cargar
   useEffect(() => {
     const fetchPetAndOwner = async () => {
       try {
         const petData = await getPet(id);
+        console.log("Pet data:", petData);
         setPet(petData);
         
         // Luego de obtener la mascota, obtenemos su dueño
         const ownerData = await getOwner(petData.user_id);
+        console.log("Owner data:", ownerData);
         setOwner(ownerData);
       } catch (err) {
         console.error('Error cargando datos:', err);
@@ -93,6 +92,7 @@ const PetDetail = () => {
 
   // Función para abrir el modal con tipo preseleccionado
   const openRequestModal = (type) => {
+    console.log(`Abriendo modal para ${type}`);
     setRequestType(type);
     setShowRequestModal(true);
   };
@@ -143,13 +143,28 @@ const PetDetail = () => {
       />
     );
 
+  // Verificar si el usuario actual es el dueño (después de cargar los datos)
+  const isOwner = currentUser && owner && currentUser.id === owner.id;
+  
   const genderIsMale = pet.gender?.name?.toLowerCase() === 'macho';
   const genderIcon = genderIsMale 
     ? <Mars size={16} className="text-white" />
     : <Venus size={16} className="text-white" />;
 
+  // Usar directamente las propiedades como booleanos
+  const isForAdoption = pet.for_adoption === true;
+  const isForSitting = pet.for_sitting === true;
+
   return (
     <div className="bg-white min-h-screen">
+      {/* Añadido: Debug de las variables importantes */}
+      <div className="hidden">
+        For adoption: {JSON.stringify(isForAdoption)}
+        For sitting: {JSON.stringify(isForSitting)}
+        Is Owner: {JSON.stringify(isOwner)}
+        Current User: {JSON.stringify(currentUser ? true : false)}
+      </div>
+      
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
@@ -174,12 +189,12 @@ const PetDetail = () => {
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 md:p-8 rounded-t-xl shadow-md">
           <div className="flex justify-between items-center">
             <div className="flex space-x-2">
-              {pet.for_adoption && (
+              {isForAdoption && (
                 <div className="bg-red-500 bg-opacity-80 p-2 rounded-full" title="Disponible para adopción">
                   <Heart size={24} className="text-white" />
                 </div>
               )}
-              {pet.for_sitting && (
+              {isForSitting && (
                 <div className="bg-blue-500 bg-opacity-80 p-2 rounded-full" title="Disponible para cuidado">
                   <PawPrint size={24} className="text-white" />
                 </div>
@@ -243,11 +258,13 @@ const PetDetail = () => {
             {/* Características */}
             <PetCharacteristics pet={pet} formatHelpers={formatHelpers} />
             
-            {/* Botones de acción */}
+            {/* Botones de acción - MODIFICADOS PARA ASEGURAR VISIBILIDAD */}
             <div className="mt-8 space-y-4">
-              {!isOwner && currentUser && (
+              {/* IMPORTANTE: Mostramos los botones si el usuario está conectado y no es el dueño */}
+              {currentUser && isOwner && (
                 <>
-                  {pet.for_adoption && (
+                  {/* Botón de adopción */}
+                  {isForAdoption && (
                     <button
                       onClick={() => openRequestModal('adoption')}
                       className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center"
@@ -255,7 +272,9 @@ const PetDetail = () => {
                       <Heart size={18} className="mr-2" /> Solicitar adopción
                     </button>
                   )}
-                  {pet.for_sitting && (
+                  
+                  {/* Botón de cuidado */}
+                  {isForSitting && (
                     <button
                       onClick={() => openRequestModal('sitting')}
                       className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
@@ -264,6 +283,24 @@ const PetDetail = () => {
                     </button>
                   )}
                 </>
+              )}
+
+              {/* Si el usuario no está conectado pero la mascota está disponible */}
+              {!currentUser && (isForAdoption || isForSitting) && (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                  <p className="text-yellow-700">
+                    Debes iniciar sesión para solicitar adopción o cuidado
+                  </p>
+                </div>
+              )}
+
+              {/* Si el usuario es el dueño */}
+              {currentUser && isOwner && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                  <p className="text-blue-700">
+                    Esta es tu mascota
+                  </p>
+                </div>
               )}
             </div>
             

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, Phone, Camera } from 'lucide-react';
+import { Mail, Camera } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { uploadUserProfileImage } from '../../../services/userService';
 
@@ -8,6 +8,17 @@ const UserInfoSection = ({ user }) => {
   const [isUploading, setIsUploading] = useState(false);
   
   const isOwnProfile = currentUser && user.id === currentUser.id;
+
+  const getRoleBadgeColor = (roleName) => {
+    if (!roleName) return 'bg-gray-500';
+
+    const role = roleName.toLowerCase();
+    if (role === 'caregiver') return 'bg-green-500';
+    if (role === 'user') return 'bg-blue-500';
+    if (role === 'admin') return 'bg-red-500';
+    
+    return 'bg-gray-500';
+  };
 
   const handleImageChange = async (e) => {
     if (!e.target.files || !e.target.files[0]) return;
@@ -40,7 +51,7 @@ const UserInfoSection = ({ user }) => {
       <div className="flex flex-col items-center">
         <div className="relative rounded-full overflow-hidden h-32 w-32 mx-auto border-4 border-white shadow-lg">
           <img 
-            src={user.image || '/images/profile_placeholder.jpg'} 
+            src={user.image || '/default/default:user.jpg'} 
             alt="Imagen de perfil" 
             className="h-full w-full object-cover"
           />
@@ -65,7 +76,11 @@ const UserInfoSection = ({ user }) => {
         </div>
 
         <h2 className="text-2xl font-bold mt-4">{user.name}</h2>
-        <p className="text-gray-600">{user.role?.name || 'Usuario'}</p>
+        {user.role?.name && (
+          <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full mt-2`}>
+            {user.role.name}
+          </span>
+        )}
       </div>
 
       <div className="mt-6 space-y-3">
@@ -73,18 +88,6 @@ const UserInfoSection = ({ user }) => {
           <div className="flex items-center">
             <Mail className="h-5 w-5 text-blue-500 mr-2" />
             <span>{user.email}</span>
-          </div>
-        )}
-        {user.phone && (
-          <div className="flex items-center">
-            <Phone className="h-5 w-5 text-blue-500 mr-2" />
-            <span>{user.phone}</span>
-          </div>
-        )}
-        {(user.latitude && user.longitude) && (
-          <div className="flex items-center">
-            <MapPin className="h-5 w-5 text-blue-500 mr-2" />
-            <span>Ubicado en el mapa</span>
           </div>
         )}
       </div>

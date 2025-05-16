@@ -53,7 +53,7 @@ export default function Profile() {
     }
   };
 
-  if (authLoading || loading) return <LoadingScreen />;
+  if (authLoading || loading) return <LoadingScreen message={'Verificando sesión...'} />;
   if (!currentUser) return <Navigate to="/login" replace />;
   if (error || !user) return <NotFoundData message1="Usuario no encontrado" message2="No se ha podido acceder al perfil de este usuario" />;
 
