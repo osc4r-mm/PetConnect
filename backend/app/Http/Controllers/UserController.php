@@ -72,6 +72,27 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function uploadProfileImage(Request $request) {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        // Eliminar imagen anterior si no es la default
+        if ($user->image && $user->image !== 'user_profile/default.jpg') {
+            Storage::disk('public')->delete($user->image);
+        }
+
+        $path = $request->file('image')->store("users/{$user->id}", 'public');
+
+        $user->image = $path;
+        $user->save();
+
+        return response()->json(['path' => asset("storage/{$path}")]);
+    }
+
+
     public function deleteUser($id) {
         // También deberíamos verificar permisos aquí
         $authenticatedUser = Auth::user();
