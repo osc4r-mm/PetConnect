@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('gender_id');
+            $table->unsignedBigInteger('gender_id')->nullable();
             $table->unsignedTinyInteger('age')->nullable();
             $table->string('description', 255)->nullable();
             $table->decimal('wallet_balance',10,2)->default(0);
             $table->decimal('latitude', 10, 6)->nullable();
             $table->decimal('longitude', 10, 6)->nullable();
-            $table->string('image')->after('id')->default('user_profile/default.jpg');
+            $table->string('image')->after('id')->default('http://localhost:8000/storage/default/default_user.jpg');
 
             $table->foreign('gender_id')->references('id')->on('genders')->onDelete('restrict');
         });

@@ -59,7 +59,7 @@ const PetDetail = () => {
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [requestType, setRequestType] = useState('adoption');
+  const [requestType, setRequestType] = useState('adopt');
   const [notFound, setNotFound] = useState(false);
   const [hasError, setHasError] = useState(false);
   
@@ -156,21 +156,15 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Añadido: Debug de las variables importantes */}
-      <div className="hidden">
-        For adoption: {JSON.stringify(isForAdoption)}
-        For sitting: {JSON.stringify(isForSitting)}
-        Is Owner: {JSON.stringify(isOwner)}
-        Current User: {JSON.stringify(currentUser ? true : false)}
-      </div>
-      
+    <div className="bg-white min-h-screen">      
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
         onClose={() => setShowRequestModal(false)}
         isOpen={showRequestModal}
         initialType={requestType}
+        isForAdoption={isForAdoption}
+        isForSitting={isForSitting}
       />
       
       {/* Página de detalle */}
@@ -248,7 +242,7 @@ const PetDetail = () => {
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Acerca de {pet.name}</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {pet.description || `¡Hola! Soy ${pet.name} ${genderIsMale ? 'y estoy buscando' : 'y estoy buscando'} un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme mejor?`}
+                {pet.description || `¡Hola! Soy ${pet.name} ${genderIsMale ? 'y estoy buscando' : 'y estoy buscando'} un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme?`}
               </p>
             </div>
           </div>
@@ -261,12 +255,12 @@ const PetDetail = () => {
             {/* Botones de acción - MODIFICADOS PARA ASEGURAR VISIBILIDAD */}
             <div className="mt-8 space-y-4">
               {/* IMPORTANTE: Mostramos los botones si el usuario está conectado y no es el dueño */}
-              {currentUser && isOwner && (
+              {currentUser && !isOwner && (
                 <>
                   {/* Botón de adopción */}
                   {isForAdoption && (
                     <button
-                      onClick={() => openRequestModal('adoption')}
+                      onClick={() => openRequestModal('adopt')}
                       className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center"
                     >
                       <Heart size={18} className="mr-2" /> Solicitar adopción
@@ -276,7 +270,7 @@ const PetDetail = () => {
                   {/* Botón de cuidado */}
                   {isForSitting && (
                     <button
-                      onClick={() => openRequestModal('sitting')}
+                      onClick={() => openRequestModal('care')}
                       className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
                     >
                       <Briefcase size={18} className="mr-2" /> Solicitar cuidado

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, PawPrint, Check, X } from 'lucide-react';
 import { request } from '../../../services/petService';
 
-const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
+const RequestForm = ({ pet, onClose, isOpen, initialType, isForAdoption, isForSitting }) => {
   const [formData, setFormData] = useState({ 
     message: '',
     type: initialType
@@ -52,7 +52,7 @@ const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            {formData.type === 'adoption' ? (
+            {formData.type === 'adopt' ? (
               <Heart size={24} className="text-red-500" />
             ) : (
               <PawPrint size={24} className="text-blue-500" />
@@ -80,19 +80,41 @@ const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
               Para solicitar a {pet.name}, completa el siguiente formulario:
             </p>
             <form onSubmit={e => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
-              {/* Selector de tipo */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de solicitud</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                >
-                  <option value="adopt">Adoptar</option>
-                  <option value="care">Cuidar</option>
-                </select>
-              </div>
+              {/* Selector de tipo - Solo se muestra si ambos tipos están disponibles */}
+              {isForAdoption && isForSitting ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de solicitud</label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    {isForAdoption && <option value="adopt">Adoptar</option>}
+                    {isForSitting && <option value="care">Cuidar</option>}
+                  </select>
+                </div>
+              ) : (
+                // Si solo hay un tipo disponible, mostrar como información en vez de selector
+                <div>
+                  <p className="block text-sm font-medium text-gray-700 mb-1">Tipo de solicitud</p>
+                  <div className="p-2 bg-gray-100 rounded-md text-gray-800 flex items-center">
+                    {isForAdoption ? (
+                      <>
+                        <Heart size={16} className="text-red-500 mr-2" /> 
+                        Adopción
+                        <input type="hidden" name="type" value="adopt" />
+                      </>
+                    ) : (
+                      <>
+                        <PawPrint size={16} className="text-blue-500 mr-2" /> 
+                        Cuidado
+                        <input type="hidden" name="type" value="care" />
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Mensaje opcional */}
               <div>
@@ -105,7 +127,7 @@ const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
                   onChange={handleInputChange}
                   rows="4"
                   className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder={`Cuéntanos por qué te gustaría ${formData.type === 'adoption' ? 'adoptar' : 'cuidar'} a ${pet.name}`}
+                  placeholder={`Cuéntanos por qué te gustaría ${formData.type === 'adopt' ? 'adoptar' : 'cuidar'} a ${pet.name}`}
                 />
               </div>
 
@@ -119,7 +141,7 @@ const RequestForm = ({ pet, onClose, isOpen, initialType }) => {
                   type="submit" 
                   disabled={formSubmitting}
                   className={`py-2 px-4 text-white rounded-md ${
-                    formData.type === 'adoption' 
+                    formData.type === 'adopt' 
                       ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500' 
                       : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'
                   }`}

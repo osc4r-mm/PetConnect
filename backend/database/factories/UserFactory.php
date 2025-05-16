@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'wallet_balance' => $this->faker->randomFloat(2, 0, 1000),
             'latitude' => $this->faker->latitude(),
             'longitude' => $this->faker->longitude(),
-            'image' => $this->faker->imageUrl(200, 200, 'people'),
+            'image' => 'http://localhost:8000/storage/default/default_user.jpg',
             'remember_token' => Str::random(10),
         ];
     }
@@ -56,7 +56,7 @@ class UserFactory extends Factory
                 'age' => $this->faker->numberBetween(2, 10),
                 'description' => 'Refugio dedicado al cuidado de mascotas en adopción.',
                 'wallet_balance' => 0,
-                'image' => 'https://placedog.net/200/200?random=' . rand(1, 100),
+                'image' => 'http://localhost:8000/storage/default/default_user.jpg',
                 'role_id' => $adminRole?->id,
             ];
         });
