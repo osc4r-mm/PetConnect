@@ -98,6 +98,10 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   const handleMouseDown = (day, hour, quarter) => {
     if (!isEditable) return;
     
+    // Desactivar selección de texto durante el arrastre
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    
     setIsSelecting(true);
     setSelectedDay(day);
     setSelectionStart({ hour, quarter });
@@ -112,6 +116,10 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
 
   // Finalizar selección
   const handleMouseUp = async () => {
+    // Re-habilitar selección de texto
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+    
     if (!isSelecting || !selectionStart || !selectionEnd) {
       setIsSelecting(false);
       return;
@@ -192,6 +200,10 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
 
   // Cancelar selección si el mouse sale del calendario
   const handleMouseLeave = () => {
+    // Re-habilitar selección de texto
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+    
     if (isSelecting) {
       setIsSelecting(false);
       setSelectionStart(null);
@@ -221,6 +233,8 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
           className="overflow-x-auto"
           ref={calendarRef}
           onMouseLeave={handleMouseLeave}
+          // Aplicar la desactivación de selección al contenedor también
+          style={{ userSelect: isSelecting ? 'none' : '', WebkitUserSelect: isSelecting ? 'none' : '' }}
         >
           <div className="min-w-max">
             {/* Encabezados de días */}

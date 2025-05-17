@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Validator;
 
 class CaregiverAvailabilityController extends Controller
 {
+    // Mapeo de nombres de días a valores numéricos
+    private $dayMapping = [
+        'monday' => 1,
+        'tuesday' => 2,
+        'wednesday' => 3,
+        'thursday' => 4,
+        'friday' => 5,
+        'saturday' => 6,
+        'sunday' => 7
+    ];
+
     /**
      * Obtener la disponibilidad de un cuidador
      */
@@ -24,6 +35,13 @@ class CaregiverAvailabilityController extends Controller
         
         // Obtener su disponibilidad
         $availability = $caregiver->availability()->get();
+        
+        // Convertir los valores numéricos a nombres de días para el frontend
+        $availability = $availability->map(function($item) {
+            $reverseDayMapping = array_flip($this->dayMapping);
+            $item->day_of_week = $reverseDayMapping[$item->day_of_week] ?? $item->day_of_week;
+            return $item;
+        });
         
         return response()->json($availability);
     }
@@ -67,13 +85,28 @@ class CaregiverAvailabilityController extends Controller
         $savedSlots = [];
         
         foreach ($request->slots as $slot) {
+            // Convertir el nombre del día a un valor numérico
+            $dayValue = $this->dayMapping[$slot['day_of_week']] ?? null;
+            
+            if ($dayValue === null) {
+                return response()->json([
+                    'message' => 'Día de la semana inválido',
+                    'errors' => ['day_of_week' => 'El día debe ser uno de: monday, tuesday, wednesday, thursday, friday, saturday, sunday']
+                ], 422);
+            }
+            
             $availability = CaregiverAvailability::firstOrCreate([
                 'caregiver_id' => $caregiver->id,
-                'day_of_week' => $slot['day_of_week'],
+                'day_of_week' => $dayValue, // Usar el valor numérico
                 'time_slot' => $slot['time_slot'],
             ]);
             
-            $savedSlots[] = $availability;
+            // Convertir de vuelta al nombre del día para la respuesta
+            $reverseDayMapping = array_flip($this->dayMapping);
+            $availabilityData = $availability->toArray();
+            $availabilityData['day_of_week'] = $reverseDayMapping[$availability->day_of_week] ?? $availability->day_of_week;
+            
+            $savedSlots[] = $availabilityData;
         }
         
         return response()->json($savedSlots);
@@ -116,9 +149,19 @@ class CaregiverAvailabilityController extends Controller
         
         // Eliminar slots
         foreach ($request->slots as $slot) {
+            // Convertir el nombre del día a un valor numérico
+            $dayValue = $this->dayMapping[$slot['day_of_week']] ?? null;
+            
+            if ($dayValue === null) {
+                return response()->json([
+                    'message' => 'Día de la semana inválido',
+                    'errors' => ['day_of_week' => 'El día debe ser uno de: monday, tuesday, wednesday, thursday, friday, saturday, sunday']
+                ], 422);
+            }
+            
             CaregiverAvailability::where([
                 'caregiver_id' => $caregiver->id,
-                'day_of_week' => $slot['day_of_week'],
+                'day_of_week' => $dayValue, // Usar el valor numérico
                 'time_slot' => $slot['time_slot'],
             ])->delete();
         }
