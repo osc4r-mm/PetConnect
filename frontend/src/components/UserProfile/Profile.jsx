@@ -78,7 +78,9 @@ export default function Profile() {
       </div>
 
       {/* Mostrar el calendario SOLO si el usuario es cuidador */}
-      {userIsCaregiver && <ScheduleSection />}
+      {userIsCaregiver && (
+        <ScheduleSection userId={user.id} isEditable={isOwnProfile} />
+      )}
 
       <PetsSection
         pets={pets || []}

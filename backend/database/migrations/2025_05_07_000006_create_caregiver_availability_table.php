@@ -4,28 +4,34 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateCaregiverAvailabilityTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('caregiver_availability', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('caregiver_id');
-            $table->smallInteger('day_of_week');
-            $table->time('time_slot');
-            $table->unique(['caregiver_id','day_of_week','time_slot']);
-            $table->foreign('caregiver_id')->references('id')->on('caregivers')->onDelete('cascade');
+            $table->foreignId('caregiver_id')->constrained()->onDelete('cascade');
+            $table->enum('day_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
+            $table->string('time_slot', 5); // Formato: 13:30
+            $table->timestamps();
+            
+            // Clave única para evitar duplicados
+            $table->unique(['caregiver_id', 'day_of_week', 'time_slot']);
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('caregiver_availability');
     }
-};
+}

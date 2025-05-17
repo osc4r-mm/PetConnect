@@ -116,16 +116,13 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-
-
     public function delete($userId) {
-        // También deberíamos verificar permisos aquí
+        // Verificar permisos
         $authenticatedUser = Auth::user();
-        
-        if (!$authenticatedUser || ($authenticatedUser->id != $userId && !$authenticatedUser->isAdmin())) {
-            return response()->json(['message' => 'No tienes permiso para eliminar este usuario'], 403);
+        if (!$authenticatedUser || $authenticatedUser->id != $userId && !$authenticatedUser->isAdmin()) {
+            return response()->json(['message' => 'No tienes permiso'], 403);
         }
-        
+
         $user = User::findOrFail($userId);
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado exitosamente']);
