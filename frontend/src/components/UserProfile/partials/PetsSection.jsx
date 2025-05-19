@@ -26,7 +26,7 @@ export default function PetsSection({ pets, onAdd, editable }) {
                             className="block relative group rounded-lg overflow-hidden shadow-md cursor-pointer h-32 transition transform hover:scale-105"
                         >
                             <img
-                                src={getPetImageUrl(pet.profile_path) || 'https://via.placeholder.com/150'}
+                                src={getPetImageUrl(pet.profile_path)}
                                 alt={pet.name}
                                 className="object-cover w-full h-full"
                             />

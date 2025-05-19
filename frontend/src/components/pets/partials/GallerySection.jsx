@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ImagePlus, Camera, Trash, Plus } from 'lucide-react';
-import { uploadPetThumbnail, uploadPetExtraPhoto, deletePetPhoto, getPetImageUrl } from '../../../services/petImageService';
+import { uploadPetThumbnail, uploadPetExtraPhoto, deletePetPhoto } from '../../../services/petImageService';
+import { getPetImageUrl } from '../../../services/petService';
 
 const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUpdate }) => {
   const [activePhoto, setActivePhoto] = useState(0);
@@ -126,7 +127,7 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
       <div className="relative rounded-lg overflow-hidden mb-4 bg-gray-100 flex items-center justify-center" style={{height: '400px'}}>
         {/* Imagen principal */}
         <img 
-          src={allPhotos[activePhoto]} 
+          src={getPetImageUrl(allPhotos[activePhoto])} 
           alt={`${name} - foto ${activePhoto + 1}`} 
           className="w-full h-full object-cover"
         />
@@ -160,7 +161,7 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
             onClick={() => setActivePhoto(index)}
             className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden cursor-pointer relative group ${index === activePhoto ? 'ring-2 ring-blue-500' : 'opacity-70'}`}
           >
-            <img src={photoUrl} alt={`${name} - miniatura ${index + 1}`} className="w-full h-full object-cover" />
+            <img src={getPetImageUrl(photoUrl)} alt={`${name} - miniatura ${index + 1}`} className="w-full h-full object-cover" />
             
             {/* Botón para eliminar foto (solo para fotos adicionales, no la principal) */}
             {editable && index > 0 && (

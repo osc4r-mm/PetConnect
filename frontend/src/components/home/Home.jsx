@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, SortAsc, SortDesc, Heart, PawPrint, Award, VolumeX, Zap, Volume2, Ruler, Mars, Venus } from 'lucide-react';
-import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels } from '../../services/petService';
+import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels, getPetImageUrl } from '../../services/petService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import FilterSection from './partials/FilterSection';
 
@@ -187,7 +187,7 @@ function PetCard({ pet }) {
           {pet.for_adoption && <div className="bg-red-500 p-1 rounded-full"><Heart size={20} className="text-white" /></div>}
           {pet.for_sitting && <div className="bg-blue-500 p-1 rounded-full"><PawPrint size={20} className="text-white" /></div>}
         </div>
-        <img src={pet.profile_path} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:rotate-1" 
+        <img src={getPetImageUrl(pet.profile_path)} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:rotate-1" 
         onMouseEnter={() => setIsHovered(false)}  
         onMouseLeave={() => setIsHovered(true)}/>
         {isHovered && pet.species && (
