@@ -66,3 +66,17 @@ export const deleteUser = async (id) => {
     throw error;
   }
 };
+
+export const getDefaultUserImageUrl = () =>
+  'http://localhost:8000/storage/default/default_user.jpg';
+
+export const isValidImageUrl = (url) => {
+  if (!url) return false;
+  return url.startsWith('http://') || url.startsWith('https://');
+};
+
+export const getUserImageUrl = (imagePath) => {
+  if (!imagePath) return getDefaultUserImageUrl();
+  if (isValidImageUrl(imagePath)) return imagePath;
+  return `http://localhost:8000/storage/${imagePath}`;
+};

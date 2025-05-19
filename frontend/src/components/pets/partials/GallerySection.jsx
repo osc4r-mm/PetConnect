@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ImagePlus, Camera, Trash, Plus } from 'lucide-react';
-import { uploadPetThumbnail, uploadPetExtraPhoto, deletePetPhoto } from '../../../services/petImageService';
+import { uploadPetThumbnail, uploadPetExtraPhoto, deletePetPhoto, getPetImageUrl } from '../../../services/petImageService';
 
 const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUpdate }) => {
   const [activePhoto, setActivePhoto] = useState(0);

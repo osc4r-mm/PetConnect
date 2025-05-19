@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
+import { getUserImageUrl } from '../../../services/userService';
 
 const OwnerCard = ({ owner }) => {
   if (!owner) return null;
@@ -11,7 +12,7 @@ const OwnerCard = ({ owner }) => {
       <div className="flex-shrink-0 mr-3">
         <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100">
           {owner.image ? (
-            <img src={owner.image} alt="Perfil" className="w-full h-full object-cover" />
+            <img src={getUserImageUrl(owner.image)} alt="Perfil" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">
               <span className="text-gray-400">🐶</span>

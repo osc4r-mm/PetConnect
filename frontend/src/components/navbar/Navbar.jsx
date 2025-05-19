@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
 import NotificationsMenu from './partials/NotificationsMenu';
+import { getUserImageUrl } from '../../services/userService';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
@@ -48,9 +49,13 @@ export default function Navbar() {
 
   // Avatar por defecto si no hay imagen
   const renderAvatar = () => (
-    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+    {user && user.image ? (
+      <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
+    ) : (
       <User size={20} className="text-gray-600" />
-    </div>
+    )}
+  </div>
   );
 
   // Mientras carga auth

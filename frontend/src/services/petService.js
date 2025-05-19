@@ -139,10 +139,9 @@ export const isValidImageUrl = (url) => {
 
 // Función para obtener la URL de imagen para una mascota (con fallback)
 export const getPetImageUrl = (imagePath) => {
-  if (isValidImageUrl(imagePath)) {
-    return imagePath;
-  }
-  return getDefaultPetImageUrl();
+  if (!imagePath) return getDefaultPetImageUrl();
+  if (isValidImageUrl(imagePath)) return imagePath;
+  return `http://localhost:8000/storage/${imagePath}`;
 };
 
 // Obtener datos para formularios de selección

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Camera, UserPlus, UserMinus } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { updateUser } from '../../../services/userService';
+import { updateUser, uploadUserProfileImage, getUserImageUrl } from '../../../services/userService';
 import { becomeCaregiver, quitCaregiver, isCaregiver} from '../../../services/caregiverService';
 
 const UserInfoSection = ({ user }) => {
@@ -32,7 +32,7 @@ const UserInfoSection = ({ user }) => {
     setIsUploading(true);
     
     try {
-      const response = await updateUser(user.id, file);
+      const response = await uploadUserProfileImage(user.id, file);
       
       if (response && response.path) {
         if (updateUserData) {
@@ -89,7 +89,7 @@ const UserInfoSection = ({ user }) => {
       <div className="flex flex-col items-center">
         <div className="relative rounded-full overflow-hidden h-32 w-32 mx-auto border-4 border-white shadow-lg">
           <img 
-            src={user.image || '/default/default:user.jpg'} 
+            src={getUserImageUrl(user.image)} 
             alt="Imagen de perfil" 
             className="h-full w-full object-cover"
           />

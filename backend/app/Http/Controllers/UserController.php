@@ -72,12 +72,10 @@ class UserController extends Controller
         }
 
         $path = $request->file('image')->store("users/{$id}", 'public');
-        $fullPath = asset("storage/{$path}");
-        
-        $user->image = $fullPath;
+        $user->image = $path; // Solo la ruta relativa
         $user->save();
 
-        return response()->json(['message' => 'Imagen actualizada', 'path' => $fullPath]);
+        return response()->json(['message' => 'Imagen actualizada', 'path' => asset("storage/{$path}")]);
     }
 
      public function becomeCaregiver($userId) {
