@@ -13,13 +13,24 @@ class PetRequestController extends Controller
     {
         $pet = Pet::findOrFail($id);
 
-        // 1) Valida la petición
         $data = $httpRequest->validate([
             'type'    => 'required|in:adopt,care',
             'message' => 'nullable|string|max:1000',
+            'pet_id'  => 'required|exists:pets,id',
+            'agreement_data' => 'required_if:type,care',
         ]);
 
-        // 2) Determina sender y receiver
+        // Validación extra para asegurar que hay al menos un slot si es "care"
+        if ($data['type'] === 'care') {
+            $slots = json_decode($data['agreement_data'], true);
+            if (empty($slots) || !is_array($slots)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Debes indicar al menos un día y una hora para el cuidado.'
+                ], 422);
+            }
+        }
+
         $senderId   = Auth::id();
         $receiverId = $pet->user_id;
 
@@ -30,21 +41,19 @@ class PetRequestController extends Controller
             ], 400);
         }
 
-        // 3) Crea la solicitud
         $request = RequestModel::create([
             'sender_id'   => $senderId,
             'receiver_id' => $receiverId,
+            'pet_id'      => $pet->id,
+            'status'      => 'pending',
+            'agreement_data' => $data['agreement_data'] ?? null,
             'type'        => $data['type'],
             'message'     => $data['message'] ?? '',
         ]);
 
-        // 4) Asocia la mascota (tabla pivote request_pets)
-        $request->pets()->attach($pet->id);
-
-        // 5) Devuelve respuesta
         return response()->json([
             'status'  => 'success',
-            'request' => $request->load('pets'),
+            'request' => $request->load('pet'),
         ], 201);
     }
 }

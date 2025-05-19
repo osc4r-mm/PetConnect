@@ -36,6 +36,16 @@ class CaregiverAvailabilityController extends Controller
         return response()->json($availability);
     }
 
+    public function getMy(Request $request)
+    {
+        $user = $request->user(); // Usuario autenticado por Sanctum
+
+        // Busca todas las disponibilidades donde el caregiver_id sea el id del usuario autenticado
+        $availabilities = CaregiverAvailability::where('caregiver_id', $user->id)->get();
+
+        return response()->json($availabilities);
+    }
+
     public function put(Request $request, $userId)
     {
         $user = Auth::user();

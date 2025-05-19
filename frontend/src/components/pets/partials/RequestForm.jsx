@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, PawPrint, Check, X } from 'lucide-react';
 import { request } from '../../../services/petService';
-import { getAvailability } from '../../../services/availabilityService';
+import { getAvailability, getMyAvailability } from '../../../services/availabilityService';
 
 // Días en español y su mapping
 const DAY_LABELS = {
@@ -14,7 +14,14 @@ const DAY_LABELS = {
   sunday: 'Domingo',
 };
 
-const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoption, isForSitting }) => {
+const RequestForm = ({
+  pet,
+  onClose,
+  isOpen,
+  initialType = 'adopt',
+  isForAdoption,
+  isForSitting,
+}) => {
   const [formData, setFormData] = useState({
     type: initialType,
     message: '',
@@ -24,16 +31,19 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
-  // Disponibilidad del cuidador (dueño del perro)
+  // Disponibilidad del cuidador (usuario autenticado para "care")
   const [availability, setAvailability] = useState([]);
-  // Para selects: día y hora seleccionados temporalmente antes de agregar
+  // Día y hora seleccionados
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
 
-  // Cargar disponibilidad solo si es "care" y hay mascota
   useEffect(() => {
-    if (formData.type === 'care' && pet && pet.user_id) {
+    if (formData.type === 'care') {
+      getMyAvailability().then(data => setAvailability(data ?? []));
+    } else if (formData.type === 'adopt' && pet && pet.user_id) {
       getAvailability(pet.user_id).then(data => setAvailability(data ?? []));
+    } else {
+      setAvailability([]);
     }
   }, [formData.type, pet]);
 
@@ -54,29 +64,40 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
     slotsByDay[slot.day_of_week].push(slot.time_slot);
   });
 
+  // Cuando cambia el día, resetea la hora
+  const handleDayChange = (e) => {
+    setSelectedDay(e.target.value);
+    setSelectedHour('');
+  };
+
   // Añadir slot seleccionado
   const handleAddSlot = () => {
     if (!selectedDay || !selectedHour) return;
     // Prevenir duplicados
-    if (formData.slots.some(s => s.day_of_week === selectedDay && s.time_slot === selectedHour)) return;
+    if (
+      formData.slots.some(
+        s => s.day_of_week === selectedDay && s.time_slot === selectedHour
+      )
+    )
+      return;
 
     setFormData(prev => ({
       ...prev,
-      slots: [...prev.slots, { day_of_week: selectedDay, time_slot: selectedHour }]
+      slots: [...prev.slots, { day_of_week: selectedDay, time_slot: selectedHour }],
     }));
     setSelectedDay('');
     setSelectedHour('');
   };
 
   // Quitar slot
-  const handleRemoveSlot = (idx) => {
+  const handleRemoveSlot = idx => {
     setFormData(prev => ({
       ...prev,
-      slots: prev.slots.filter((_, i) => i !== idx)
+      slots: prev.slots.filter((_, i) => i !== idx),
     }));
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (formErrors[name]) setFormErrors(prev => ({ ...prev, [name]: null }));
@@ -86,7 +107,18 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
   const handleSubmit = () => {
     setFormSubmitting(true);
 
-    // Enviar slots solo si es care
+    // Validar que haya al menos un slot para "care"
+    if (
+      formData.type === 'care' &&
+      (!formData.slots || formData.slots.length === 0)
+    ) {
+      setFormErrors({
+        submit: 'Debes seleccionar al menos un día y hora para el cuidado.',
+      });
+      setFormSubmitting(false);
+      return;
+    }
+
     const sendData = {
       ...formData,
       agreement_data: formData.type === 'care' ? JSON.stringify(formData.slots) : null,
@@ -102,7 +134,9 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
         }, 2000);
       })
       .catch(error => {
-        setFormErrors({ submit: 'Ha ocurrido un error. Inténtalo de nuevo.' });
+        setFormErrors({
+          submit: 'Ha ocurrido un error. Inténtalo de nuevo.',
+        });
       })
       .finally(() => setFormSubmitting(false));
   };
@@ -110,8 +144,14 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl shadow-xl w-full max-w-md p-6"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             {formData.type === 'adopt' ? (
@@ -121,7 +161,10 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
             )}
             <h3 className="text-xl font-bold ml-2">Nueva solicitud</h3>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             <X size={20} />
           </button>
         </div>
@@ -137,10 +180,24 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
           </div>
         ) : (
           <>
-            <form onSubmit={e => { e.preventDefault(); handleSubmit(); }} className="space-y-4">
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+              className="space-y-4"
+            >
+              {process.env.NODE_ENV !== 'production' && (
+  <div style={{ background: '#eee', padding: '1em', marginBottom: '1em', fontSize: '0.9em', maxHeight: 200, overflow: 'auto' }}>
+    <strong>DEBUG availability:</strong>
+    <pre>{JSON.stringify(availability, null, 2)}</pre>
+  </div>
+)}
               {/* Selector tipo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de solicitud</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tipo de solicitud
+                </label>
                 <select
                   name="type"
                   value={formData.type}
@@ -155,17 +212,21 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
               {/* Si es care, seleccionar slots */}
               {formData.type === 'care' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selecciona horarios para el cuidado</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Selecciona horarios para el cuidado
+                  </label>
                   <div className="flex space-x-2 mb-2">
                     {/* Día */}
                     <select
                       value={selectedDay}
-                      onChange={e => { setSelectedDay(e.target.value); setSelectedHour(''); }}
+                      onChange={handleDayChange}
                       className="p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">Día</option>
                       {Object.keys(slotsByDay).map(day => (
-                        <option key={day} value={day}>{DAY_LABELS[day] || day}</option>
+                        <option key={day} value={day}>
+                          {DAY_LABELS[day] || day}
+                        </option>
                       ))}
                     </select>
                     {/* Hora */}
@@ -176,9 +237,12 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
                       className="p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">Hora</option>
-                      {selectedDay && slotsByDay[selectedDay]?.map(hour =>
-                        <option key={hour} value={hour}>{hour.substring(0,5)}</option>
-                      )}
+                      {selectedDay &&
+                        slotsByDay[selectedDay]?.map(hour => (
+                          <option key={hour} value={hour}>
+                            {hour.substring(0, 5)}
+                          </option>
+                        ))}
                     </select>
                     {/* Botón añadir */}
                     <button
@@ -195,9 +259,22 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
                     {formData.slots.length > 0 && (
                       <ul className="mb-2">
                         {formData.slots.map((slot, idx) => (
-                          <li key={idx} className="flex items-center text-sm bg-blue-100 rounded px-2 py-1 mb-1">
-                            <span className="flex-1">{DAY_LABELS[slot.day_of_week] || slot.day_of_week}, {slot.time_slot.substring(0,5)}</span>
-                            <button type="button" className="ml-2 text-red-500" onClick={() => handleRemoveSlot(idx)}>Quitar</button>
+                          <li
+                            key={idx}
+                            className="flex items-center text-sm bg-blue-100 rounded px-2 py-1 mb-1"
+                          >
+                            <span className="flex-1">
+                              {DAY_LABELS[slot.day_of_week] || slot.day_of_week}
+                              {', '}
+                              {slot.time_slot.substring(0, 5)}
+                            </span>
+                            <button
+                              type="button"
+                              className="ml-2 text-red-500"
+                              onClick={() => handleRemoveSlot(idx)}
+                            >
+                              Quitar
+                            </button>
                           </li>
                         ))}
                       </ul>
@@ -217,14 +294,22 @@ const RequestForm = ({ pet, onClose, isOpen, initialType = 'adopt', isForAdoptio
                   onChange={handleInputChange}
                   rows="3"
                   className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder={`Cuéntanos por qué te gustaría ${formData.type === 'adopt' ? 'adoptar' : 'cuidar'} a ${pet.name}`}
+                  placeholder={`Cuéntanos por qué te gustaría ${
+                    formData.type === 'adopt' ? 'adoptar' : 'cuidar'
+                  } a ${pet.name}`}
                 />
               </div>
 
-              {formErrors.submit && <p className="text-red-500 text-sm">{formErrors.submit}</p>}
+              {formErrors.submit && (
+                <p className="text-red-500 text-sm">{formErrors.submit}</p>
+              )}
 
               <div className="flex justify-end pt-3 space-x-2">
-                <button type="button" onClick={onClose} className="py-2 px-4 border rounded-md text-gray-700 hover:bg-gray-50">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="py-2 px-4 border rounded-md text-gray-700 hover:bg-gray-50"
+                >
                   Cancelar
                 </button>
                 <button

@@ -11,6 +11,17 @@ export const getAvailability = async (userId) => {
   }
 };
 
+// Obtener la disponibilidad del usuario autenticado (cuidador)
+export const getMyAvailability = async () => {
+  try {
+    const response = await api.get('/caregiver/availability');
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener disponibilidad propia:', error);
+    throw error;
+  }
+};
+
 // Guardar o actualizar slots de disponibilidad
 export const saveAvailability = async (userId, slots) => {
   try {

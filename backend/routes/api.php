@@ -66,5 +66,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
     Route::put('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'put']);
     Route::delete('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'delete']);
-
+        Route::get('/caregiver/availability', [CaregiverAvailabilityController::class, 'getMy']);
 });

@@ -122,7 +122,7 @@ export const deletePet = async (id) => {
 
 // Hacer una solicitud
 export const request = async (petId, formData) => {
-  const response = await api.post(`/pet/${petId}/request`, formData);
+  const response = await api.post(`/pet/${petId}/request`, { ...formData, pet_id: petId });
   return response.data;
 };
 
