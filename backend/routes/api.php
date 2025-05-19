@@ -9,6 +9,7 @@ use App\Http\Controllers\PetRequestController;
 use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CaregiverAvailabilityController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserRequestController;
 
 
 /*
@@ -44,7 +45,6 @@ Route::get('/genders', [PetDataController::class, 'getGenders']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'user']);
-    Route::get('/notifications', [NotificationController::class, 'index']);
    
     // Rutas de mascotas
     Route::post('/pet', [PetsController::class, 'put']);
@@ -66,5 +66,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
     Route::put('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'put']);
     Route::delete('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'delete']);
-        Route::get('/caregiver/availability', [CaregiverAvailabilityController::class, 'getMy']);
+    Route::get('/caregiver/availability', [CaregiverAvailabilityController::class, 'getMy']);
+
+    // Rutas de solicitudes
+    Route::get('/requests', [NotificationController::class, 'index']);
+    Route::get('/user/{userId}/requests', [UserRequestController::class, 'getMy']);
+    Route::patch('/request/{requestId}/accept', [NotificationController::class, 'accept']);
+    Route::patch('/request/{requestId}/reject', [NotificationController::class, 'reject']);
+    Route::delete('/request/{id}/cancel', [NotificationController::class, 'cancel']);
 });

@@ -6,6 +6,7 @@ import {
   deleteAvailability,
 } from '../../../services/availabilityService';
 import { Clock } from 'lucide-react';
+import api from '../../../services/api';
 
 const weekDayShorts = [
   { long: 'Lunes', short: 'Lns' },
@@ -34,6 +35,7 @@ for (let hour = 7; hour < 24; hour++) {
 const ScheduleSection = ({ userId, isEditable = false }) => {
   const { user: currentUser } = useAuth();
   const [availability, setAvailability] = useState([]);
+  const [walks, setWalks] = useState({});
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(null);
   const [selectionEnd, setSelectionEnd] = useState(null);
@@ -50,23 +52,6 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     y: 0,
   });
 
-  useEffect(() => {
-    const fetchAvailability = async () => {
-      setLoading(true);
-      try {
-        const targetId = userId || currentUser?.id;
-        if (!targetId) return;
-        const data = await getAvailability(targetId);
-        setAvailability(data);
-      } catch (error) {
-        console.error('Error al cargar disponibilidad:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAvailability();
-  }, [userId, currentUser]);
-
   // Responsive: show short name for days if < 800px
   const [showShortDays, setShowShortDays] = useState(false);
   useEffect(() => {
@@ -78,6 +63,57 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Cargar disponibilidades y paseos al montar el componente
+  useEffect(() => {
+    const fetchAvailabilityAndWalks = async () => {
+      setLoading(true);
+      try {
+        const targetId = userId || currentUser?.id;
+        if (!targetId) return;
+        const [data, walksResp] = await Promise.all([
+          getAvailability(targetId),
+          api.get(`/user/${targetId}/requests?type=care`)
+        ]);
+        setAvailability(data);
+
+        // Solo paseos aceptados!
+        const walksMap = {};
+        (walksResp.data.requests || []).forEach(req => {
+          if (req.status !== 'accepted') return;
+          let agreement = {};
+          try {
+            agreement = typeof req.agreement_data === 'string'
+              ? JSON.parse(req.agreement_data)
+              : req.agreement_data || {};
+          } catch (e) {}
+          if (agreement.slots && Array.isArray(agreement.slots)) {
+            agreement.slots.forEach(slot => {
+              if (!walksMap[slot.day_of_week]) walksMap[slot.day_of_week] = {};
+              // Multiples perros pueden coincidir!
+              if (!walksMap[slot.day_of_week][slot.time_slot]) walksMap[slot.day_of_week][slot.time_slot] = [];
+              walksMap[slot.day_of_week][slot.time_slot].push(req.pet?.name || req.pet_name || 'Mascota');
+            });
+          }
+        });
+        setWalks(walksMap);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAvailabilityAndWalks();
+  }, [userId, currentUser]);
+
+  const getWalkInfo = (day, hour, quarter) => {
+    const dayKey = dayValues[day];
+    const timeString = `${hour.toString().padStart(2, '0')}:${(quarter * 15).toString().padStart(2, '0')}`;
+    if (walks[dayKey] && walks[dayKey][timeString]) {
+      return walks[dayKey][timeString]; // array de nombres de perros
+    }
+    return null;
+  };
+
   const isSlotAvailable = (day, hour, quarter) => {
     const minute = quarter * 15;
     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
@@ -86,7 +122,11 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     );
   };
 
+  // Clase de cada celda
   const getSlotClassName = (day, hour, quarter) => {
+    const walkPets = getWalkInfo(day, hour, quarter);
+    if (walkPets && walkPets.length > 0) return 'bg-yellow-300';
+
     const minute = quarter * 15;
     const slotIsAvailable = isSlotAvailable(dayValues[day], hour, quarter);
 
@@ -110,7 +150,28 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     return 'bg-gray-100';
   };
 
-  // --- Selección de slots ---
+  // Tooltip por celda
+  const handleCellMouseEnter = (e, day, hour, quarter) => {
+    const walkPets = getWalkInfo(day, hour, quarter);
+    let text = '';
+    if (walkPets && walkPets.length > 0) {
+      text = `Cuidando a: ${walkPets.join(', ')}`;
+    } else {
+      text = isSlotAvailable(dayValues[day], hour, quarter) ? 'Libre' : 'No disponible';
+    }
+    const cellRect = e.target.getBoundingClientRect();
+    setTooltip({
+      visible: true,
+      text,
+      x: cellRect.left + cellRect.width / 2 + window.scrollX,
+      y: cellRect.top - 8 + window.scrollY,
+    });
+  };
+  const handleCellMouseLeave = () => {
+    setTooltip(tooltip => ({ ...tooltip, visible: false }));
+  };
+
+  // --- Selección
   const handleMouseDown = (day, hour, quarter) => {
     if (!isEditable) return;
     document.body.style.userSelect = 'none';
@@ -183,26 +244,10 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
       setSelectionEnd(null);
       setSelectedDay(null);
     }
-    // Ocultar tooltip
     setTooltip(tooltip => ({ ...tooltip, visible: false }));
   };
 
-  // Tooltip handlers
-  const handleCellMouseEnter = (e, day, hour, quarter) => {
-    const slotIsAvailable = isSlotAvailable(dayValues[day], hour, quarter);
-    const cellRect = e.target.getBoundingClientRect();
-    // El tooltip sigue el ratón y se ajusta por scroll
-    setTooltip({
-      visible: true,
-      text: slotIsAvailable ? 'Libre' : 'No disponible',
-      x: cellRect.left + cellRect.width / 2 + window.scrollX,
-      y: cellRect.top - 8 + window.scrollY,
-    });
-  };
-  const handleCellMouseLeave = () => {
-    setTooltip(tooltip => ({ ...tooltip, visible: false }));
-  };
-
+  // ---- Render ----
   return (
     <div className="mt-8 w-full">
       <h3 className="text-xl font-bold mb-4 flex items-center">
@@ -214,7 +259,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
           <span className="text-sm text-gray-600">
             Haz clic y arrastra para seleccionar y configurar tu disponibilidad.
             <br />
-            Verde = libre. Azul: vas a añadir. Rojo: vas a eliminar.
+            Verde = libre. Amarillo = cuidando. Azul: vas a añadir. Rojo: vas a eliminar.
           </span>
           <button
             className={`px-4 py-1 rounded text-white font-semibold transition ${
@@ -258,7 +303,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
             </div>
             {/* Horario */}
             <div className="flex">
-              {/* Columna de horas: una celda grande con borde por hora */}
+              {/* Columna de horas */}
               <div className="flex flex-col">
                 {hours.map((hour, hidx) => (
                   <div

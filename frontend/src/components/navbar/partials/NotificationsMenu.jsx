@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getNotifications } from '../../../services/notificationService';
-import { Bell } from 'lucide-react';
+import { getRequests } from '../../../services/requestService';
+import { acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
+import { Bell, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const NotificationsMenu = () => {
@@ -8,15 +9,19 @@ const NotificationsMenu = () => {
   const [tab, setTab] = useState('received');
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
+  const [feedback, setFeedback] = useState({});
   const menuRef = useRef();
 
+  // Recarga notificaciones si se ha actuado sobre alguna
+  const fetchNotifications = () => {
+    getRequests().then(({ received, sent }) => {
+      setReceived(received);
+      setSent(sent);
+    });
+  };
+
   useEffect(() => {
-    if (open) {
-      getNotifications().then(({ received, sent }) => {
-        setReceived(received);
-        setSent(sent);
-      });
-    }
+    if (open) fetchNotifications();
   }, [open]);
 
   // Cerrar menú al hacer clic fuera
@@ -27,6 +32,26 @@ const NotificationsMenu = () => {
     if (open) document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, [open]);
+
+  const handleAccept = async (id) => {
+    await acceptRequest(id);
+    setFeedback(f => ({ ...f, [id]: 'accepted' }));
+    setTimeout(fetchNotifications, 500);
+  };
+
+  const handleReject = async (id) => {
+    await rejectRequest(id);
+    setFeedback(f => ({ ...f, [id]: 'rejected' }));
+    setTimeout(fetchNotifications, 500);
+  };
+
+  const handleCancel = async (id) => {
+    if (window.confirm('¿Seguro que quieres anular el contrato? Esta acción es irreversible.')) {
+      await cancelRequest(id);
+      setFeedback(f => ({ ...f, [id]: 'cancelled' }));
+      setTimeout(fetchNotifications, 500);
+    }
+  };
 
   const unreadCount = received.length;
 
@@ -68,22 +93,44 @@ const NotificationsMenu = () => {
                 <div className="font-semibold">{req.sender.name} te ha enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</div>
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
                 <div className="flex gap-2 mt-2">
-                  <button className="bg-green-500 text-white rounded px-2 py-1 text-xs">Aceptar</button>
-                  <button className="bg-red-500 text-white rounded px-2 py-1 text-xs">Rechazar</button>
+                  {req.status === 'accepted' ? (
+                    <>
+                      <span className="flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
+                      <button
+                        className="bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() => handleCancel(req.id)}
+                      >Anular contrato</button>
+                    </>
+                  ) : req.status === 'rejected' ? (
+                    <span className="flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
+                  ) : (
+                    <>
+                      <button
+                        className="bg-green-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() => handleAccept(req.id)}
+                      >Aceptar</button>
+                      <button
+                        className="bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        onClick={() => handleReject(req.id)}
+                      >Rechazar</button>
+                    </>
+                  )}
                 </div>
                 <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>
               </div>
             ))}
             {tab === 'sent' && sent.map(req => (
               <div key={req.id} className="p-4 border-b text-sm">
-                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.receiver.name} por {req.pet.name}
+                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {req.receiver.name}
+                {feedback[req.id] === 'accepted' ? (
+                  <span className="ml-2 flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
+                ) : feedback[req.id] === 'rejected' ? (
+                  <span className="ml-2 flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
+                ) : null}
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
                 <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>
               </div>
             ))}
-          </div>
-          <div className="p-2 border-t text-center">
-            <Link to="/requests" className="text-green-700 hover:underline text-xs">Ver todas las solicitudes</Link>
           </div>
         </div>
       )}
