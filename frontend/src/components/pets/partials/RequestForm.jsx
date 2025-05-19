@@ -13,6 +13,17 @@ const DAY_LABELS = {
   saturday: 'Sábado',
   sunday: 'Domingo',
 };
+const WEEK_DAYS_ORDER = [
+  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+];
+
+// Función para ordenar slots por día y hora
+function sortSlots(a, b) {
+  const dayA = WEEK_DAYS_ORDER.indexOf(a.day_of_week);
+  const dayB = WEEK_DAYS_ORDER.indexOf(b.day_of_week);
+  if (dayA !== dayB) return dayA - dayB;
+  return a.time_slot.localeCompare(b.time_slot, 'en', { numeric: true });
+}
 
 const RequestForm = ({
   pet,
@@ -70,7 +81,7 @@ const RequestForm = ({
     setSelectedHour('');
   };
 
-  // Añadir slot seleccionado
+  // Añadir slot seleccionado (y mantener ordenados los slots)
   const handleAddSlot = () => {
     if (!selectedDay || !selectedHour) return;
     // Prevenir duplicados
@@ -81,9 +92,12 @@ const RequestForm = ({
     )
       return;
 
+    const newSlots = [...formData.slots, { day_of_week: selectedDay, time_slot: selectedHour }];
+    newSlots.sort(sortSlots);
+
     setFormData(prev => ({
       ...prev,
-      slots: [...prev.slots, { day_of_week: selectedDay, time_slot: selectedHour }],
+      slots: newSlots,
     }));
     setSelectedDay('');
     setSelectedHour('');
@@ -91,9 +105,11 @@ const RequestForm = ({
 
   // Quitar slot
   const handleRemoveSlot = idx => {
+    const newSlots = formData.slots.slice();
+    newSlots.splice(idx, 1);
     setFormData(prev => ({
       ...prev,
-      slots: prev.slots.filter((_, i) => i !== idx),
+      slots: newSlots,
     }));
   };
 
@@ -187,12 +203,6 @@ const RequestForm = ({
               }}
               className="space-y-4"
             >
-              {process.env.NODE_ENV !== 'production' && (
-  <div style={{ background: '#eee', padding: '1em', marginBottom: '1em', fontSize: '0.9em', maxHeight: 200, overflow: 'auto' }}>
-    <strong>DEBUG availability:</strong>
-    <pre>{JSON.stringify(availability, null, 2)}</pre>
-  </div>
-)}
               {/* Selector tipo */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -238,11 +248,19 @@ const RequestForm = ({
                     >
                       <option value="">Hora</option>
                       {selectedDay &&
-                        slotsByDay[selectedDay]?.map(hour => (
-                          <option key={hour} value={hour}>
-                            {hour.substring(0, 5)}
-                          </option>
-                        ))}
+                        slotsByDay[selectedDay]
+                          // Filtra las horas ya seleccionadas para ese día
+                          .filter(hour =>
+                            !formData.slots.some(
+                              s => s.day_of_week === selectedDay && s.time_slot === hour
+                            )
+                          )
+                          .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
+                          .map(hour => (
+                            <option key={hour} value={hour}>
+                              {hour.substring(0, 5)}
+                            </option>
+                          ))}
                     </select>
                     {/* Botón añadir */}
                     <button
@@ -254,29 +272,32 @@ const RequestForm = ({
                       Añadir
                     </button>
                   </div>
-                  {/* Lista de slots seleccionados */}
+                  {/* Lista de slots seleccionados, ordenados */}
                   <div>
                     {formData.slots.length > 0 && (
                       <ul className="mb-2">
-                        {formData.slots.map((slot, idx) => (
-                          <li
-                            key={idx}
-                            className="flex items-center text-sm bg-blue-100 rounded px-2 py-1 mb-1"
-                          >
-                            <span className="flex-1">
-                              {DAY_LABELS[slot.day_of_week] || slot.day_of_week}
-                              {', '}
-                              {slot.time_slot.substring(0, 5)}
-                            </span>
-                            <button
-                              type="button"
-                              className="ml-2 text-red-500"
-                              onClick={() => handleRemoveSlot(idx)}
+                        {formData.slots
+                          .slice()
+                          .sort(sortSlots)
+                          .map((slot, idx) => (
+                            <li
+                              key={idx}
+                              className="flex items-center text-sm bg-blue-100 rounded px-2 py-1 mb-1"
                             >
-                              Quitar
-                            </button>
-                          </li>
-                        ))}
+                              <span className="flex-1">
+                                {DAY_LABELS[slot.day_of_week] || slot.day_of_week}
+                                {', '}
+                                {slot.time_slot.substring(0, 5)}
+                              </span>
+                              <button
+                                type="button"
+                                className="ml-2 text-red-500"
+                                onClick={() => handleRemoveSlot(idx)}
+                              >
+                                Quitar
+                              </button>
+                            </li>
+                          ))}
                       </ul>
                     )}
                   </div>

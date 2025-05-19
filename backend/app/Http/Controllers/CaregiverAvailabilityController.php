@@ -40,8 +40,14 @@ class CaregiverAvailabilityController extends Controller
     {
         $user = $request->user(); // Usuario autenticado por Sanctum
 
-        // Busca todas las disponibilidades donde el caregiver_id sea el id del usuario autenticado
-        $availabilities = CaregiverAvailability::where('caregiver_id', $user->id)->get();
+        // Busca el registro de cuidador con el user_id del usuario autenticado
+        $caregiver = Caregiver::where('user_id', $user->id)->first();
+        if (!$caregiver) {
+            return response()->json([], 200);
+        }
+
+        // Ahora busca las disponibilidades por el id del cuidador
+        $availabilities = CaregiverAvailability::where('caregiver_id', $caregiver->id)->get();
 
         return response()->json($availabilities);
     }
