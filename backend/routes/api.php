@@ -63,8 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de cuidadores
     Route::post('/caregivers/{userId}/become', [CaregiverController::class, 'become']);
     Route::post('/caregivers/{userId}/quit', [CaregiverController::class, 'quit']);
-    Route::get('/caregivers/{userId}/availability', [CaregiverAvailabilityController::class, 'getAvailability']);
-    Route::post('/caregivers/availability', [CaregiverAvailabilityController::class, 'saveAvailability']);
-    Route::delete('/caregivers/availability', [CaregiverAvailabilityController::class, 'deleteAvailability']);
+    Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
+    Route::put('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'put']);
+    Route::delete('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'delete']);
 
 });

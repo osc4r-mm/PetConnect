@@ -21,151 +21,72 @@ class CaregiverAvailabilityController extends Controller
         'sunday' => 7
     ];
 
-    /**
-     * Obtener la disponibilidad de un cuidador
-     */
-    public function getAvailability($userId)
+    public function get($userId)
     {
-        // Buscar el cuidador por user_id
         $caregiver = Caregiver::where('user_id', $userId)->first();
-        
         if (!$caregiver) {
-            return response()->json([], 200); // Devolver array vacío si no existe
+            return response()->json([], 200);
         }
-        
-        // Obtener su disponibilidad
-        $availability = $caregiver->availability()->get();
-        
-        // Convertir los valores numéricos a nombres de días para el frontend
-        $availability = $availability->map(function($item) {
-            $reverseDayMapping = array_flip($this->dayMapping);
-            $item->day_of_week = $reverseDayMapping[$item->day_of_week] ?? $item->day_of_week;
-            return $item;
+        $availability = $caregiver->availability()->get()->map(function($item) {
+            return [
+                'day_of_week' => $item->day_of_week,
+                'time_slot' => $item->time_slot,
+            ];
         });
-        
         return response()->json($availability);
     }
-    
-    /**
-     * Guardar slots de disponibilidad
-     */
-    public function saveAvailability(Request $request)
+
+    public function put(Request $request, $userId)
     {
         $user = Auth::user();
-        
-        // Verificar que el usuario es cuidador
+        if ($user->id != $userId) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
         $caregiver = $user->caregiver;
-        
         if (!$caregiver) {
             return response()->json(['message' => 'El usuario no es un cuidador'], 400);
         }
-        
-        // Validar datos
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'slots' => 'required|array',
             'slots.*.day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
             'slots.*.time_slot' => 'required|string|size:5',
         ]);
-        
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Datos inválidos', 'errors' => $validator->errors()], 422);
-        }
-        
-        // Validar cada time_slot individualmente
+        $newSlots = [];
         foreach ($request->slots as $slot) {
-            if (!preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $slot['time_slot'])) {
-                return response()->json([
-                    'message' => 'Formato de hora inválido', 
-                    'errors' => ['time_slot' => 'El formato debe ser HH:MM (00:00 - 23:59)']
-                ], 422);
-            }
+            $newSlots[] = CaregiverAvailability::updateOrCreate(
+                [
+                    'caregiver_id' => $caregiver->id,
+                    'day_of_week' => $slot['day_of_week'],
+                    'time_slot' => $slot['time_slot']
+                ],
+                []
+            );
         }
-        
-        // Guardar slots
-        $savedSlots = [];
-        
-        foreach ($request->slots as $slot) {
-            // Convertir el nombre del día a un valor numérico
-            $dayValue = $this->dayMapping[$slot['day_of_week']] ?? null;
-            
-            if ($dayValue === null) {
-                return response()->json([
-                    'message' => 'Día de la semana inválido',
-                    'errors' => ['day_of_week' => 'El día debe ser uno de: monday, tuesday, wednesday, thursday, friday, saturday, sunday']
-                ], 422);
-            }
-            
-            $availability = CaregiverAvailability::firstOrCreate([
-                'caregiver_id' => $caregiver->id,
-                'day_of_week' => $dayValue, // Usar el valor numérico
-                'time_slot' => $slot['time_slot'],
-            ]);
-            
-            // Convertir de vuelta al nombre del día para la respuesta
-            $reverseDayMapping = array_flip($this->dayMapping);
-            $availabilityData = $availability->toArray();
-            $availabilityData['day_of_week'] = $reverseDayMapping[$availability->day_of_week] ?? $availability->day_of_week;
-            
-            $savedSlots[] = $availabilityData;
-        }
-        
-        return response()->json($savedSlots);
+        return response()->json(['message' => 'Disponibilidad actualizada', 'slots' => $newSlots]);
     }
-    
-    /**
-     * Eliminar slots de disponibilidad
-     */
-    public function deleteAvailability(Request $request)
+
+    public function delete(Request $request, $userId)
     {
         $user = Auth::user();
-        
-        // Verificar que el usuario es cuidador
+        if ($user->id != $userId) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
         $caregiver = $user->caregiver;
-        
         if (!$caregiver) {
             return response()->json(['message' => 'El usuario no es un cuidador'], 400);
         }
-        
-        // Validar datos
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'slots' => 'required|array',
-            'slots.*.day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'slots.*.time_slot' => 'required|string|size:5',
+            'slots.*.day_of_week' => 'required',
+            'slots.*.time_slot' => 'required'
         ]);
-        
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Datos inválidos', 'errors' => $validator->errors()], 422);
-        }
-        
-        // Validar cada time_slot individualmente
         foreach ($request->slots as $slot) {
-            if (!preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $slot['time_slot'])) {
-                return response()->json([
-                    'message' => 'Formato de hora inválido', 
-                    'errors' => ['time_slot' => 'El formato debe ser HH:MM (00:00 - 23:59)']
-                ], 422);
-            }
-        }
-        
-        // Eliminar slots
-        foreach ($request->slots as $slot) {
-            // Convertir el nombre del día a un valor numérico
-            $dayValue = $this->dayMapping[$slot['day_of_week']] ?? null;
-            
-            if ($dayValue === null) {
-                return response()->json([
-                    'message' => 'Día de la semana inválido',
-                    'errors' => ['day_of_week' => 'El día debe ser uno de: monday, tuesday, wednesday, thursday, friday, saturday, sunday']
-                ], 422);
-            }
-            
             CaregiverAvailability::where([
                 'caregiver_id' => $caregiver->id,
-                'day_of_week' => $dayValue, // Usar el valor numérico
-                'time_slot' => $slot['time_slot'],
+                'day_of_week' => $slot['day_of_week'],
+                'time_slot' => $slot['time_slot']
             ])->delete();
         }
-        
-        return response()->json(['message' => 'Disponibilidad eliminada correctamente']);
+        return response()->json(['message' => 'Disponibilidad eliminada']);
     }
 }

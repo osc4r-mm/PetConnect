@@ -3,7 +3,7 @@ import api from './api';
 // Obtener disponibilidad del cuidador
 export const getAvailability = async (userId) => {
   try {
-    const response = await api.get(`/caregivers/${userId}/availability`);
+    const response = await api.get(`/caregiver/${userId}/availability`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener disponibilidad:', error);
@@ -11,10 +11,10 @@ export const getAvailability = async (userId) => {
   }
 };
 
-// Guardar slots de disponibilidad
-export const saveAvailability = async (slots) => {
+// Guardar o actualizar slots de disponibilidad
+export const saveAvailability = async (userId, slots) => {
   try {
-    const response = await api.post('/caregivers/availability', { slots });
+    const response = await api.put(`/caregiver/${userId}/availability`, { slots });
     return response.data;
   } catch (error) {
     console.error('Error al guardar disponibilidad:', error);
@@ -23,9 +23,9 @@ export const saveAvailability = async (slots) => {
 };
 
 // Eliminar slots de disponibilidad
-export const deleteAvailability = async (slots) => {
+export const deleteAvailability = async (userId, slots) => {
   try {
-    const response = await api.delete('/caregivers/availability', { data: { slots } });
+    const response = await api.delete(`/caregiver/${userId}/availability`, { data: { slots } });
     return response.data;
   } catch (error) {
     console.error('Error al eliminar disponibilidad:', error);
