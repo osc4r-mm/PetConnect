@@ -36,6 +36,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   const { user: currentUser } = useAuth();
   const [availability, setAvailability] = useState([]);
   const [walks, setWalks] = useState({});
+  const [rawRequests, setRawRequests] = useState([]); // <--- For debugging
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(null);
   const [selectionEnd, setSelectionEnd] = useState(null);
@@ -76,9 +77,13 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
         ]);
         setAvailability(data);
 
-        // Solo paseos aceptados!
+        setRawRequests(walksResp.data.requests || []);
+
+        // Solo paseos aceptados para el USUARIO DEL PERFIL (targetId)
         const walksMap = {};
         (walksResp.data.requests || []).forEach(req => {
+          // Aquí cambiamos: antes era req.sender_id !== currentUser.id
+          if (req.sender_id !== targetId) return;
           if (req.status !== 'accepted') return;
           let agreement = {};
           try {
@@ -86,10 +91,9 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
               ? JSON.parse(req.agreement_data)
               : req.agreement_data || {};
           } catch (e) {}
-          if (agreement.slots && Array.isArray(agreement.slots)) {
-            agreement.slots.forEach(slot => {
+          if (agreement && Array.isArray(agreement)) {
+            agreement.forEach(slot => {
               if (!walksMap[slot.day_of_week]) walksMap[slot.day_of_week] = {};
-              // Multiples perros pueden coincidir!
               if (!walksMap[slot.day_of_week][slot.time_slot]) walksMap[slot.day_of_week][slot.time_slot] = [];
               walksMap[slot.day_of_week][slot.time_slot].push(req.pet?.name || req.pet_name || 'Mascota');
             });
@@ -102,6 +106,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
         setLoading(false);
       }
     };
+
     fetchAvailabilityAndWalks();
   }, [userId, currentUser]);
 
@@ -125,7 +130,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   // Clase de cada celda
   const getSlotClassName = (day, hour, quarter) => {
     const walkPets = getWalkInfo(day, hour, quarter);
-    if (walkPets && walkPets.length > 0) return 'bg-yellow-300';
+    if (walkPets && walkPets.length > 0) return 'bg-yellow-400';
 
     const minute = quarter * 15;
     const slotIsAvailable = isSlotAvailable(dayValues[day], hour, quarter);
@@ -155,7 +160,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     const walkPets = getWalkInfo(day, hour, quarter);
     let text = '';
     if (walkPets && walkPets.length > 0) {
-      text = `Cuidando a: ${walkPets.join(', ')}`;
+      text = `Está paseando a: ${walkPets.join(', ')}`;
     } else {
       text = isSlotAvailable(dayValues[day], hour, quarter) ? 'Libre' : 'No disponible';
     }
@@ -259,7 +264,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
           <span className="text-sm text-gray-600">
             Haz clic y arrastra para seleccionar y configurar tu disponibilidad.
             <br />
-            Verde = libre. Amarillo = cuidando. Azul: vas a añadir. Rojo: vas a eliminar.
+            Verde = libre. Amarillo = paseando. Azul: vas a añadir. Rojo: vas a eliminar.
           </span>
           <button
             className={`px-4 py-1 rounded text-white font-semibold transition ${

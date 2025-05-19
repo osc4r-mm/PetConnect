@@ -23,7 +23,7 @@ export const LoadingScreen = ({ message }) => (
 export const NotFoundData = ({
   message1 = 'No encontrado',
   message2 = '',
-  icon = PawPrint,        // puede ser componente o elemento JSX
+  icon = PawPrint,
   redirectUrl = '/',
   redirectMessage = 'Volver al inicio'
 }) => {
