@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetRequestController;
 use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CaregiverAvailabilityController;
+use App\Http\Controllers\NotificationController;
 
 
 /*
@@ -43,6 +44,7 @@ Route::get('/genders', [PetDataController::class, 'getGenders']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'user']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
    
     // Rutas de mascotas
     Route::post('/pet', [PetsController::class, 'put']);

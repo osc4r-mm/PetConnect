@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LoadingScreen } from './components/Util';
 import Login     from './components/auth/Login';
 import Register  from './components/auth/Register';
-import Navbar    from './components/Navbar';
+import Navbar    from './components/navbar/Navbar';
 import Home      from './components/home/Home';
 import PetDetail from './components/pets/PetDetail';
 import Profile   from './components/UserProfile/Profile';

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import NotificationsMenu from './partials/NotificationsMenu';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const { user, loading, logout } = useAuth();
@@ -98,45 +99,50 @@ export default function Navbar() {
           {/* Auth botones desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  id="avatar-button"
-                  onClick={() => setIsDropdownOpen(o => !o)}
-                  className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
-                >
-                  {renderAvatar()}
-                  <span>{user.name}</span>
-                  <ChevronDown size={16} className="text-gray-500" />
-                </button>
-                {isDropdownOpen && (
-                  <div 
-                    id="user-dropdown"
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50"
-                    style={{ filter: 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))' }}
+              <div className="flex items-center space-x-4">
+                <div className="mr-4">
+                  <NotificationsMenu />
+                </div>
+                <div className="relative">
+                  <button
+                    id="avatar-button"
+                    onClick={() => setIsDropdownOpen(o => !o)}
+                    className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
                   >
-                    <Link
-                      to="/profile"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    {renderAvatar()}
+                    <span>{user.name}</span>
+                    <ChevronDown size={16} className="text-gray-500" />
+                  </button>
+                  {isDropdownOpen && (
+                    <div 
+                      id="user-dropdown"
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50"
+                      style={{ filter: 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))' }}
                     >
-                      Mi perfil
-                    </Link>
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                    >
-                      <LogOut size={16} className="mr-2" />
-                      Cerrar sesión
-                    </button>
-                  </div>
-                )}
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Mi perfil
+                      </Link>
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <LogOut size={16} className="mr-2" />
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex items-center space-x-4">

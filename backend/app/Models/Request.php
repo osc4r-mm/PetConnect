@@ -8,7 +8,7 @@ class Request extends Model
 {
     protected $table = 'requests';
     public $timestamps = false;
-    protected $fillable = ['sender_id', 'receiver_id', 'type', 'message'];
+    protected $fillable = ['id', 'pet_id', 'sender_id', 'receiver_id', 'type', 'message', 'status', 'agreement_data', 'created_at', 'updated_at'];
 
     public function sender()
     {
@@ -20,8 +20,8 @@ class Request extends Model
         return $this->belongsTo(User::class, 'receiver_id');
     }
 
-    public function pets()
+    public function pet()
     {
-        return $this->belongsToMany(Pet::class, 'request_pets');
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 }
