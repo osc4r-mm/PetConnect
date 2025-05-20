@@ -113,36 +113,12 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
           <span className="ml-2 text-xs text-gray-500">({totalVotes} voto{totalVotes !== 1 ? 's' : ''})</span>
         )}
       </div>
-      {myRating && (
-        <span className="text-green-700 text-xs">¡Ya has valorado este cuidador!</span>
-      )}
       {!canVote && !myRating && (
         <span className="text-gray-500 text-xs">Solo puedes valorar si este cuidador ya ha cuidado una mascota tuya.</span>
       )}
       {canVote && !myRating && (
         <span className="text-gray-600 text-xs">Haz clic para valorar. Puedes cambiar tu voto.</span>
       )}
-      <div style={{
-        background: "#fafad2", border: "1px solid #eee", marginTop: 8, padding: 8, borderRadius: 4, fontSize: 12
-      }}>
-        <div style={{
-  background: '#fffae6',
-  border: '1px solid #ffe066',
-  margin: '8px 0',
-  padding: 8,
-  borderRadius: 4,
-  fontSize: 12
-}}>
-  <div><b>DEBUG FRONTEND:</b></div>
-  <div>caregiverId (prop): <b>{caregiverId}</b></div>
-  <div>canVote (prop): <b>{String(canVote)}</b></div>
-  <div>myRating (estado): <b>{String(myRating)}</b></div>
-  <div>avgRating (estado): <b>{String(avgRating)}</b></div>
-  <div>totalVotes (estado): <b>{String(totalVotes)}</b></div>
-  <div>loading (estado): <b>{String(loading)}</b></div>
-  <div>submitting (estado): <b>{String(submitting)}</b></div>
-</div>
-      </div>
     </div>
   );
 }

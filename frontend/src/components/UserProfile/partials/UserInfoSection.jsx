@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Camera, UserPlus, UserMinus, Edit3, Save, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { updateUser, getUserImageUrl, uploadUserProfileImage } from '../../../services/userService';
 import { becomeCaregiver, quitCaregiver, isCaregiver } from '../../../services/caregiverService';
 import CaregiverReviewStars from './CaregiverReviewStars';
+import api from '../../../services/api';
 
 const UserInfoSection = ({ user }) => {
   const { user: currentUser, updateUserData } = useAuth();
@@ -22,12 +23,25 @@ const UserInfoSection = ({ user }) => {
   const isOwnProfile = currentUser && user.id === currentUser.id;
   const userIsCaregiver = isCaregiver(user);
 
-  // Permiso para votar: solo si no es tu perfil, es cuidador, y backend te lo permite
-  const canVote = !!(
-    userIsCaregiver &&
-    !isOwnProfile &&
-    user.canBeReviewedByMe // este campo debe venir del backend en el objeto user
-  );
+  // Nuevo estado para canVote
+  const [canVote, setCanVote] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    // Solo consulta si el user es cuidador y no es tu propio perfil
+    if (userIsCaregiver && !isOwnProfile && user.caregiver_id) {
+      api.get(`/caregivers/${user.caregiver_id}/can_be_reviewed`)
+        .then(res => {
+          if (mounted) setCanVote(res.data.canBeReviewedByMe);
+        })
+        .catch(() => {
+          if (mounted) setCanVote(false);
+        });
+    } else {
+      setCanVote(false);
+    }
+    return () => { mounted = false; }
+  }, [userIsCaregiver, isOwnProfile, user.caregiver_id]);
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
@@ -177,9 +191,9 @@ const UserInfoSection = ({ user }) => {
         )}
 
         {/* Review de cuidador: bajo nombre/email/rol */}
-        {userIsCaregiver && user.caregiver_id && (
+        {userIsCaregiver && (
           <CaregiverReviewStars
-            caregiverId={user.caregiver_id}
+            caregiverId={user.caregiver_id || user.id}
             canVote={canVote}
           />
         )}

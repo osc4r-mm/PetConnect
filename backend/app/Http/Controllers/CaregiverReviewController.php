@@ -41,12 +41,6 @@ class CaregiverReviewController extends Controller
         if (!$hasHadCare) {
             return response()->json([
                 'error' => 'No puedes valorar a este cuidador.',
-                // DEBUG EXTRA por si quieres ver qué ids se están usando realmente
-                'debug' => [
-                    'caregiver_id' => $caregiverId,
-                    'caregiver_user_id' => $caregiverUserId,
-                    'current_user_id' => $user->id
-                ]
             ], 403);
         }
 
