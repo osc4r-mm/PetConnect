@@ -9,7 +9,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // ✅ usa el contexto
+  const { login } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,16 +20,32 @@ const Login = () => {
     e.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
-    
+
     try {
-      await login(credentials); // ✅ usa el login del contexto
+      await login(credentials);
       navigate('/');
     } catch (error) {
-      console.error('Error de login:', error);
-      setErrorMessage(
-        error.message || 
-        'Error al iniciar sesión. Verifica tus credenciales.'
-      );
+      // Manejo mejorado de errores
+      if (error.response) {
+        // Laravel validation errors
+        if (error.response.status === 422) {
+          const data = error.response.data;
+          if (data.errors) {
+            // Mostrar todos los errores de validación
+            setErrorMessage(Object.values(data.errors).flat().join(' '));
+          } else if (data.message) {
+            setErrorMessage(data.message);
+          } else {
+            setErrorMessage('Error de validación. Revisa los datos.');
+          }
+        } else if (error.response.status === 401) {
+          setErrorMessage('No autorizado. Revisa tus credenciales.');
+        } else {
+          setErrorMessage('Error inesperado. Intenta de nuevo.');
+        }
+      } else {
+        setErrorMessage('Error de conexión. Intenta más tarde.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +55,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-        
+
         {errorMessage && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {errorMessage}

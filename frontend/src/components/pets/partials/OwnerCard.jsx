@@ -11,13 +11,8 @@ const OwnerCard = ({ owner }) => {
       {/* Foto de perfil */}
       <div className="flex-shrink-0 mr-3">
         <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100">
-          {owner.image ? (
+          <span>{owner.image}</span>
             <img src={getUserImageUrl(owner.image)} alt="Perfil" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200">
-              <span className="text-gray-400">🐶</span>
-            </div>
-          )}
         </div>
       </div>
       

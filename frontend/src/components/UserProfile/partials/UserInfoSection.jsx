@@ -1,46 +1,54 @@
 import React, { useState } from 'react';
-import { Mail, Camera, UserPlus, UserMinus } from 'lucide-react';
+import { Mail, Camera, UserPlus, UserMinus, Edit3, Save, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { updateUser, uploadUserProfileImage, getUserImageUrl } from '../../../services/userService';
-import { becomeCaregiver, quitCaregiver, isCaregiver} from '../../../services/caregiverService';
+import { updateUser, getUserImageUrl, uploadUserProfileImage } from '../../../services/userService';
+import { becomeCaregiver, quitCaregiver, isCaregiver } from '../../../services/caregiverService';
+import CaregiverReviewStars from './CaregiverReviewStars';
 
 const UserInfoSection = ({ user }) => {
   const { user: currentUser, updateUserData } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
+  // Edición
+  const [editMode, setEditMode] = useState(false);
+  const [form, setForm] = useState({
+    name: user.name || "",
+    email: user.email || "",
+    description: user.description || ""
+  });
+  const [formError, setFormError] = useState(null);
+
   const isOwnProfile = currentUser && user.id === currentUser.id;
-  
-  // Verificar si el usuario es cuidador
   const userIsCaregiver = isCaregiver(user);
+
+  // Permiso para votar: solo si no es tu perfil, es cuidador, y backend te lo permite
+  const canVote = !!(
+    userIsCaregiver &&
+    !isOwnProfile &&
+    user.canBeReviewedByMe // este campo debe venir del backend en el objeto user
+  );
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
-
     const role = roleName.toLowerCase();
     if (role === 'caregiver') return 'bg-green-500';
     if (role === 'user') return 'bg-blue-500';
     if (role === 'admin') return 'bg-red-500';
-    
     return 'bg-gray-500';
   };
 
   const handleImageChange = async (e) => {
     if (!e.target.files || !e.target.files[0]) return;
-    
     const file = e.target.files[0];
     setIsUploading(true);
-    
     try {
       const response = await uploadUserProfileImage(user.id, file);
-      
-      if (response && response.path) {
-        if (updateUserData) {
-          updateUserData({
-            ...user,
-            image: response.path
-          });
-        }
+      if (response && response.path && updateUserData) {
+        updateUserData({
+          ...user,
+          image: response.path
+        });
       }
     } catch (error) {
       console.error('Error al subir la imagen de perfil:', error);
@@ -49,7 +57,43 @@ const UserInfoSection = ({ user }) => {
       setIsUploading(false);
     }
   };
-  
+
+  // Editar campos del perfil
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+    setForm(form => ({ ...form, [name]: value }));
+  };
+
+  const handleEdit = () => {
+    setForm({
+      name: user.name || "",
+      email: user.email || "",
+      description: user.description || ""
+    });
+    setFormError(null);
+    setEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setFormError(null);
+  };
+
+  const handleSave = async () => {
+    setFormError(null);
+    try {
+      const updatedUser = await updateUser(user.id, {
+        name: form.name,
+        email: form.email,
+        description: form.description
+      });
+      if (updateUserData) updateUserData(updatedUser);
+      setEditMode(false);
+    } catch (err) {
+      setFormError("No se pudo actualizar el perfil. Comprueba los datos.");
+    }
+  };
+
   // Convertirse en cuidador
   const handleBecomeCaregiver = async () => {
     setIsProcessing(true);
@@ -65,7 +109,7 @@ const UserInfoSection = ({ user }) => {
       setIsProcessing(false);
     }
   };
-  
+
   // Darse de baja como cuidador
   const handleQuitCaregiver = async () => {
     if (window.confirm('¿Estás seguro de que quieres dejar de ser cuidador?')) {
@@ -93,7 +137,6 @@ const UserInfoSection = ({ user }) => {
             alt="Imagen de perfil" 
             className="h-full w-full object-cover"
           />
-          
           {isOwnProfile && (
             <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 cursor-pointer transition-opacity">
               {isUploading ? (
@@ -113,61 +156,124 @@ const UserInfoSection = ({ user }) => {
           )}
         </div>
 
-        <h2 className="text-2xl font-bold mt-4">{user.name}</h2>
-        
-        {/* Mostrar rol */}
-        {user.role?.name && (
-          <div className="mt-2 flex flex-col items-center">
-            <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
-              {user.role.name}
-            </span>
-            
-            {/* Botones de acción para el propio perfil */}
-            {isOwnProfile && (
-              <div className="mt-4 space-y-2 w-full">
-                {/* Si no es cuidador, mostrar botón para convertirse en cuidador */}
-                {!userIsCaregiver && (
-                  <button
-                    onClick={handleBecomeCaregiver}
-                    disabled={isProcessing}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
-                  >
-                    <UserPlus size={18} />
-                    {isProcessing ? 'Procesando...' : 'Hacerse cuidador'}
-                  </button>
-                )}
-                
-                {/* Si es cuidador, mostrar botón para darse de baja */}
-                {userIsCaregiver && (
-                  <button
-                    onClick={handleQuitCaregiver}
-                    disabled={isProcessing}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
-                  >
-                    <UserMinus size={18} />
-                    {isProcessing ? 'Procesando...' : 'Darse de baja como cuidador'}
-                  </button>
-                )}
+        {/* Botón editar perfil */}
+        {isOwnProfile && !editMode && (
+          <button className="flex gap-2 items-center mt-2 px-4 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition text-sm"
+            onClick={handleEdit}>
+            <Edit3 size={18} /> Editar perfil
+          </button>
+        )}
+        {editMode && (
+          <div className="flex gap-2 mt-2">
+            <button className="flex gap-2 items-center px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition text-sm"
+              onClick={handleSave}>
+              <Save size={18} />Guardar
+            </button>
+            <button className="flex gap-2 items-center px-4 py-1 rounded bg-gray-400 text-white hover:bg-gray-500 transition text-sm"
+              onClick={handleCancel}>
+              <X size={18} />Cancelar
+            </button>
+          </div>
+        )}
+
+        {/* Review de cuidador: bajo nombre/email/rol */}
+        {userIsCaregiver && (
+          <CaregiverReviewStars
+            caregiverId={user.caregiver_id || user.id}
+            canVote={canVote}
+          />
+        )}
+
+        <div className="mt-4 w-full max-w-md">
+          {/* Nombre */}
+          <div className="mb-2">
+            <label className="block text-gray-600 font-medium">Nombre</label>
+            {editMode ? (
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleFieldChange}
+                className="w-full border rounded px-3 py-1 mt-1"
+              />
+            ) : (
+              <div className="text-xl font-bold">{user.name}</div>
+            )}
+          </div>
+          {/* Email */}
+          <div className="mb-2">
+            <label className="block text-gray-600 font-medium">Email</label>
+            {editMode ? (
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleFieldChange}
+                className="w-full border rounded px-3 py-1 mt-1"
+              />
+            ) : (
+              <div className="flex items-center">
+                <Mail className="h-5 w-5 text-blue-500 mr-2" />
+                <span>{user.email}</span>
               </div>
             )}
           </div>
-        )}
-      </div>
+          {/* Rol */}
+          {user.role?.name && (
+            <div className="mb-2">
+              <label className="block text-gray-600 font-medium">Rol</label>
+              <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
+                {user.role.name}
+              </span>
+            </div>
+          )}
+          {/* Sobre mí */}
+          <div className="mb-2">
+            <label className="block text-gray-600 font-medium">Sobre mí</label>
+            {editMode ? (
+              <textarea
+                name="description"
+                rows={3}
+                value={form.description}
+                onChange={handleFieldChange}
+                className="w-full border rounded px-3 py-1 mt-1"
+              />
+            ) : (
+              <p className="text-gray-700">
+                {user.description || 'Sin descripción disponible.'}
+              </p>
+            )}
+          </div>
+          {/* Error */}
+          {formError && (
+            <div className="text-red-600 text-sm mb-2">{formError}</div>
+          )}
+        </div>
 
-      <div className="mt-6 space-y-3">
-        {user.email && (
-          <div className="flex items-center">
-            <Mail className="h-5 w-5 text-blue-500 mr-2" />
-            <span>{user.email}</span>
+        {/* Botones cuidador */}
+        {user.role?.name && isOwnProfile && (
+          <div className="mt-4 space-y-2 w-full max-w-md">
+            {!userIsCaregiver && (
+              <button
+                onClick={handleBecomeCaregiver}
+                disabled={isProcessing}
+                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+              >
+                <UserPlus size={18} />
+                {isProcessing ? 'Procesando...' : 'Hacerse cuidador'}
+              </button>
+            )}
+            {userIsCaregiver && (
+              <button
+                onClick={handleQuitCaregiver}
+                disabled={isProcessing}
+                className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+              >
+                <UserMinus size={18} />
+                {isProcessing ? 'Procesando...' : 'Darse de baja como cuidador'}
+              </button>
+            )}
           </div>
         )}
-      </div>
-
-      <div className="mt-6">
-        <h3 className="font-semibold mb-2">Sobre mí</h3>
-        <p className="text-gray-700">
-          {user.description || 'Sin descripción disponible.'}
-        </p>
       </div>
     </div>
   );

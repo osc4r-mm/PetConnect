@@ -15,7 +15,7 @@ export const rejectRequest = async (requestId) => {
   return data;
 };
 
-export const cancelRequest = async (id) => {
-  const { data } = await api.delete(`/request/${id}/cancel`);
+export const cancelRequest = async (requestId) => {
+  const { data } = await api.delete(`/request/${requestId}/cancel`);
   return data;
 };

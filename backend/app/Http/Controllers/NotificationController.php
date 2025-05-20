@@ -9,21 +9,35 @@ use Illuminate\Support\Facades\Auth;
 class NotificationController extends Controller
 {
     // Notificaciones de solicitudes (enviadas y recibidas) para el usuario autenticado, solo "pending"
-    public function index(HttpRequest $req)
+    public function getAll(HttpRequest $req)
     {
         $userId = Auth::id();
 
         // Recibidas
         $received = RequestModel::with(['sender', 'pet'])
             ->where('receiver_id', $userId)
-            ->where('status', 'pending')
+            ->where(function($q) {
+                $q->whereIn('status', ['pending', 'rejected'])
+                    ->where('created_at', '>=', now()->subDays(7))
+                ->orWhere(function($q2) {
+                    $q2->where('status', 'accepted')
+                        ->where('created_at', '>=', now()->subDays(30));
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
         // Enviadas
         $sent = RequestModel::with(['receiver', 'pet'])
             ->where('sender_id', $userId)
-            ->where('status', 'pending')
+            ->where(function($q) {
+                $q->whereIn('status', ['pending', 'rejected'])
+                    ->where('created_at', '>=', now()->subDays(7))
+                ->orWhere(function($q2) {
+                    $q2->where('status', 'accepted')
+                        ->where('created_at', '>=', now()->subDays(30));
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -34,16 +48,26 @@ class NotificationController extends Controller
     }
 
     public function accept($id)
-    {
-        $request = RequestModel::findOrFail($id);
-        // Solo receptor puede aceptar
-        if ($request->receiver_id !== Auth::id()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-        $request->status = 'accepted';
-        $request->save();
-        return response()->json(['ok' => true, 'status' => 'accepted']);
+{
+    $request = RequestModel::findOrFail($id);
+    // Solo receptor puede aceptar
+    if ($request->receiver_id !== Auth::id()) {
+        return response()->json(['error' => 'No autorizado'], 403);
     }
+    $request->status = 'accepted';
+    $request->save();
+
+    // Si es adopción, cambiar el dueño del perro
+    if ($request->type === 'adopt' && $request->pet) {
+        $pet = $request->pet;
+        $pet->user_id = $request->sender_id;
+        $pet->for_sitting = false;
+        $pet->for_adoption = false;
+        $pet->save();
+    }
+
+    return response()->json(['ok' => true, 'status' => 'accepted']);
+}
 
     public function reject($id)
     {

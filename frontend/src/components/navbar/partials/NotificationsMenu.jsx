@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getRequests } from '../../../services/requestService';
-import { acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
+import { getRequests, acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
 import { Bell, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -9,10 +8,9 @@ const NotificationsMenu = () => {
   const [tab, setTab] = useState('received');
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
-  const [feedback, setFeedback] = useState({});
   const menuRef = useRef();
 
-  // Recarga notificaciones si se ha actuado sobre alguna
+  // Cargar todas las notificaciones (no solo pending)
   const fetchNotifications = () => {
     getRequests().then(({ received, sent }) => {
       setReceived(received);
@@ -33,27 +31,35 @@ const NotificationsMenu = () => {
     return () => document.removeEventListener('mousedown', handle);
   }, [open]);
 
+  // Cambia el status localmente en el array correspondiente
   const handleAccept = async (id) => {
     await acceptRequest(id);
-    setFeedback(f => ({ ...f, [id]: 'accepted' }));
-    setTimeout(fetchNotifications, 500);
+    setReceived(prev =>
+      prev.map(req => req.id === id ? { ...req, status: 'accepted' } : req)
+    );
   };
 
   const handleReject = async (id) => {
     await rejectRequest(id);
-    setFeedback(f => ({ ...f, [id]: 'rejected' }));
-    setTimeout(fetchNotifications, 500);
+    setReceived(prev =>
+      prev.map(req => req.id === id ? { ...req, status: 'rejected' } : req)
+    );
   };
 
   const handleCancel = async (id) => {
     if (window.confirm('¿Seguro que quieres anular el contrato? Esta acción es irreversible.')) {
       await cancelRequest(id);
-      setFeedback(f => ({ ...f, [id]: 'cancelled' }));
-      setTimeout(fetchNotifications, 500);
+      setReceived(prev =>
+        prev.map(req => req.id === id ? { ...req, status: 'cancelled' } : req)
+      );
+      setSent(prev =>
+        prev.map(req => req.id === id ? { ...req, status: 'cancelled' } : req)
+      );
     }
   };
 
-  const unreadCount = received.length;
+  // Ahora cuenta solo las pendientes
+  const unreadCount = received.filter(r => r.status === 'pending').length;
 
   return (
     <div className="relative" ref={menuRef}>
@@ -83,16 +89,22 @@ const NotificationsMenu = () => {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {tab === 'received' && received.length === 0 && (
-              <div className="p-4 text-gray-500">No tienes solicitudes recibidas pendientes.</div>
+              <div className="p-4 text-gray-500">No tienes solicitudes recibidas.</div>
             )}
             {tab === 'sent' && sent.length === 0 && (
-              <div className="p-4 text-gray-500">No has enviado solicitudes pendientes.</div>
+              <div className="p-4 text-gray-500">No has enviado solicitudes.</div>
             )}
+            {/* Recibidas */}
             {tab === 'received' && received.map(req => (
               <div key={req.id} className="p-4 border-b text-sm">
-                <div className="font-semibold">{req.sender.name} te ha enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</div>
+                <div className="font-semibold">
+                  {req.sender && req.sender.name
+                    ? <span>{req.sender.name} te ha enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</span>
+                    : <span>Solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</span>
+                  }
+                </div>
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-2 flex-wrap">
                   {req.status === 'accepted' ? (
                     <>
                       <span className="flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
@@ -103,6 +115,8 @@ const NotificationsMenu = () => {
                     </>
                   ) : req.status === 'rejected' ? (
                     <span className="flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
+                  ) : req.status === 'cancelled' ? (
+                    <span className="flex items-center text-yellow-700 font-bold">Contrato anulado</span>
                   ) : (
                     <>
                       <button
@@ -119,13 +133,22 @@ const NotificationsMenu = () => {
                 <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>
               </div>
             ))}
+            {/* Enviadas */}
             {tab === 'sent' && sent.map(req => (
               <div key={req.id} className="p-4 border-b text-sm">
-                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {req.receiver.name}
-                {feedback[req.id] === 'accepted' ? (
-                  <span className="ml-2 flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
-                ) : feedback[req.id] === 'rejected' ? (
+                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {req.receiver?.name || "el dueño"}
+                {req.status === 'accepted' ? (
+                  <>
+                    <span className="ml-2 flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
+                    <button
+                      className="ml-2 bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                      onClick={() => handleCancel(req.id)}
+                    >Anular contrato</button>
+                  </>
+                ) : req.status === 'rejected' ? (
                   <span className="ml-2 flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
+                ) : req.status === 'cancelled' ? (
+                  <span className="ml-2 flex items-center text-yellow-700 font-bold">Contrato anulado</span>
                 ) : null}
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
                 <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Caregiver;
+use App\Models\Request as RequestModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +37,7 @@ class CaregiverController extends Controller
         // Crear registro de cuidador si no existe
         $caregiver = Caregiver::firstOrCreate(
             ['user_id' => $user->id],
-            ['hourly_rate' => 10.00] // Valor predeterminado
+            ['hourly_rate' => 10.00]
         );
         
         return response()->json([
@@ -68,6 +69,11 @@ class CaregiverController extends Controller
         if ($user->caregiver) {
             $user->caregiver()->delete();
         }
+
+        RequestModel::where('sender_id', $user->id)
+        ->where('type', 'care')
+        ->whereIn('status', ['pending', 'accepted'])
+        ->delete();
         
         // Cambiar rol a usuario
         $user->role_id = $userRole->id;

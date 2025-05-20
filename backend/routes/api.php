@@ -10,7 +10,7 @@ use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CaregiverAvailabilityController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserRequestController;
-
+use App\Http\Controllers\CaregiverReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +33,9 @@ Route::get('/user/{userId}', [UserController::class, 'getOne']);
 Route::get('/user/{userId}/pets', [UserController::class, 'getPetsFromUser']);
 Route::delete('/user/{userId}', [UserController::class, 'delete']);
 
+// Rutas de cuidadores
+Route::get('/caregivers/{caregiverId}/reviews', [CaregiverReviewController::class, 'getAll']);
+
 // Rutas complementarias
 Route::get('/species', [PetDataController::class, 'getSpecies']);
 Route::get('/breeds', [PetDataController::class, 'getBreeds']);
@@ -50,7 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pet', [PetsController::class, 'put']);
     Route::put('/pet/{petId}', [PetsController::class, 'update']);
     Route::delete('/pet/{petId}', [PetsController::class, 'delete']);
-
     Route::post('/pet/{petId}/request', [PetRequestController::class, 'put']);
     Route::post('/pet/upload-thumbnail', [PetsController::class, 'uploadThumbnail']);
     Route::post('/pet/{petId}/upload-extra-photo', [PetsController::class, 'uploadExtraPhoto']);
@@ -67,9 +69,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'put']);
     Route::delete('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'delete']);
     Route::get('/caregiver/availability', [CaregiverAvailabilityController::class, 'getMy']);
+    Route::post('/caregivers/{caregiver}/reviews', [CaregiverReviewController::class, 'put']);
 
     // Rutas de solicitudes
-    Route::get('/requests', [NotificationController::class, 'index']);
+    Route::get('/requests', [NotificationController::class, 'getAll']);
     Route::get('/user/{userId}/requests', [UserRequestController::class, 'getMy']);
     Route::patch('/request/{requestId}/accept', [NotificationController::class, 'accept']);
     Route::patch('/request/{requestId}/reject', [NotificationController::class, 'reject']);

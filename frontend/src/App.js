@@ -8,8 +8,11 @@ import Login     from './components/auth/Login';
 import Register  from './components/auth/Register';
 import Navbar    from './components/navbar/Navbar';
 import Home      from './components/home/Home';
+import Caregivers from './components/caregivers/Caregivers';
 import PetDetail from './components/pets/PetDetail';
 import Profile   from './components/UserProfile/Profile';
+import Contact from './components/contact/contact';
+import About from './components/about/about';
 
 // Guard de rutas privadas
 function PrivateRoute() {
@@ -38,8 +41,11 @@ export default function App() {
           <Routes>
             {/* Públicas */}
             <Route path="/" element={<Home />} />
+            <Route path="/caregivers" element={<Caregivers />} />
             <Route path="/pet/:id" element={<PetDetail />} />
-              <Route path="/user/:id" element={<Profile />} />
+            <Route path="/user/:id" element={<Profile />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
 
             {/* Invitados */}
             <Route element={<GuestRoute />}>

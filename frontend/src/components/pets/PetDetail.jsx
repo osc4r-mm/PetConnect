@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPet, getOwner } from '../../services/petService';
+import { isCaregiver } from '../../services/caregiverService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import { useAuth } from '../../context/AuthContext';
 
@@ -56,6 +57,7 @@ const PetDetail = () => {
   
   const [pet, setPet] = useState(null);
   const [owner, setOwner] = useState(null);
+  const isCaregiverUser = currentUser && isCaregiver(currentUser);
   const [loading, setLoading] = useState(true);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestType, setRequestType] = useState('adopt');
@@ -272,10 +274,21 @@ const PetDetail = () => {
                   {isForSitting && (
                     <button
                       onClick={() => openRequestModal('care')}
-                      className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+                      className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                      disabled={!isCaregiverUser}
+                      title={
+                        !isCaregiverUser
+                          ? "Debes ser cuidador para solicitar cuidado"
+                          : ""
+                      }
                     >
-                      <Briefcase size={18} className="mr-2" /> Solicitar cuidado
+                      <PawPrint size={18} className="mr-2" /> Solicitar cuidado
                     </button>
+                  )}
+                  {isForSitting && !isCaregiverUser && currentUser && (
+                    <div className="text-xs text-blue-700 text-center">
+                      Debes ser cuidador para solicitar cuidado
+                    </div>
                   )}
                 </>
               )}
