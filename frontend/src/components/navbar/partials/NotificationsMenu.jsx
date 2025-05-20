@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getRequests, acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
-import { Bell, Check, X } from 'lucide-react';
+import { Bell, Check, X, PawPrint, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const requestTypeIcon = (type) =>
+  type === 'care'
+    ? <PawPrint size={16} className="inline-block text-blue-600 align-middle ml-2" />
+    : <Heart size={15} className="inline-block text-pink-500 align-middle ml-2" />;
 
 const NotificationsMenu = () => {
   const [open, setOpen] = useState(false);
@@ -61,6 +66,18 @@ const NotificationsMenu = () => {
   // Ahora cuenta solo las pendientes
   const unreadCount = received.filter(r => r.status === 'pending').length;
 
+  const statusBadge = (status) => {
+    if (status === 'pending')
+      return <span className="ml-2 inline-block bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-semibold align-middle">Pendiente</span>;
+    if (status === 'accepted')
+      return <span className="ml-2 inline-block bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold align-middle">Aceptada</span>;
+    if (status === 'rejected')
+      return <span className="ml-2 inline-block bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-semibold align-middle">Rechazada</span>;
+    if (status === 'cancelled')
+      return <span className="ml-2 inline-block bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full text-xs font-semibold align-middle">Anulada</span>;
+    return null;
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       <button className="relative" onClick={() => setOpen(!open)}>
@@ -99,25 +116,24 @@ const NotificationsMenu = () => {
               <div key={req.id} className="p-4 border-b text-sm">
                 <div className="font-semibold">
                   {req.sender && req.sender.name
-                    ? <span>{req.sender.name} te ha enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</span>
-                    : <span>Solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</span>
+                    ? (
+                      <span>
+                        <Link
+                          to={`/profile/${req.sender.id}`}
+                          className="text-green-700 hover:underline font-bold"
+                          onClick={() => setOpen(false)}
+                        >
+                          {req.sender.name}
+                        </Link>
+                        {' '}te ha enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}
+                      </span>
+                    ) : <span>Solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name}</span>
                   }
                 </div>
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
                 <div className="flex gap-2 mt-2 flex-wrap">
-                  {req.status === 'accepted' ? (
-                    <>
-                      <span className="flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
-                      <button
-                        className="bg-yellow-500 text-white rounded px-2 py-1 text-xs"
-                        onClick={() => handleCancel(req.id)}
-                      >Anular contrato</button>
-                    </>
-                  ) : req.status === 'rejected' ? (
-                    <span className="flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
-                  ) : req.status === 'cancelled' ? (
-                    <span className="flex items-center text-yellow-700 font-bold">Contrato anulado</span>
-                  ) : (
+                  {/* SOLO mostrar los botones si está pending */}
+                  {req.status === 'pending' && (
                     <>
                       <button
                         className="bg-green-500 text-white rounded px-2 py-1 text-xs"
@@ -129,29 +145,54 @@ const NotificationsMenu = () => {
                       >Rechazar</button>
                     </>
                   )}
-                </div>
-                <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>
-              </div>
-            ))}
-            {/* Enviadas */}
-            {tab === 'sent' && sent.map(req => (
-              <div key={req.id} className="p-4 border-b text-sm">
-                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {req.receiver?.name || "el dueño"}
-                {req.status === 'accepted' ? (
-                  <>
-                    <span className="ml-2 flex items-center text-green-700 font-bold"><Check size={16} className="mr-1" />Aceptada</span>
+                  {/* Mostrar botón de anular solo si es aceptada y NO es adopt */}
+                  {req.status === 'accepted' && req.type !== 'adopt' && (
                     <button
-                      className="ml-2 bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                      className="bg-yellow-500 text-white rounded px-2 py-1 text-xs"
                       onClick={() => handleCancel(req.id)}
                     >Anular contrato</button>
-                  </>
-                ) : req.status === 'rejected' ? (
-                  <span className="ml-2 flex items-center text-red-700 font-bold"><X size={16} className="mr-1" />Rechazada</span>
-                ) : req.status === 'cancelled' ? (
-                  <span className="ml-2 flex items-center text-yellow-700 font-bold">Contrato anulado</span>
-                ) : null}
+                  )}
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-400">{new Date(req.created_at).toLocaleString()}</span>
+                  <span className="flex items-center">
+                    {requestTypeIcon(req.type)}
+                    {statusBadge(req.status)}
+                  </span>
+                </div>
+              </div>
+            ))}
+
+            {tab === 'sent' && sent.map(req => (
+              <div key={req.id} className="p-4 border-b text-sm">
+                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
+                  req.receiver?.name ? (
+                    <Link
+                      to={`/profile/${req.receiver.id}`}
+                      className="text-green-700 hover:underline font-bold"
+                      onClick={() => setOpen(false)}
+                    >
+                      {req.receiver.name}
+                    </Link>
+                  ) : "el dueño"
+                }
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
-                <div className="text-xs text-gray-400 mt-1">{new Date(req.created_at).toLocaleString()}</div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-400">{new Date(req.created_at).toLocaleString()}</span>
+                  <span className="flex items-center">
+                    {requestTypeIcon(req.type)}
+                    {statusBadge(req.status)}
+                  </span>
+                </div>
+                {/* Botón de anular solo si aceptada y NO es adopt */}
+                {req.status === 'accepted' && req.type !== 'adopt' && (
+                  <button
+                    className="mt-2 bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                    onClick={() => handleCancel(req.id)}
+                  >
+                    Anular contrato
+                  </button>
+                )}
               </div>
             ))}
           </div>

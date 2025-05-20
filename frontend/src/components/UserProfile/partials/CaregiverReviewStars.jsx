@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import api from '../../../services/api';
+import { getReviews, voteReview, canBeReviewed } from '../../../services/reviewService';
 
-// Colores para las estrellas
-const STAR_COLOR = '#FFD700'; // Amarillo voto real
-const STAR_HOVER = '#FFE066'; // Amarillo hover preview
-const STAR_EMPTY = '#E5E7EB'; // Gris claro
-const STAR_DISABLED = '#FDE68A'; // Amarillo apagado
+const STAR_COLOR = '#FFD700';
+const STAR_HOVER = '#FFE066';
+const STAR_EMPTY = '#E5E7EB';
+const STAR_DISABLED = '#FDE68A';
 
 export default function CaregiverReviewStars({ caregiverId, canVote }) {
   const [myRating, setMyRating] = useState(null);
@@ -17,38 +16,33 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
   const [submitting, setSubmitting] = useState(false);
   const stars = [1, 2, 3, 4, 5];
 
-  // Obtiene la valoración media y la del usuario logueado
-  useEffect(() => {
-    let mounted = true;
+  const fetchData = async () => {
     setLoading(true);
-    api.get(`/caregivers/${caregiverId}/reviews`)
-      .then(res => {
-        if (!mounted) return;
-        setAvgRating(res.data.avg);
-        setTotalVotes(res.data.count);
-        if (res.data.user_review) setMyRating(res.data.user_review.rating);
-      })
-      .finally(() => setLoading(false));
-    return () => { mounted = false };
+    const data = await getReviews(caregiverId);
+    setAvgRating(data.avg);
+    setTotalVotes(data.count);
+    setMyRating(data.user_review ? data.user_review.rating : null);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line
   }, [caregiverId]);
 
-  // Votar
   const handleVote = async (value) => {
     if (!canVote || submitting || myRating === value) return;
     setSubmitting(true);
     try {
-      await api.post(`/caregivers/${caregiverId}/reviews`, { rating: value });
-      setMyRating(value);
-      // Actualiza media y votos
-      const res = await api.get(`/caregivers/${caregiverId}/reviews`);
-      setAvgRating(res.data.avg);
-      setTotalVotes(res.data.count);
+      const data = await voteReview(caregiverId, value);
+      setAvgRating(data.avg);
+      setTotalVotes(data.count);
+      setMyRating(data.user_review ? data.user_review.rating : null);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Color de estrella (hover > voto propio > vacía)
   const getStarColor = (i) => {
     if (!canVote) {
       return (myRating && i <= myRating) ? STAR_DISABLED : STAR_EMPTY;
@@ -62,15 +56,6 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
     return STAR_EMPTY;
   };
 
-  console.log("DEBUG CaregiverReviewStars", {
-  caregiverId,
-  canVote,
-  myRating,
-  avgRating,
-  totalVotes,
-  loading,
-  submitting
-});
   return (
     <div className="flex flex-col items-center space-y-1 mt-3 mb-2">
       <div className="flex items-center space-x-1">

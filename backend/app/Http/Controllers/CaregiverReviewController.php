@@ -27,11 +27,10 @@ class CaregiverReviewController extends Controller
     }
 
     public function put(Request $request, $caregiverId) {
-        $user = $request->user(); // Usuario autenticado (dueño)
-        $caregiver = Caregiver::findOrFail($caregiverId); // Objeto caregiver
-        $caregiverUserId = $caregiver->user_id; // user_id del cuidador
+        $user = $request->user();
+        $caregiver = Caregiver::findOrFail($caregiverId);
+        $caregiverUserId = $caregiver->user_id;
 
-        // Buscar solicitud aceptada entre cuidador y dueño actual
         $hasHadCare = RequestModel::where('sender_id', $caregiverUserId)
             ->where('receiver_id', $user->id)
             ->where('type', 'care')
@@ -49,7 +48,18 @@ class CaregiverReviewController extends Controller
             ['reviewer_id' => $user->id, 'caregiver_id' => $caregiver->id],
             ['rating' => $request->rating, 'reviewed_at' => now()]
         );
-        return response()->json(['ok' => true, 'rating' => $review->rating]);
+
+        // Devuelve misma estructura que getAll para actualizar el front de una vez
+        $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
+        $avg = $reviews->avg('rating') ?? 0;
+        $count = $reviews->count();
+        $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+
+        return response()->json([
+            'avg' => $avg,
+            'count' => $count,
+            'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
+        ]);
     }
 
     public function canBeReviewedByMe($caregiverId) {

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('receiver_id');
             $table->enum('type',['adopt','care']);
             $table->text('message')->nullable();
-            $table->enum('status',['pending','accepted','rejected'])->default('pending');
+            $table->enum('status',['pending','accepted','rejected','cancelled'])->default('pending');
             $table->text('agreement_data')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

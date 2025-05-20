@@ -93,7 +93,9 @@ class NotificationController extends Controller
         ) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
-        $request->delete();
+       
+        $request->status = 'cancelled';
+        $request->save();
         return response()->json(['ok' => true, 'cancelled' => true]);
     }
 }
