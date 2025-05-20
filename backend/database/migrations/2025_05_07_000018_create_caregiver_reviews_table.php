@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('reviewer_id');
-            $table->unsignedBigInteger('caregiver_id');
+            $table->unsignedBigInteger('caregiver_id')->nullable();
             $table->smallInteger('rating');
             $table->timestamp('reviewed_at')->useCurrent()->useCurrentOnUpdate();
             $table->unique(['reviewer_id','caregiver_id']);

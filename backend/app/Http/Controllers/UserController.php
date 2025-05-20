@@ -11,12 +11,21 @@ class UserController extends Controller
 {
     public function getAll() {
         $users = User::with('role')->get();
+        // Añadir caregiver_id a cada usuario si es cuidador
+        $users->transform(function ($user) {
+            $caregiver = Caregiver::where('user_id', $user->id)->first();
+            $user->caregiver_id = $caregiver ? $caregiver->id : null;
+            return $user;
+        });
         return response()->json($users);
     }
 
     public function getOne($userId)
     {
         $user = User::with(['role'])->findOrFail($userId);
+        // Buscar caregiver_id si existe
+        $caregiver = Caregiver::where('user_id', $user->id)->first();
+        $user->caregiver_id = $caregiver ? $caregiver->id : null;
         return response()->json($user);
     }
 
@@ -110,7 +119,10 @@ class UserController extends Controller
         
         // Cargar la relación de rol actualizada
         $user->load('role');
-        
+        // Añadir caregiver_id
+        $caregiver = Caregiver::where('user_id', $user->id)->first();
+        $user->caregiver_id = $caregiver ? $caregiver->id : null;
+
         return response()->json($user);
     }
 

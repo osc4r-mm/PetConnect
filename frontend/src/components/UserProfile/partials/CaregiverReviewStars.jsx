@@ -62,8 +62,17 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
     return STAR_EMPTY;
   };
 
+  console.log("DEBUG CaregiverReviewStars", {
+  caregiverId,
+  canVote,
+  myRating,
+  avgRating,
+  totalVotes,
+  loading,
+  submitting
+});
   return (
-    <div className="flex flex-col items-start space-y-1 mt-3 mb-2">
+    <div className="flex flex-col items-center space-y-1 mt-3 mb-2">
       <div className="flex items-center space-x-1">
         {stars.map(i => (
           <button
@@ -113,6 +122,27 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
       {canVote && !myRating && (
         <span className="text-gray-600 text-xs">Haz clic para valorar. Puedes cambiar tu voto.</span>
       )}
+      <div style={{
+        background: "#fafad2", border: "1px solid #eee", marginTop: 8, padding: 8, borderRadius: 4, fontSize: 12
+      }}>
+        <div style={{
+  background: '#fffae6',
+  border: '1px solid #ffe066',
+  margin: '8px 0',
+  padding: 8,
+  borderRadius: 4,
+  fontSize: 12
+}}>
+  <div><b>DEBUG FRONTEND:</b></div>
+  <div>caregiverId (prop): <b>{caregiverId}</b></div>
+  <div>canVote (prop): <b>{String(canVote)}</b></div>
+  <div>myRating (estado): <b>{String(myRating)}</b></div>
+  <div>avgRating (estado): <b>{String(avgRating)}</b></div>
+  <div>totalVotes (estado): <b>{String(totalVotes)}</b></div>
+  <div>loading (estado): <b>{String(loading)}</b></div>
+  <div>submitting (estado): <b>{String(submitting)}</b></div>
+</div>
+      </div>
     </div>
   );
 }

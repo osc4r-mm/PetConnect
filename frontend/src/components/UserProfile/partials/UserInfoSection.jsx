@@ -177,9 +177,9 @@ const UserInfoSection = ({ user }) => {
         )}
 
         {/* Review de cuidador: bajo nombre/email/rol */}
-        {userIsCaregiver && (
+        {userIsCaregiver && user.caregiver_id && (
           <CaregiverReviewStars
-            caregiverId={user.caregiver_id || user.id}
+            caregiverId={user.caregiver_id}
             canVote={canVote}
           />
         )}
