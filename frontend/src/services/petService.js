@@ -128,7 +128,7 @@ export const request = async (petId, formData) => {
 
 // Función para obtener la URL de imagen predeterminada para mascota
 export const getDefaultPetImageUrl = () => {
-  return 'http://localhost:8000/storage/default/default_pet.jpg';
+  return `${process.env.SERVER_URL}/storage/default/default_pet.jpg`;
 };
 
 // Función para verificar si una URL es válida
@@ -141,7 +141,7 @@ export const isValidImageUrl = (url) => {
 export const getPetImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultPetImageUrl();
   if (isValidImageUrl(imagePath)) return imagePath;
-  return `http://localhost:8000/storage/${imagePath}`;
+  return `${process.env.SERVER_URL}/storage/${imagePath}`;
 };
 
 // Obtener datos para formularios de selección
