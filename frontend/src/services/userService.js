@@ -68,7 +68,7 @@ export const deleteUser = async (id) => {
 };
 
 export const getDefaultUserImageUrl = () =>
-  `${process.env.SERVER_URL}/storage/default/default_user.jpg`;
+  `${process.env.REACT_APP_SERVER_URL}/default/default_user.jpg`;
 
 export const isValidImageUrl = (url) => {
   if (!url) return false;
@@ -77,5 +77,5 @@ export const isValidImageUrl = (url) => {
 
 export const getUserImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultUserImageUrl();
-  return `${process.env.REACT_APP_SERVER_URL}/storage/${imagePath}`;
+  return `${process.env.REACT_APP_SERVER_URL}/${imagePath}`;
 };
