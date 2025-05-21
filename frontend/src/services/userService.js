@@ -77,6 +77,5 @@ export const isValidImageUrl = (url) => {
 
 export const getUserImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultUserImageUrl();
-  if (isValidImageUrl(imagePath)) return imagePath;
-  return `${process.env.SERVER_URL}/storage/${imagePath}`;
+  return `${process.env.REACT_APP_SERVER_URL}/storage/${imagePath}`;
 };
