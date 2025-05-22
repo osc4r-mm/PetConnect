@@ -73,7 +73,7 @@ export const createPet = async (petData) => {
 // Actualizar una mascota existente
 export const updatePet = async (id, petData) => {
   try {
-    const response = await api.post(`/pet/${id}`, petData, {
+    const response = await api.put(`/pet/${id}`, petData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
