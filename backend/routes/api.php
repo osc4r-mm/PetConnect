@@ -34,6 +34,7 @@ Route::get('/user/{userId}/pets', [UserController::class, 'getPetsFromUser']);
 Route::delete('/user/{userId}', [UserController::class, 'delete']);
 
 // Rutas de cuidadores
+Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
 Route::get('/caregivers/{caregiverId}/reviews', [CaregiverReviewController::class, 'getAll']);
 
 // Rutas complementarias
@@ -65,7 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rutas de cuidadores
     Route::post('/caregivers/{userId}/become', [CaregiverController::class, 'become']);
     Route::post('/caregivers/{userId}/quit', [CaregiverController::class, 'quit']);
-    Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
     Route::put('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'put']);
     Route::delete('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'delete']);
     Route::get('/caregiver/availability', [CaregiverAvailabilityController::class, 'getMy']);
