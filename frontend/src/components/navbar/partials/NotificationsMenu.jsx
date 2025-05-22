@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getRequests, acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
 import { Bell, PawPrint, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
 const requestTypeIcon = (type) =>
   type === 'care'
@@ -14,6 +15,7 @@ const NotificationsMenu = () => {
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
   const menuRef = useRef();
+  const { user } = useAuth();
 
   // Cargar todas las notificaciones (no solo pending)
   const fetchNotifications = () => {
@@ -23,9 +25,15 @@ const NotificationsMenu = () => {
     });
   };
 
+  // 1. Cargar notificaciones al abrir el menú (ya lo tienes)
   useEffect(() => {
-    if (open) fetchNotifications();
-  }, [open]);
+    if (open && user) fetchNotifications();
+  }, [open, user]);
+
+  // 2. Cargar notificaciones al montar el componente SI hay usuario autenticado
+  useEffect(() => {
+    if (user) fetchNotifications();
+  }, [user]);
 
   // Cerrar menú al hacer clic fuera
   useEffect(() => {
@@ -77,6 +85,9 @@ const NotificationsMenu = () => {
       return <span className="ml-2 inline-block bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full text-xs font-semibold align-middle">Anulada</span>;
     return null;
   };
+
+  // Si no hay usuario, no mostrar el icono
+  if (!user) return null;
 
   return (
     <div className="relative" ref={menuRef}>
