@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import { getReviews, voteReview, canBeReviewed } from '../../../services/reviewService';
+import { getReviews, voteReview } from '../../../services/reviewService';
 
 const STAR_COLOR = '#FFD700';
 const STAR_HOVER = '#FFE066';
 const STAR_EMPTY = '#E5E7EB';
 const STAR_DISABLED = '#FDE68A';
 
-export default function CaregiverReviewStars({ caregiverId, canVote }) {
+export default function CaregiverReviewStars({ caregiverUserId, canVote }) {
   const [myRating, setMyRating] = useState(null);
   const [hoverRating, setHoverRating] = useState(0);
   const [avgRating, setAvgRating] = useState(null);
@@ -18,8 +18,7 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await getReviews(caregiverId);
-    console.log("Reviews data:", data); // <-- Añade esto
+    const data = await getReviews(caregiverUserId);
     setAvgRating(data.avg);
     setTotalVotes(data.count);
     setMyRating(data.user_review ? data.user_review.rating : null);
@@ -28,13 +27,14 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
 
   useEffect(() => {
     fetchData();
-  }, [caregiverId]);
+    // eslint-disable-next-line
+  }, [caregiverUserId]);
 
   const handleVote = async (value) => {
     if (!canVote || submitting || myRating === value) return;
     setSubmitting(true);
     try {
-      const data = await voteReview(caregiverId, value);
+      const data = await voteReview(caregiverUserId, value);
       setAvgRating(data.avg);
       setTotalVotes(data.count);
       setMyRating(data.user_review ? data.user_review.rating : null);

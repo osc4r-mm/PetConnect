@@ -15,8 +15,8 @@ class CaregiverReview extends Model
         return $this->belongsTo(User::class, 'reviewer_id');
     }
 
-    public function caregiver()
+    public function caregiverUser()
     {
-        return $this->belongsTo(Caregiver::class, 'caregiver_id')->withDefault();
+        return $this->belongsTo(User::class, 'caregiver_user_id');
     }
 }

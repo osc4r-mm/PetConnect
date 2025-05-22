@@ -3,37 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Caregiver;
+use App\Models\User;
 use App\Models\CaregiverReview;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\Auth;
 
 class CaregiverReviewController extends Controller
 {
-   public function getAll($caregiverId) {
-    $caregiver = Caregiver::findOrFail($caregiverId);
-    $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
-    $avg = $reviews->avg('rating') ?? 0;
-    $count = $reviews->count();
+    // Obtener todas las reviews y la review del usuario autenticado para un cuidador (por user_id)
+    public function getAll($caregiverUserId) {
+        $caregiver = User::where('id', $caregiverUserId)
+            ->whereHas('role', function ($q) { $q->where('name', 'caregiver'); })
+            ->firstOrFail();
 
-    $user = Auth::user();
-    $user_review = null;
-    if ($user) {
-        $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+        $reviews = CaregiverReview::where('caregiver_user_id', $caregiverUserId)->get();
+        $avg = $reviews->avg('rating') ?? 0;
+        $count = $reviews->count();
+
+        $user = Auth::user();
+        $user_review = null;
+        if ($user) {
+            $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+        }
+
+        return response()->json([
+            'avg' => $avg,
+            'count' => $count,
+            'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
+        ]);
     }
 
-    return response()->json([
-        'avg' => $avg,
-        'count' => $count,
-        'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
-    ]);
-}
-
-    public function put(Request $request, $caregiverId) {
+    // Votar o actualizar voto
+    public function put(Request $request, $caregiverUserId) {
         $user = Auth::user();
-        $caregiver = Caregiver::findOrFail($caregiverId);
-        $caregiverUserId = $caregiver->user_id;
+        $caregiver = User::where('id', $caregiverUserId)
+            ->whereHas('role', function ($q) { $q->where('name', 'caregiver'); })
+            ->firstOrFail();
 
+        // Comprobar si el usuario autenticado ha tenido cuidado con este cuidador
         $hasHadCare = RequestModel::where('sender_id', $caregiverUserId)
             ->where('receiver_id', $user->id)
             ->where('type', 'care')
@@ -48,11 +55,11 @@ class CaregiverReviewController extends Controller
 
         $request->validate(['rating' => 'required|integer|min:1|max:5']);
         $review = CaregiverReview::updateOrCreate(
-            ['reviewer_id' => $user->id, 'caregiver_id' => $caregiver->id],
+            ['reviewer_id' => $user->id, 'caregiver_user_id' => $caregiverUserId],
             ['rating' => $request->rating, 'reviewed_at' => now()]
         );
 
-        $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
+        $reviews = CaregiverReview::where('caregiver_user_id', $caregiverUserId)->get();
         $avg = $reviews->avg('rating') ?? 0;
         $count = $reviews->count();
         $user_review = $reviews->firstWhere('reviewer_id', $user->id);
@@ -64,14 +71,19 @@ class CaregiverReviewController extends Controller
         ]);
     }
 
-    public function canBeReviewedByMe($caregiverId) {
+    // Saber si el usuario autenticado puede votar a ese cuidador
+    public function canBeReviewedByMe($caregiverUserId) {
         $user = Auth::user();
-        $caregiver = Caregiver::findOrFail($caregiverId);
-        $canBeReviewed = RequestModel::where('sender_id', $caregiver->user_id)
+        $caregiver = User::where('id', $caregiverUserId)
+            ->whereHas('role', function ($q) { $q->where('name', 'caregiver'); })
+            ->firstOrFail();
+
+        $canBeReviewed = RequestModel::where('sender_id', $caregiverUserId)
             ->where('receiver_id', $user->id)
             ->where('type', 'care')
             ->where('status', 'accepted')
             ->exists();
+
         return response()->json(['canBeReviewedByMe' => $canBeReviewed]);
     }
 }
