@@ -17,7 +17,7 @@ const About = () => (
         PetConnect ha sido creada por <a className="text-purple-600 underline" href="https://github.com/osc4r-mm" target="_blank" rel="noopener noreferrer">Oscar M.M.</a> como parte de un proyecto personal con el fin de ayudar a las mascotas a encontrar un hogar o los mejores cuidados cuando sus familias lo necesitan.
       </p>
       <p className="text-gray-600">
-        ¿Tienes sugerencias o deseas colaborar? Visita nuestra página de <a href="/contacto" className="text-purple-600 underline">contacto</a>.
+        ¿Tienes sugerencias o deseas colaborar? Visita nuestra página de <a href="/contact" className="text-purple-600 underline">contacto</a>.
       </p>
     </div>
   </div>

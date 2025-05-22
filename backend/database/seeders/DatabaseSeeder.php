@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         // Create 1 admin user
         User::factory()->shelter()->create();
         // Create 500 pets with random data 
-        Pet::factory()->count(500)->create([
+        Pet::factory()->count(100)->create([
             'user_id' => User::where('role_id', Role::where('name', 'admin')->first()->id)->first()->id,
         ]);
 
