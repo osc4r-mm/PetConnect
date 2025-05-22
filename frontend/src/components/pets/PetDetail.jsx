@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Heart, PawPrint, Mars, Venus, ArrowLeft, Briefcase, Calendar
+  Heart, PawPrint, Mars, Venus,
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPet, getOwner } from '../../services/petService';
@@ -149,11 +149,6 @@ const PetDetail = () => {
 
   // Verificar si el usuario actual es el dueño (después de cargar los datos)
   const isOwner = currentUser && owner && currentUser.id === owner.id;
-  
-  const genderIsMale = pet.gender?.name?.toLowerCase() === 'macho';
-  const genderIcon = genderIsMale 
-    ? <Mars size={16} className="text-white" />
-    : <Venus size={16} className="text-white" />;
 
   // Usar directamente las propiedades como booleanos
   const isForAdoption = pet.for_adoption === true;
@@ -193,11 +188,6 @@ const PetDetail = () => {
           <div className="flex flex-col">
             <div className="flex items-center mb-3">
               <h1 className="text-3xl md:text-4xl font-bold mr-3">{pet.name}</h1>
-              {pet.gender && (
-                <div className={`p-1.5 rounded-full ${genderIsMale ? 'bg-blue-400' : 'bg-pink-400'}`}>
-                  {genderIcon}
-                </div>
-              )}
             </div>
             
             <div className="flex flex-wrap gap-2">
@@ -209,12 +199,6 @@ const PetDetail = () => {
               {pet.breed?.name && (
                 <span className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">
                   {pet.breed.name}
-                </span>
-              )}
-              {formatHelpers.age(pet.age) && (
-                <span className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm flex items-center">
-                  <Calendar size={14} className="mr-1" />
-                  {formatHelpers.age(pet.age)}
                 </span>
               )}
             </div>
@@ -234,30 +218,29 @@ const PetDetail = () => {
               onPhotosUpdate={handlePhotosUpdate}
             />
             {isOwner && !editing && (
-  <button
-    className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
-    onClick={() => setEditing(true)}
-  >
-    Editar mascota
-  </button>
-)}
+              <button
+                className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
+                onClick={() => setEditing(true)}
+              >
+                Editar mascota
+              </button>
+            )}
 
-{isOwner && editing && (
-  <EditPetForm
-    pet={pet}
-    onUpdated={updatedPet => {
-      setPet(updatedPet);
-      setEditing(false);
-    }}
-    onCancel={() => setEditing(false)}
-  />
-)}
-            
+            {isOwner && editing && (
+              <EditPetForm
+                pet={pet}
+                onUpdated={updatedPet => {
+                  setPet(updatedPet);
+                  setEditing(false);
+                }}
+                onCancel={() => setEditing(false)}
+              />
+            )}
             {/* Descripción */}
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Acerca de {pet.name}</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {pet.description || `¡Hola! Soy ${pet.name} ${genderIsMale ? 'y estoy buscando' : 'y estoy buscando'} un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme?`}
+                {pet.description || `¡Hola! Soy ${pet.name} y estoy buscando un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme?`}
               </p>
             </div>
           </div>

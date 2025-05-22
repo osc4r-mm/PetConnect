@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Mars, Venus, Calendar, Clock, 
-  VolumeX, Zap, Volume2, Ruler 
+  VolumeX, Zap, Volume2, Ruler, Weight
 } from 'lucide-react';
 
 // Componente reutilizable para características
@@ -40,6 +40,12 @@ const PetCharacteristics = ({ pet, formatHelpers }) => {
           icon={<Calendar className="text-orange-500" size={20} />}
           title="Edad"
           value={formatHelpers.age(pet.age)}
+        />
+
+        <CharacteristicItem
+          icon={<Weight className="text-gray-700" size={20} />} // No hay ícono de balanza en lucide-react
+          title="Peso"
+          value={`${pet.weight} kg`}
         />
         
         <CharacteristicItem
