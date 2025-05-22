@@ -72,32 +72,8 @@ export const createPet = async (petData) => {
 
 // Actualizar una mascota existente
 export const updatePet = async (id, petData) => {
-  const formData = new FormData();
-  
-  // Añadir método PUT a través de _method para Laravel
-  formData.append('_method', 'PUT');
-  
-  // Añadir campos de texto al FormData
-  Object.keys(petData).forEach(key => {
-    if (key !== 'profile_image' && key !== 'additional_photos') {
-      formData.append(key, petData[key]);
-    }
-  });
-  
-  // Añadir la imagen de perfil si existe
-  if (petData.profile_image) {
-    formData.append('profile_image', petData.profile_image);
-  }
-  
-  // Añadir fotos adicionales si existen
-  if (petData.additional_photos && petData.additional_photos.length > 0) {
-    petData.additional_photos.forEach(photo => {
-      formData.append('additional_photos[]', photo);
-    });
-  }
-  
   try {
-    const response = await api.post(`/pet/${id}`, formData, {
+    const response = await api.post(`/pet/${id}`, petData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
