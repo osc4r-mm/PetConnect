@@ -72,7 +72,7 @@ const PetCharacteristics = ({ pet, formatHelpers }) => {
         <CharacteristicItem
           icon={<Clock className="text-indigo-500" size={20} />}
           title="Fecha de registro"
-          value={formatHelpers.date(pet.created_at)}
+          value={formatHelpers.date(pet.registered_at)}
         />
       </div>
     </div>
