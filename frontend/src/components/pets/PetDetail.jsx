@@ -173,16 +173,6 @@ const PetDetail = () => {
       
       {/* Página de detalle */}
       <div className="container mx-auto pb-12">
-        {/* Botón para regresar */}
-        <div className="p-4">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="flex items-center text-purple-600 hover:text-purple-800"
-          >
-            <ArrowLeft size={20} className="mr-1" /> Volver
-          </button>
-        </div>
-        
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
           {/* Iconos de disponibilidad en posición absoluta */}
