@@ -122,7 +122,7 @@ class PetsController extends Controller
         ], 201);
     }
 
-    public function updatePet(Request $request, Pet $petId) {
+    public function update(Request $request, $petId) {
         $pet = Pet::findOrFail($petId);
         
         // Check if user owns this pet
@@ -143,39 +143,11 @@ class PetsController extends Controller
             'size_id' => 'nullable|exists:sizes,id',
             'activity_level_id' => 'nullable|exists:activity_levels,id',
             'noise_level_id' => 'nullable|exists:noise_levels,id',
-            'profile_image' => 'nullable|image|max:2048',
-            'additional_photos.*' => 'nullable|image|max:2048',
         ]);
         
-        $petData = $request->except('profile_image', 'additional_photos');
-        
-        // Handle profile image if provided
-        if ($request->hasFile('profile_image')) {
-            // Delete old profile image if exists
-            if ($pet->profile_path) {
-                Storage::disk('public')->delete($pet->profile_path);
-            }
-            
-            $profileImage = $request->file('profile_image');
-            $profilePath = $profileImage->store('pets/profiles', 'public');
-            $petData['profile_path'] = $profilePath;
-        }
-        
+        $petData = $request->all();
         $pet->update($petData);
-        
-        // Handle additional photos if provided
-        if ($request->hasFile('additional_photos')) {
-            foreach ($request->file('additional_photos') as $photo) {
-                $path = $photo->store('pets/photos', 'public');
-                
-                PetPhoto::create([
-                    'pet_id' => $pet->id,
-                    'image_path' => $path,
-                    'uploaded_at' => now()
-                ]);
-            }
-        }
-        
+
         return response()->json([
             'message' => 'Mascota actualizada exitosamente',
             'pet' => $pet->fresh(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel', 'photos'])

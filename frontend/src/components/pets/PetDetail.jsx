@@ -13,6 +13,7 @@ import GallerySection from './partials/GallerySection';
 import OwnerCard from './partials/OwnerCard';
 import PetCharacteristics from './partials/PetCharacteristics';
 import RequestForm from './partials/RequestForm';
+import EditPetForm from './partials/EditPetForm';
 
 // Helpers para formatear datos
 const formatHelpers = {
@@ -91,6 +92,8 @@ const PetDetail = () => {
     fetchPetAndOwner();
   }, [id]);
 
+  const [editing, setEditing] = useState(false);
+
   // Función para abrir el modal con tipo preseleccionado
   const openRequestModal = (type) => {
     console.log(`Abriendo modal para ${type}`);
@@ -155,7 +158,7 @@ const PetDetail = () => {
   // Usar directamente las propiedades como booleanos
   const isForAdoption = pet.for_adoption === true;
   const isForSitting = pet.for_sitting === true;
-
+  
   return (
     <div className="min-h-screen">
       {/* Modal de adopción/cuidado */}
@@ -240,6 +243,25 @@ const PetDetail = () => {
               petId={pet.id}
               onPhotosUpdate={handlePhotosUpdate}
             />
+            {isOwner && !editing && (
+  <button
+    className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
+    onClick={() => setEditing(true)}
+  >
+    Editar mascota
+  </button>
+)}
+
+{isOwner && editing && (
+  <EditPetForm
+    pet={pet}
+    onUpdated={updatedPet => {
+      setPet(updatedPet);
+      setEditing(false);
+    }}
+    onCancel={() => setEditing(false)}
+  />
+)}
             
             {/* Descripción */}
             <div className="mt-8">
