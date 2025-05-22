@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CaregiverReviewController extends Controller
 {
-    // app/Http/Controllers/CaregiverReviewController.php
     public function getAll($caregiverId) {
         $caregiver = Caregiver::findOrFail($caregiverId);
         $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
@@ -29,7 +28,7 @@ class CaregiverReviewController extends Controller
     }
 
     public function put(Request $request, $caregiverId) {
-        $user = $request->user();
+        $user = Auth::user();
         $caregiver = Caregiver::findOrFail($caregiverId);
         $caregiverUserId = $caregiver->user_id;
 
@@ -51,7 +50,6 @@ class CaregiverReviewController extends Controller
             ['rating' => $request->rating, 'reviewed_at' => now()]
         );
 
-        // Devuelve misma estructura que getAll para actualizar el front de una vez
         $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
         $avg = $reviews->avg('rating') ?? 0;
         $count = $reviews->count();
@@ -66,8 +64,8 @@ class CaregiverReviewController extends Controller
 
     public function canBeReviewedByMe($caregiverId) {
         $user = Auth::user();
-        $caregiver = \App\Models\Caregiver::findOrFail($caregiverId);
-        $canBeReviewed = \App\Models\Request::where('sender_id', $caregiver->user_id)
+        $caregiver = Caregiver::findOrFail($caregiverId);
+        $canBeReviewed = RequestModel::where('sender_id', $caregiver->user_id)
             ->where('receiver_id', $user->id)
             ->where('type', 'care')
             ->where('status', 'accepted')
