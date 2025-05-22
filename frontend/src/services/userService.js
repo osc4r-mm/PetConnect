@@ -82,5 +82,5 @@ export const isValidImageUrl = (url) => {
 export const getUserImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultUserImageUrl();
   if (isValidImageUrl(imagePath)) return imagePath;
-  return `/uploads/${imagePath}`;
+  return `${imagePath}`;
 };

@@ -74,14 +74,11 @@ class UserController extends Controller
 
         // Eliminar la imagen anterior si existe y no es la default
         if ($user->image && !str_contains($user->image, 'default')) {
-            $oldPath = str_replace(asset('storage/'), '', $user->image);
-            if ($oldPath) {
-                Storage::disk('public')->delete($oldPath);
-            }
+                Storage::disk('public')->delete($user->image);
         }
 
         $path = $request->file('image')->store("users/{$id}", 'public');
-        $user->image = $path; // Solo la ruta relativa
+        $user->image = $path;
         $user->save();
 
         return response()->json(['message' => 'Imagen actualizada', 'path' => $path]);
