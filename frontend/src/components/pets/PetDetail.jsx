@@ -163,6 +163,7 @@ const PetDetail = () => {
         initialType={requestType}
         isForAdoption={isForAdoption}
         isForSitting={isForSitting}
+        isCaregiverUser={isCaregiverUser}
       />
       
       {/* Página de detalle */}

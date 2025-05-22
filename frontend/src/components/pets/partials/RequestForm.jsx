@@ -33,6 +33,7 @@ const RequestForm = ({
   initialType = 'adopt',
   isForAdoption,
   isForSitting,
+  isCaregiverUser
 }) => {
   const [formData, setFormData] = useState({
     type: initialType,
@@ -225,7 +226,7 @@ const RequestForm = ({
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   {isForAdoption && <option value="adopt">Adoptar</option>}
-                  {isForSitting && <option value="care">Cuidar</option>}
+                  {isForSitting && isCaregiverUser && <option value="care">Cuidar</option>}
                 </select>
               </div>
 
