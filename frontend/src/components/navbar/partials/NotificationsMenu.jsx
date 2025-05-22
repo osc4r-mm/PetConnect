@@ -9,6 +9,24 @@ const requestTypeIcon = (type) =>
     ? <PawPrint size={16} className="inline-block text-blue-600 align-middle ml-2" />
     : <Heart size={15} className="inline-block text-pink-500 align-middle ml-2" />;
 
+// Utilidad para formatear horarios por día
+function formatSchedule(schedule) {
+  // schedule: { Monday: ["07:00", "07:15"], Friday: ["07:00", ...] }
+  if (!schedule || typeof schedule !== 'object') return null;
+  return (
+    <div className="mt-1 text-xs text-gray-700">
+      {Object.entries(schedule).map(([day, times]) => (
+        <div key={day}>
+          <span className="font-semibold">{day}:</span>{" "}
+          {Array.isArray(times) && times.length > 0
+            ? times.join(', ')
+            : <span className="text-gray-400">Sin horas</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const NotificationsMenu = () => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState('received');
@@ -142,6 +160,10 @@ const NotificationsMenu = () => {
                   }
                 </div>
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
+
+                {/* MOSTRAR HORARIOS SI ES DE CUIDADO Y TIENE SCHEDULE */}
+                {req.type === 'care' && req.schedule && formatSchedule(req.schedule)}
+
                 <div className="flex gap-2 mt-2 flex-wrap">
                   {/* SOLO mostrar los botones si está pending */}
                   {req.status === 'pending' && (
@@ -188,6 +210,8 @@ const NotificationsMenu = () => {
                   ) : "el dueño"
                 }
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
+                {/* MOSTRAR HORARIOS SI ES DE CUIDADO Y TIENE SCHEDULE */}
+                {req.type === 'care' && req.schedule && formatSchedule(req.schedule)}
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xs text-gray-400">{new Date(req.created_at).toLocaleString()}</span>
                   <span className="flex items-center">
