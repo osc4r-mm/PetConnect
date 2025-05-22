@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'wallet_balance' => $this->faker->randomFloat(2, 0, 1000),
             'latitude' => $this->faker->latitude(),
             'longitude' => $this->faker->longitude(),
-            'image' => 'uploads/default/default_user.jpg',
+            'image' => 'default/default_user.jpg',
             'remember_token' => Str::random(10),
         ];
     }
@@ -56,7 +56,7 @@ class UserFactory extends Factory
                 'age' => $this->faker->numberBetween(2, 10),
                 'description' => 'Refugio dedicado al cuidado de mascotas en adopción.',
                 'wallet_balance' => 0,
-                'image' => 'uploads/default/default_user.jpg',
+                'image' => 'default/default_user.jpg',
                 'role_id' => $adminRole?->id,
             ];
         });
