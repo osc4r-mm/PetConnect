@@ -297,6 +297,7 @@ const PetDetail = () => {
                   <OwnerCard owner={owner} />
                 </div>
               </div>
+            ))
 
             {/* Botón de editar mascota */}
             {isOwner && !editing && (
