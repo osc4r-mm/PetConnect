@@ -41,6 +41,23 @@ class NotificationController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Añadir el campo schedule (horarios) si es de tipo "care"
+        $received = $received->map(function($req) {
+            $reqArray = $req->toArray();
+            if ($req->type === 'care' && !empty($req->agreement_data)) {
+                $reqArray['schedule'] = $req->agreement_data; // ya es array por el cast
+            }
+            return $reqArray;
+        });
+
+        $sent = $sent->map(function($req) {
+            $reqArray = $req->toArray();
+            if ($req->type === 'care' && !empty($req->agreement_data)) {
+                $reqArray['schedule'] = $req->agreement_data; // ya es array por el cast
+            }
+            return $reqArray;
+        });
+
         return response()->json([
             'received' => $received,
             'sent' => $sent,

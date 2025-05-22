@@ -10,6 +10,10 @@ class Request extends Model
     public $timestamps = false;
     protected $fillable = ['id', 'pet_id', 'sender_id', 'receiver_id', 'type', 'message', 'status', 'agreement_data', 'created_at', 'updated_at'];
 
+    protected $casts = [
+        'agreement_data' => 'array',
+    ];
+    
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
