@@ -21,7 +21,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     species_id: pet.species?.id || '',
     breed_id: pet.breed?.id || '',
     size_id: pet.size?.id || '',
-    activity_level_id: pet.activity_level?.id || '',
+    activity_level_id: pet.activity_level?.name || '',
     noise_level_id: pet.noise_level?.id || '',
   });
 
