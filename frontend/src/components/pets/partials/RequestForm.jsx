@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, PawPrint, Check, X } from 'lucide-react';
 import { request } from '../../../services/petService';
 import { getAvailability, getMyAvailability } from '../../../services/availabilityService';
+import { useAuth } from '../../../context/AuthContext';
 
 // Días en español y su mapping
 const DAY_LABELS = {
@@ -41,6 +42,7 @@ const RequestForm = ({
   const [formErrors, setFormErrors] = useState({});
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
+  const { user: currentUser } = useAuth();
 
   // Disponibilidad del cuidador (usuario autenticado para "care")
   const [availability, setAvailability] = useState([]);
@@ -49,14 +51,22 @@ const RequestForm = ({
   const [selectedHour, setSelectedHour] = useState('');
 
   useEffect(() => {
-    if (formData.type === 'care') {
-      getMyAvailability().then(data => setAvailability(data ?? []));
-    } else if (formData.type === 'adopt' && pet && pet.user_id) {
-      getAvailability(pet.user_id).then(data => setAvailability(data ?? []));
+  if (formData.type === 'care') {
+    if (currentUser) {
+      getMyAvailability()
+        .then(data => setAvailability(data ?? []))
+        .catch(() => setAvailability([]));
     } else {
       setAvailability([]);
     }
-  }, [formData.type, pet]);
+  } else if (formData.type === 'adopt' && pet && pet.user_id) {
+    getAvailability(pet.user_id)
+      .then(data => setAvailability(data ?? []))
+      .catch(() => setAvailability([]));
+  } else {
+    setAvailability([]);
+  }
+}, [formData.type, pet, currentUser]);
 
   // Reiniciar el form al abrir
   useEffect(() => {
