@@ -11,16 +11,20 @@ const requestTypeIcon = (type) =>
 
 // Utilidad para formatear horarios por día
 function formatSchedule(schedule) {
-  // schedule: { Monday: ["07:00", "07:15"], Friday: ["07:00", ...] }
+  // schedule: { Monday: ["07:00", ...], ... }
   if (!schedule || typeof schedule !== 'object') return null;
+  const entries = Object.entries(schedule).filter(([day, times]) => Array.isArray(times) && times.length > 0);
+
+  if (entries.length === 0) {
+    return <div className="mt-1 text-xs text-gray-500">Sin horarios seleccionados</div>;
+  }
+
   return (
     <div className="mt-1 text-xs text-gray-700">
-      {Object.entries(schedule).map(([day, times]) => (
+      {entries.map(([day, times]) => (
         <div key={day}>
           <span className="font-semibold">{day}:</span>{" "}
-          {Array.isArray(times) && times.length > 0
-            ? times.join(', ')
-            : <span className="text-gray-400">Sin horas</span>}
+          {times.join(', ')}
         </div>
       ))}
     </div>
