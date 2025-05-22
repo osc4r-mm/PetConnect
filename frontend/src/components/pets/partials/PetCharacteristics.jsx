@@ -53,20 +53,20 @@ const PetCharacteristics = ({ pet, formatHelpers }) => {
           title="Tamaño"
           value={pet.size?.name}
         />
-        
+                
         <CharacteristicItem
           icon={<Zap className="text-yellow-500" size={20} />}
           title="Nivel de actividad"
-          value={pet.activityLevel?.name}
+          value={pet.activity_level?.name}
         />
-        
+
         <CharacteristicItem
-          icon={pet.noiseLevel?.id === 1 
+          icon={pet.noise_level?.id === 1 
             ? <VolumeX className="text-green-500" size={20} />
             : <Volume2 className="text-red-500" size={20} />
           }
           title="Nivel de ruido"
-          value={pet.noiseLevel?.name}
+          value={pet.noise_level?.name}
         />
         
         <CharacteristicItem
