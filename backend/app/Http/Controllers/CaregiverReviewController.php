@@ -7,27 +7,33 @@ use App\Models\Caregiver;
 use App\Models\CaregiverReview;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class CaregiverReviewController extends Controller
 {
-    public function getAll($caregiverId) {
-        $caregiver = Caregiver::findOrFail($caregiverId);
-        $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
-        $avg = $reviews->avg('rating') ?? 0;
-        $count = $reviews->count();
-        $user_review = null;
-        $user = Auth::user();
-        if ($user) {
-            $user_review = CaregiverReview::where('caregiver_id', $caregiverId)
-                ->where('reviewer_id', $user->id)
-                ->first();
-        }
-        return response()->json([
-            'avg' => $avg,
-            'count' => $count,
-            'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
-        ]);
+   public function getAll($caregiverId) {
+    $caregiver = Caregiver::findOrFail($caregiverId);
+    $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
+    $avg = $reviews->avg('rating') ?? 0;
+    $count = $reviews->count();
+
+    $user = Auth::user();
+    $user_review = null;
+Log::info('Caregiver id recibido:', [$caregiverId]);
+Log::info('Usuario logueado:', [$user ? $user->id : null]);
+Log::info('Reviews:', $reviews->toArray());
+Log::info('User review encontrado:', [$user_review]);
+    if ($user) {
+        $user_review = $reviews->firstWhere('reviewer_id', $user->id);
     }
+
+    return response()->json([
+        'avg' => $avg,
+        'count' => $count,
+        'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
+    ]);
+}
 
     public function put(Request $request, $caregiverId) {
         $user = Auth::user();

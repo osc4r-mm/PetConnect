@@ -193,7 +193,7 @@ const UserInfoSection = ({ user }) => {
         {/* Review de cuidador: bajo nombre/email/rol */}
         {userIsCaregiver && (
           <CaregiverReviewStars
-            caregiverId={user.caregiver.id}
+            caregiverId={user.caregiver?.id}
             canVote={canVote}
           />
         )}
