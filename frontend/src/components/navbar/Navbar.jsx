@@ -1,7 +1,7 @@
 // src/components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut } from 'lucide-react';
 import NotificationsMenu from './partials/NotificationsMenu';
 import { getUserImageUrl } from '../../services/userService';
 import { useAuth } from '../../context/AuthContext';
@@ -102,8 +102,11 @@ export default function Navbar() {
                     id="avatar-button"
                     onClick={() => setIsDropdownOpen(o => !o)}
                     className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
-                  >
+                  >                      <div>
+  Ruta: <b>{user.image}</b>
+</div>
                     <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+
                       <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
                     </div>
                     <span>{user.name}</span>

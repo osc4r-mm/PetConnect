@@ -8,10 +8,13 @@ const OwnerCard = ({ owner }) => {
   
   return (
     <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm p-2 hover:scale-105 transition-transform duration-200 cursor-pointer">
-      {/* Foto de perfil */}
+      {/* Foto de perfil */}          <div>
+  Ruta: <b>{owner.image}</b>
+</div>
       <div className="flex-shrink-0 mr-3">
         <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100">
           <span>{owner.image}</span>
+
             <img src={getUserImageUrl(owner.image)} alt="Perfil" className="w-full h-full object-cover" />
         </div>
       </div>
