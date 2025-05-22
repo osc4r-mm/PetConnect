@@ -130,7 +130,7 @@ const NotificationsMenu = () => {
                     ? (
                       <span>
                         <Link
-                          to={`/profile/${req.sender.id}`}
+                          to={`/user/${req.sender.id}`}
                           className="text-green-700 hover:underline font-bold"
                           onClick={() => setOpen(false)}
                         >
@@ -179,7 +179,7 @@ const NotificationsMenu = () => {
                 Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link
-                      to={`/profile/${req.receiver.id}`}
+                      to={`/user/${req.receiver.id}`}
                       className="text-green-700 hover:underline font-bold"
                       onClick={() => setOpen(false)}
                     >
