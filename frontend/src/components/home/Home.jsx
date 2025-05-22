@@ -5,9 +5,17 @@ import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels
 import { LoadingScreen, NotFoundData } from '../Util';
 import FilterSection from './partials/FilterSection';
 
+{/* Guardar filtros y ahorrar en la carga */}
+const FILTERS_KEY = 'pet_filters';
+const SORT_KEY = 'pet_sort';
+function loadFilters() { try { return JSON.parse(localStorage.getItem(FILTERS_KEY)) || null; } catch { return null; } }
+function saveFilters(f) { localStorage.setItem(FILTERS_KEY, JSON.stringify(f)); }
+function loadSort() { try { return JSON.parse(localStorage.getItem(SORT_KEY)) || null; } catch { return null; } }
+function saveSort(s) { localStorage.setItem(SORT_KEY, JSON.stringify(s)); }
+
 export default function Home() {
+  
   const [showFilters, setShowFilters] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [animatingCards, setAnimatingCards] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -23,11 +31,13 @@ export default function Home() {
   const [activityList, setActivityList] = useState([]);
   const [noiseList, setNoiseList] = useState([]);
 
-  const [filters, setFilters] = useState({
+  const defaultFilters = {
     name: '', age_min: '', age_max: '', weight_min: '', weight_max: '',
     gender_id: '', for_adoption: true, for_sitting: true,
     species_id: '', breed_id: '', size_id: '', activity_level_id: '', noise_level_id: ''
-  });
+  };
+  const [filters, setFilters] = useState(() => loadFilters() || defaultFilters);
+  const [sortConfig, setSortConfig] = useState(() => loadSort() || { key: null, direction: 'asc' });
 
   useEffect(() => {
     getSpecies().then(setSpeciesList);
@@ -54,37 +64,43 @@ export default function Home() {
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
-    
-    if (name === 'species_id') {
-      const newSpeciesId = value;
-      if (filters.breed_id) {
-        const currentBreed = breedList.find(b => b.id === Number(filters.breed_id));
-        if (newSpeciesId === '' || (currentBreed && currentBreed.species_id !== Number(newSpeciesId))) {
-          setAnimatingCards(true);
-          setFilters(prev => ({ 
-            ...prev, 
-            [name]: value,
-            breed_id: ''
-          }));
-          setPage(1);
-          setTimeout(() => setAnimatingCards(false), 300);
-          return;
-        }
+
+    // Si cambias de especie y la raza seleccionada no es válida para la especie, resetea la raza
+    let newFilters;
+    if (name === 'species_id' && filters.breed_id) {
+      const currentBreed = breedList.find(b => b.id === Number(filters.breed_id));
+      if (value === '' || (currentBreed && currentBreed.species_id !== Number(value))) {
+        setAnimatingCards(true);
+        newFilters = { 
+          ...filters, 
+          [name]: value, 
+          breed_id: ''
+        };
+        setFilters(newFilters);
+        saveFilters(newFilters);
+        setPage(1);
+        setTimeout(() => setAnimatingCards(false), 300);
+        return;
       }
     }
-    
+
+    newFilters = { ...filters, [name]: type === 'checkbox' ? checked : value };
     setAnimatingCards(true);
-    setFilters(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setFilters(newFilters);
+    saveFilters(newFilters);
     setPage(1);
     setTimeout(() => setAnimatingCards(false), 300);
   };
 
   const handleSort = key => {
     const direction = (sortConfig.key === key && sortConfig.direction === 'asc') ? 'desc' : 'asc';
+    const newSort = { key, direction };
     setAnimatingCards(true);
-    setSortConfig({ key, direction });
+    setSortConfig(newSort);
+    saveSort(newSort);
     setTimeout(() => setAnimatingCards(false), 300);
   };
+
 
   const renderSortButton = (field, label) => {
     const isActive = sortConfig.key === field;
@@ -94,6 +110,12 @@ export default function Home() {
         {isActive ? (isAsc ? <SortAsc size={18}/> : <SortDesc size={18}/>) : <SortAsc size={16} className="opacity-70" />}
       </button>
     );
+  };
+  
+  const clearFilters = () => {
+    setFilters(defaultFilters);
+    saveFilters(defaultFilters);
+    setPage(1);
   };
 
   return (
@@ -116,11 +138,7 @@ export default function Home() {
       ) : error ? (
         <NotFoundData />
       ) : pets.length === 0 ? (
-        <NoResults onReset={() => setFilters({
-          name: '', age_min: '', age_max: '', weight_min: '', weight_max: '',
-          for_adoption: true, for_sitting: true,
-          species_id: '', breed_id: '', size_id: '', activity_level_id: '', noise_level_id: ''
-        })} />
+        <NoResults onReset={clearFilters} />
       ) : (
         <div className='p-1'>
           {/* Pagination arriba */}
@@ -229,10 +247,10 @@ function Tag({ label }) {
   return <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{label}</span>;
 }
 
-const NoResults = ({ onReset }) => (
+const NoResults = ({ clearFilters }) => (
   <div className="text-center py-8">
     <p className="text-gray-500 text-lg">No se encontraron mascotas.</p>
     <p className="text-gray-500 text-md">Prueba a limpiar los filtros</p>
-    <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
+    <button onClick={clearFilters} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
   </div>
 );
