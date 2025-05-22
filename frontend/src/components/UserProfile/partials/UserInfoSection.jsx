@@ -29,8 +29,8 @@ const UserInfoSection = ({ user }) => {
   useEffect(() => {
     let mounted = true;
     // Solo consulta si el user es cuidador y no es tu propio perfil
-    if (userIsCaregiver && !isOwnProfile && user.caregiver.id) {
-      api.get(`/caregivers/${user.caregiver.id}/can_be_reviewed`)
+    if (userIsCaregiver && !isOwnProfile && user.caregiver_id) {
+      api.get(`/caregivers/${user.caregiver_id}/can_be_reviewed`)
         .then(res => {
           if (mounted) setCanVote(res.data.canBeReviewedByMe);
         })
@@ -41,7 +41,7 @@ const UserInfoSection = ({ user }) => {
       setCanVote(false);
     }
     return () => { mounted = false; }
-  }, [userIsCaregiver, isOwnProfile, user.caregiver.id]);
+  }, [userIsCaregiver, isOwnProfile, user.caregiver_id]);
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
@@ -193,7 +193,7 @@ const UserInfoSection = ({ user }) => {
         {/* Review de cuidador: bajo nombre/email/rol */}
         {userIsCaregiver && (
           <CaregiverReviewStars
-            caregiverId={user.caregiver?.id}
+            caregiverId={user.caregiver_id}
             canVote={canVote}
           />
         )}
