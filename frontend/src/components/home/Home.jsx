@@ -5,7 +5,7 @@ import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels
 import { LoadingScreen, NotFoundData } from '../Util';
 import FilterSection from './partials/FilterSection';
 
-{/* Guardar filtros y ahorrar en la carga */}
+/* Guardar filtros y ahorrar en la carga */
 const FILTERS_KEY = 'pet_filters';
 const SORT_KEY = 'pet_sort';
 function loadFilters() { try { return JSON.parse(localStorage.getItem(FILTERS_KEY)) || null; } catch { return null; } }
@@ -84,7 +84,14 @@ export default function Home() {
         saveMetaList('noiseList', data);
       });
     }
-  }, []);
+  }, [
+    speciesList.length,
+    breedList.length,
+    genderList.length,
+    sizeList.length,
+    activityList.length,
+    noiseList.length
+  ]);
 
   useEffect(() => {
     setLoading(true);
