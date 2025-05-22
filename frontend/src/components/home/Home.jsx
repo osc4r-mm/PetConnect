@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, SortAsc, SortDesc, Heart, PawPrint, Award, VolumeX, Zap, Volume2, Ruler, Mars, Venus } from 'lucide-react';
+import { SortAsc, SortDesc, Heart, PawPrint, Mars, Venus } from 'lucide-react';
 import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels, getNoiseLevels, getPetImageUrl } from '../../services/petService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import FilterSection from './partials/FilterSection';
@@ -95,10 +95,6 @@ export default function Home() {
       </button>
     );
   };
-
-  const filteredBreeds = filters.species_id
-    ? breedList.filter(b => b.species_id === Number(filters.species_id))
-    : breedList;
 
   return (
     <div className="flex flex-col h-full p-6">

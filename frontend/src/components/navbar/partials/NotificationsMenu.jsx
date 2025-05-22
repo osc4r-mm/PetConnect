@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getRequests, acceptRequest, rejectRequest, cancelRequest } from '../../../services/requestService';
-import { Bell, Check, X, PawPrint, Heart } from 'lucide-react';
+import { Bell, PawPrint, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const requestTypeIcon = (type) =>

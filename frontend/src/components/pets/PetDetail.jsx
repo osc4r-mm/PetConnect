@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Heart, PawPrint, Mars, Venus,
+  Heart, PawPrint
 } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getPet, getOwner } from '../../services/petService';
 import { isCaregiver } from '../../services/caregiverService';
 import { LoadingScreen, NotFoundData } from '../Util';
@@ -53,7 +53,6 @@ const formatHelpers = {
 // Componente principal
 const PetDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   
   const [pet, setPet] = useState(null);
@@ -229,80 +228,83 @@ const PetDetail = () => {
           
           {/* Columna derecha: características y botones */}
           <div className="md:col-span-1">
-            {/* Características */}
-            <PetCharacteristics pet={pet} formatHelpers={formatHelpers} />
             
-            {/* Botones de acción - MODIFICADOS PARA ASEGURAR VISIBILIDAD */}
-            <div className="mt-8 space-y-4">
-              {/* IMPORTANTE: Mostramos los botones si el usuario está conectado y no es el dueño */}
-              {currentUser && !isOwner && (
-                <>
-                  {/* Botón de adopción */}
-                  {isForAdoption && (
-                    <button
-                      onClick={() => openRequestModal('adopt')}
-                      className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center"
-                    >
-                      <Heart size={18} className="mr-2" /> Solicitar adopción
-                    </button>
-                  )}
-                  
-                  {/* Botón de cuidado */}
-                  {isForSitting && (
-                    <button
-                      onClick={() => openRequestModal('care')}
-                      className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-                      disabled={!isCaregiverUser}
-                      title={
-                        !isCaregiverUser
-                          ? "Debes ser cuidador para solicitar cuidado"
-                          : ""
-                      }
-                    >
-                      <PawPrint size={18} className="mr-2" /> Solicitar cuidado
-                    </button>
-                  )}
-                  {isForSitting && !isCaregiverUser && currentUser && (
-                    <div className="text-xs text-blue-700 text-center">
-                      Debes ser cuidador para solicitar cuidado
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Si el usuario no está conectado pero la mascota está disponible */}
-              {!currentUser && (isForAdoption || isForSitting) && (
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-                  <p className="text-yellow-700">
-                    Debes iniciar sesión para solicitar adopción o cuidado
-                  </p>
-                </div>
-              )}
-
-              {/* Si el usuario es el dueño */}
-              {currentUser && isOwner && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-                  <p className="text-blue-700">
-                    Esta es tu mascota
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            {/* Sección del dueño */}
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-3">Contactar con el dueño</h3>
-              <OwnerCard owner={owner} />
-            </div>
 
             {/* Botón de editar mascota */}
             {isOwner && !editing && (
-              <button
-                className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
-                onClick={() => setEditing(true)}
-              >
-                Editar mascota
-              </button>
+              <div>
+                {/* Características */}
+                <PetCharacteristics pet={pet} formatHelpers={formatHelpers} />
+                
+                {/* Botones de acción - MODIFICADOS PARA ASEGURAR VISIBILIDAD */}
+                <div className="mt-8 space-y-4">
+                  {/* IMPORTANTE: Mostramos los botones si el usuario está conectado y no es el dueño */}
+                  {currentUser && !isOwner && (
+                    <>
+                      {/* Botón de adopción */}
+                      {isForAdoption && (
+                        <button
+                          onClick={() => openRequestModal('adopt')}
+                          className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center"
+                        >
+                          <Heart size={18} className="mr-2" /> Solicitar adopción
+                        </button>
+                      )}
+                      
+                      {/* Botón de cuidado */}
+                      {isForSitting && (
+                        <button
+                          onClick={() => openRequestModal('care')}
+                          className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                          disabled={!isCaregiverUser}
+                          title={
+                            !isCaregiverUser
+                              ? "Debes ser cuidador para solicitar cuidado"
+                              : ""
+                          }
+                        >
+                          <PawPrint size={18} className="mr-2" /> Solicitar cuidado
+                        </button>
+                      )}
+                      {isForSitting && !isCaregiverUser && currentUser && (
+                        <div className="text-xs text-blue-700 text-center">
+                          Debes ser cuidador para solicitar cuidado
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Si el usuario no está conectado pero la mascota está disponible */}
+                  {!currentUser && (isForAdoption || isForSitting) && (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                      <p className="text-yellow-700">
+                        Debes iniciar sesión para solicitar adopción o cuidado
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Si el usuario es el dueño */}
+                  {currentUser && isOwner && (
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                      <p className="text-blue-700">
+                        Esta es tu mascota
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Sección del dueño */}
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-3">Contactar con el dueño</h3>
+                  <OwnerCard owner={owner} />
+                </div>
+                <button
+                  className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
+                  onClick={() => setEditing(true)}
+                >
+                  Editar mascota
+                </button>
+              </div>
             )}
             {isOwner && editing && (
               <EditPetForm

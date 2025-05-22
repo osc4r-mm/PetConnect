@@ -36,7 +36,6 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   const { user: currentUser } = useAuth();
   const [availability, setAvailability] = useState([]);
   const [walks, setWalks] = useState({});
-  const [rawRequests, setRawRequests] = useState([]); // <--- For debugging
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(null);
   const [selectionEnd, setSelectionEnd] = useState(null);
@@ -76,8 +75,6 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
           api.get(`/user/${targetId}/requests?type=care`)
         ]);
         setAvailability(data);
-
-        setRawRequests(walksResp.data.requests || []);
 
         // Solo paseos aceptados para el USUARIO DEL PERFIL (targetId)
         const walksMap = {};

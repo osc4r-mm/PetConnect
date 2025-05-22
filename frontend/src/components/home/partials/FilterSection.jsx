@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronUp, SortAsc, SortDesc } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function FilterSection({
   showFilters,
