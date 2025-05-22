@@ -228,10 +228,7 @@ const PetDetail = () => {
           
           {/* Columna derecha: características y botones */}
           <div className="md:col-span-1">
-            
-
-            {/* Botón de editar mascota */}
-            {isOwner && !editing && (
+            (!editing && (
               <div>
                 {/* Características */}
                 <PetCharacteristics pet={pet} formatHelpers={formatHelpers} />
@@ -298,13 +295,17 @@ const PetDetail = () => {
                   <h3 className="text-lg font-medium mb-3">Contactar con el dueño</h3>
                   <OwnerCard owner={owner} />
                 </div>
+              </div>
+            )
+
+            {/* Botón de editar mascota */}
+            {isOwner && !editing && (
                 <button
                   className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
                   onClick={() => setEditing(true)}
                 >
                   Editar mascota
                 </button>
-              </div>
             )}
             {isOwner && editing && (
               <EditPetForm
