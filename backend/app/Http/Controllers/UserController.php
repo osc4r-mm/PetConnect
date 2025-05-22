@@ -84,7 +84,7 @@ class UserController extends Controller
         $user->image = $path; // Solo la ruta relativa
         $user->save();
 
-        return response()->json(['message' => 'Imagen actualizada', 'path' => asset("storage/{$path}")]);
+        return response()->json(['message' => 'Imagen actualizada', 'path' => $path]);
     }
 
      public function becomeCaregiver($userId) {

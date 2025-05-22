@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('wallet_balance',10,2)->default(0);
             $table->decimal('latitude', 10, 6)->nullable();
             $table->decimal('longitude', 10, 6)->nullable();
-            $table->string('image')->after('id')->default('storage/default/default_user.jpg');
+            $table->string('image')->after('id')->default('uploads/default/default_user.jpg');
 
             $table->foreign('gender_id')->references('id')->on('genders')->onDelete('restrict');
         });
