@@ -17,13 +17,14 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
   const stars = [1, 2, 3, 4, 5];
 
   const fetchData = async () => {
-    setLoading(true);
-    const data = await getReviews(caregiverId);
-    setAvgRating(data.avg);
-    setTotalVotes(data.count);
-    setMyRating(data.user_review ? data.user_review.rating : null);
-    setLoading(false);
-  };
+  setLoading(true);
+  const data = await getReviews(caregiverId);
+  console.log("Reviews data:", data); // <-- Añade esto
+  setAvgRating(data.avg);
+  setTotalVotes(data.count);
+  setMyRating(data.user_review ? data.user_review.rating : null);
+  setLoading(false);
+};
 
   useEffect(() => {
     fetchData();
