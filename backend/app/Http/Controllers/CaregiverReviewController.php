@@ -18,7 +18,9 @@ class CaregiverReviewController extends Controller
         $user_review = null;
         $user = Auth::user();
         if ($user) {
-            $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+            $user_review = CaregiverReview::where('caregiver_id', $caregiverId)
+                ->where('reviewer_id', $user->id)
+                ->first();
         }
         return response()->json([
             'avg' => $avg,
