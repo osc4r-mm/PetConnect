@@ -103,7 +103,9 @@ export default function Navbar() {
                     onClick={() => setIsDropdownOpen(o => !o)}
                     className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
                   >
-                    <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
+                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                      <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
+                    </div>
                     <span>{user.name}</span>
                     <ChevronDown size={16} className="text-gray-500" />
                   </button>
@@ -191,7 +193,9 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <div className="flex items-center px-4">
-                  <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
+                  <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                    <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
+                  </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-gray-800">{user.name}</div>
                     <div className="text-sm font-medium text-gray-500">{user.email}</div>
