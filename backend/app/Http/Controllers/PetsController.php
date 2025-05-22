@@ -196,20 +196,14 @@ class PetsController extends Controller
 
         // Eliminar la imagen anterior si existe y no es la default
         if ($pet->profile_path && !str_contains($pet->profile_path, 'placeholder')) {
-            // Extraer la ruta relativa de la URL completa
-            $oldPath = str_replace(asset('storage/'), '', $pet->profile_path);
-            if ($oldPath) {
-                Storage::disk('public')->delete($oldPath);
-            }
+            Storage::disk('public')->delete($pet->profile_path);
         }
 
         $path = $request->file('image')->store("pets/{$request->pet_id}", 'public');
-        
-        // Actualizar la mascota solo con el campo profile_path
-        $pet->profile_path = asset("storage/{$path}");
+        $pet->profile_path = $path;
         $pet->save();
 
-        return response()->json(['message' => 'Thumbnail uploaded', 'path' => asset("storage/{$path}")]);
+        return response()->json(['message' => 'Thumbnail uploaded', 'path' => $path]);
     }
 
     public function uploadExtraPhoto(Request $request, $petId) {
@@ -224,17 +218,16 @@ class PetsController extends Controller
         }
 
         $path = $request->file('image')->store("pets/{$petId}/extras", 'public');
-        
-        // Crear registro de la nueva foto
+
         $photo = new PetPhoto();
         $photo->pet_id = $petId;
-        $photo->image_path = asset("storage/{$path}");
+        $photo->image_path = $path;
         $photo->uploaded_at = now();
         $photo->save();
 
         return response()->json([
-            'message' => 'Extra photo uploaded', 
-            'path' => asset("storage/{$path}"),
+            'message' => 'Extra photo uploaded',
+            'path' => $path,
             'photo_id' => $photo->id
         ]);
     }

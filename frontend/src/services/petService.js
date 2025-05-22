@@ -128,19 +128,23 @@ export const request = async (petId, formData) => {
 
 // Función para obtener la URL de imagen predeterminada para mascota
 export const getDefaultPetImageUrl = () => {
-  return `${process.env.SERVER_URL || ''}/uploads/default/default_pet.jpg`;
+  return `/uploads/default/default_pet.jpg`;
 };
 
 // Función para verificar si una URL es válida
 export const isValidImageUrl = (url) => {
   if (!url) return false;
-  return url.startsWith('http://') || url.startsWith('https://');
+  return (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('/uploads/')
+  );
 };
 
-// Función para obtener la URL de imagen para una mascota (con fallback)
 export const getPetImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultPetImageUrl();
-  return `${process.env.SERVER_URL || ''}/uploads/${imagePath}`;
+  if (isValidImageUrl(imagePath)) return imagePath;
+  return `/uploads/${imagePath}`;
 };
 
 // Obtener datos para formularios de selección
