@@ -20,8 +20,8 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef(null);
+  const debounceRef = useRef();
   const dropdownRef = useRef(null);
-  let debounce;
 
   // Cada vez que cambie `position`, movemos el mapa
   useEffect(() => {
@@ -45,10 +45,10 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
 
   // Busqueda
   useEffect(() => {
-    clearTimeout(debounce);
+    clearTimeout(debounceRef.current);
     if (searchTerm.length >= 2) {
       setIsSearching(true);
-      debounce = setTimeout(async () => {
+      debounceRef.current = setTimeout(async () => {
         const cities = await searchCities(searchTerm);
         setSearchResults(cities);
         setShowDropdown(cities.length > 0);
@@ -58,7 +58,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
       setShowDropdown(false);
       setSearchResults([]);
     }
-    return () => clearTimeout(debounce);
+    return () => clearTimeout(debounceRef.current);
   }, [searchTerm]);
 
   function MapEventsHandler() {
