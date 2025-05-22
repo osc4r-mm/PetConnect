@@ -12,6 +12,14 @@ function loadFilters() { try { return JSON.parse(localStorage.getItem(FILTERS_KE
 function saveFilters(f) { localStorage.setItem(FILTERS_KEY, JSON.stringify(f)); }
 function loadSort() { try { return JSON.parse(localStorage.getItem(SORT_KEY)) || null; } catch { return null; } }
 function saveSort(s) { localStorage.setItem(SORT_KEY, JSON.stringify(s)); }
+function loadMetaList(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || null;
+  } catch { return null; }
+}
+function saveMetaList(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
 export default function Home() {
   
@@ -24,12 +32,12 @@ export default function Home() {
   const [lastPage, setLastPage] = useState(1);
 
   // meta data lists fetched from API
-  const [speciesList, setSpeciesList] = useState([]);
-  const [breedList, setBreedList] = useState([]);
-  const [genderList, setGenderList] = useState([]);
-  const [sizeList, setSizeList] = useState([]);
-  const [activityList, setActivityList] = useState([]);
-  const [noiseList, setNoiseList] = useState([]);
+  const [speciesList, setSpeciesList] = useState(() => loadMetaList('speciesList') || []);
+  const [breedList, setBreedList] = useState(() => loadMetaList('breedList') || []);
+  const [genderList, setGenderList] = useState(() => loadMetaList('genderList') || []);
+  const [sizeList, setSizeList] = useState(() => loadMetaList('sizeList') || []);
+  const [activityList, setActivityList] = useState(() => loadMetaList('activityList') || []);
+  const [noiseList, setNoiseList] = useState(() => loadMetaList('noiseList') || []);
 
   const defaultFilters = {
     name: '', age_min: '', age_max: '', weight_min: '', weight_max: '',
@@ -40,12 +48,42 @@ export default function Home() {
   const [sortConfig, setSortConfig] = useState(() => loadSort() || { key: null, direction: 'asc' });
 
   useEffect(() => {
-    getSpecies().then(setSpeciesList);
-    getBreeds().then(setBreedList);
-    getGenders().then(setGenderList);
-    getSizes().then(setSizeList);
-    getActivityLevels().then(setActivityList);
-    getNoiseLevels().then(setNoiseList);
+    if (speciesList.length === 0) {
+      getSpecies().then(data => {
+        setSpeciesList(data);
+        saveMetaList('speciesList', data);
+      });
+    }
+    if (breedList.length === 0) {
+      getBreeds().then(data => {
+        setBreedList(data);
+        saveMetaList('breedList', data);
+      });
+    }
+    if (genderList.length === 0) {
+      getGenders().then(data => {
+        setGenderList(data);
+        saveMetaList('genderList', data);
+      });
+    }
+    if (sizeList.length === 0) {
+      getSizes().then(data => {
+        setSizeList(data);
+        saveMetaList('sizeList', data);
+      });
+    }
+    if (activityList.length === 0) {
+      getActivityLevels().then(data => {
+        setActivityList(data);
+        saveMetaList('activityList', data);
+      });
+    }
+    if (noiseList.length === 0) {
+      getNoiseLevels().then(data => {
+        setNoiseList(data);
+        saveMetaList('noiseList', data);
+      });
+    }
   }, []);
 
   useEffect(() => {
