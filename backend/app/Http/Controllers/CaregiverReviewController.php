@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Caregiver;
 use App\Models\CaregiverReview;
 use App\Models\Request as RequestModel;
+use Illuminate\Support\Facades\Auth;
 
 class CaregiverReviewController extends Controller
 {
@@ -16,8 +17,9 @@ class CaregiverReviewController extends Controller
         $avg = $reviews->avg('rating') ?? 0;
         $count = $reviews->count();
         $user_review = null;
-        if (auth('sanctum')->user()) {
-            $user_review = $reviews->firstWhere('reviewer_id', auth()->id());
+        $user = Auth::user();
+        if ($user) {
+            $user_review = $reviews->firstWhere('reviewer_id', $user->id);
         }
         return response()->json([
             'avg' => $avg,
@@ -63,7 +65,7 @@ class CaregiverReviewController extends Controller
     }
 
     public function canBeReviewedByMe($caregiverId) {
-        $user = auth()->user();
+        $user = Auth::user();
         $caregiver = \App\Models\Caregiver::findOrFail($caregiverId);
         $canBeReviewed = \App\Models\Request::where('sender_id', $caregiver->user_id)
             ->where('receiver_id', $user->id)
