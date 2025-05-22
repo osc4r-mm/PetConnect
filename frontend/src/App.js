@@ -1,8 +1,9 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import CookiesModal, { isCookiesAccepted } from './components/cookies/CookiesModal';
 import { LoadingScreen } from './components/Util';
 import Login     from './components/auth/Login';
 import Register  from './components/auth/Register';
@@ -32,6 +33,18 @@ function GuestRoute() {
 }
 
 export default function App() {
+  const [showCookies, setShowCookies] = useState(false);
+
+  // Mostrar el modal si NO está aceptado o expirado
+  useEffect(() => {
+    setShowCookies(!isCookiesAccepted());
+  }, []);
+
+  // Cada vez que se acepta, ocultar modal y actualizar expiración
+  const handleCookiesAccept = () => {
+    setShowCookies(false);
+  };
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -63,6 +76,7 @@ export default function App() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          {showCookies && <CookiesModal onAccept={handleCookiesAccept} />}
           </main>
         </div>
       </BrowserRouter>
