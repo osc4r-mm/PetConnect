@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('caregiver_user_id');
             $table->smallInteger('rating');
             $table->timestamp('reviewed_at')->useCurrent()->useCurrentOnUpdate();
-            $table->unique(['reviewer_id','caregiver_user_id']);
+            $table->unique(['reviewer_id','caregiver_id']);
             $table->foreign('reviewer_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('caregiver_user_id')->references('id')->on('users')->onDelete('cascade');
         });
