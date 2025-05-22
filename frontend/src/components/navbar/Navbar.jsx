@@ -47,17 +47,6 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  // Avatar por defecto si no hay imagen
-  const renderAvatar = () => (
-    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-    {user && user.image ? (
-      <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
-    ) : (
-      <User size={20} className="text-gray-600" />
-    )}
-  </div>
-  );
-
   // Mientras carga auth
   if (loading) {
     return (
@@ -114,7 +103,7 @@ export default function Navbar() {
                     onClick={() => setIsDropdownOpen(o => !o)}
                     className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
                   >
-                    {renderAvatar()}
+                    <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
                     <span>{user.name}</span>
                     <ChevronDown size={16} className="text-gray-500" />
                   </button>
@@ -202,7 +191,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <div className="flex items-center px-4">
-                  {renderAvatar()}
+                  <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
                   <div className="ml-3">
                     <div className="text-base font-medium text-gray-800">{user.name}</div>
                     <div className="text-sm font-medium text-gray-500">{user.email}</div>
