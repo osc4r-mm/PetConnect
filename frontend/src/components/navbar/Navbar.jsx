@@ -53,7 +53,7 @@ export default function Navbar() {
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center">
           <Link to="/" className="text-xl font-bold text-green-600">
-            <img src="/uploads/img/logo.png" alt="" />
+            <img src="/uploads/default/logo.png" alt="" />
           </Link>
         </div>
       </nav>
@@ -67,7 +67,7 @@ export default function Navbar() {
           {/* Logo + enlaces desktop */}
           <div className="flex">
             <Link to="/" className="self-center text-xl font-bold text-green-600">
-              <img className="h-12 w-auto" src="/uploads/img/logo.png" alt="" />
+              <img className="h-12 w-auto" src="/uploads/default/logo.png" alt="" />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {['/', '/about', '/contact'].map((path, idx) => {
