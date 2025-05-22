@@ -9,11 +9,19 @@ const requestTypeIcon = (type) =>
     ? <PawPrint size={16} className="inline-block text-blue-600 align-middle ml-2" />
     : <Heart size={15} className="inline-block text-pink-500 align-middle ml-2" />;
 
-// Utilidad para formatear horarios por día
+const weekDays = {
+  0: "Lunes",
+  1: "Martes",
+  2: "Miércoles",
+  3: "Jueves",
+  4: "Viernes",
+  5: "Sábado",
+  6: "Domingo"
+};
+
 function formatSchedule(schedule) {
-  // schedule: { Monday: ["07:00", ...], ... }
   if (!schedule || typeof schedule !== 'object') return null;
-  const entries = Object.entries(schedule).filter(([day, times]) => Array.isArray(times) && times.length > 0);
+  const entries = Object.entries(schedule).filter(([_, times]) => Array.isArray(times) && times.length > 0);
 
   if (entries.length === 0) {
     return <div className="mt-1 text-xs text-gray-500">Sin horarios seleccionados</div>;
@@ -23,7 +31,7 @@ function formatSchedule(schedule) {
     <div className="mt-1 text-xs text-gray-700">
       {entries.map(([day, times]) => (
         <div key={day}>
-          <span className="font-semibold">{day}:</span>{" "}
+          <span className="font-semibold">{weekDays[day] || day}:</span>{" "}
           {times.join(', ')}
         </div>
       ))}
