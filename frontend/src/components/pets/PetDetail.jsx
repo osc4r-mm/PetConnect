@@ -218,16 +218,6 @@ const PetDetail = () => {
               onPhotosUpdate={handlePhotosUpdate}
             />
 
-            {isOwner && editing && (
-              <EditPetForm
-                pet={pet}
-                onUpdated={updatedPet => {
-                  setPet(updatedPet);
-                  setEditing(false);
-                }}
-                onCancel={() => setEditing(false)}
-              />
-            )}
             {/* Descripción */}
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Acerca de {pet.name}</h2>
@@ -313,6 +303,16 @@ const PetDetail = () => {
               >
                 Editar mascota
               </button>
+            )}
+            {isOwner && editing && (
+              <EditPetForm
+                pet={pet}
+                onUpdated={updatedPet => {
+                  setPet(updatedPet);
+                  setEditing(false);
+                }}
+                onCancel={() => setEditing(false)}
+              />
             )}
           </div>
         </div>
