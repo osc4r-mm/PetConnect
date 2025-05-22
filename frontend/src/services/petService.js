@@ -73,11 +73,17 @@ export const createPet = async (petData) => {
 // Actualizar una mascota existente
 export const updatePet = async (id, petData) => {
   try {
-    const response = await api.put(`/pet/${id}`, petData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    // Si algún campo opcional es "", conviértelo a null:
+    const cleanData = { ...petData };
+    ['breed_id', 'size_id', 'activity_level_id', 'noise_level_id'].forEach(field => {
+      if (cleanData[field] === "") cleanData[field] = null;
     });
+
+    // Asegúrate de enviar booleanos
+    cleanData.for_adoption = !!cleanData.for_adoption;
+    cleanData.for_sitting = !!cleanData.for_sitting;
+
+    const response = await api.put(`/pet/${id}`, cleanData); // No Content-Type necesario, axios manda JSON por defecto
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar mascota con ID ${id}:`, error);

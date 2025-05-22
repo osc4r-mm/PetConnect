@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   updatePet,
   getSpecies,
@@ -7,7 +7,6 @@ import {
   getSizes,
   getActivityLevels,
   getNoiseLevels,
-  getPetImageUrl,
 } from '../../../services/petService';
 
 const EditPetForm = ({ pet, onUpdated, onCancel }) => {
@@ -25,6 +24,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     activity_level_id: pet.activityLevel?.id || '',
     noise_level_id: pet.noiseLevel?.id || '',
   });
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [speciesList, setSpeciesList] = useState([]);
@@ -33,8 +33,6 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
   const [sizeList, setSizeList] = useState([]);
   const [activityList, setActivityList] = useState([]);
   const [noiseList, setNoiseList] = useState([]);
-
-  const fileInputRef = useRef();
 
   useEffect(() => {
     getSpecies().then(setSpeciesList);
@@ -45,26 +43,22 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     getNoiseLevels().then(setNoiseList);
   }, []);
 
-  // Filtrar razas por especie seleccionada
   const filteredBreeds = form.species_id
     ? breedList.filter(b => b.species_id === Number(form.species_id))
     : breedList;
 
   const handleChange = e => {
-    const { name, value, type, checked, files } = e.target;
-    if (type === 'file') {
-      setForm(f => ({ ...f, [name]: files[0] }));
-    } else if (type === 'checkbox') {
-      setForm(f => ({ ...f, [name]: checked }));
-    } else {
+    const { name, value, type, checked } = e.target;
+    setForm(f => ({
+      ...f,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+    // Reset breed on species change
+    if (name === 'species_id') {
       setForm(f => ({
         ...f,
-        [name]: value
+        breed_id: ''
       }));
-      // Si cambia la especie, resetea la raza
-      if (name === 'species_id') {
-        setForm(f => ({ ...f, breed_id: '' }));
-      }
     }
   };
 
@@ -73,22 +67,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     setSaving(true);
     setError('');
     try {
-      const data = new FormData();
-      data.append('name', form.name);
-      data.append('age', form.age);
-      data.append('gender_id', form.gender_id);
-      data.append('weight', form.weight);
-      data.append('description', form.description || '');
-      data.append('for_adoption', form.for_adoption ? '1' : '0');
-      data.append('for_sitting', form.for_sitting ? '1' : '0');
-      data.append('species_id', form.species_id);
-      if (form.breed_id) data.append('breed_id', form.breed_id);
-      if (form.size_id) data.append('size_id', form.size_id);
-      if (form.activity_level_id) data.append('activity_level_id', form.activity_level_id);
-      if (form.noise_level_id) data.append('noise_level_id', form.noise_level_id);
-      
-      const updated = await updatePet(pet.id, data);
-      onUpdated(updated.pet);
+      await updatePet(pet.id, form);
+      onUpdated({ ...pet, ...form });
     } catch (err) {
       setError('Error actualizando mascota');
     }

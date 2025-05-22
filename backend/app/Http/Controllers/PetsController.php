@@ -150,7 +150,7 @@ class PetsController extends Controller
 
         return response()->json([
             'message' => 'Mascota actualizada exitosamente',
-            'pet' => $pet->fresh(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel', 'photos'])
+            'pet' => $pet->fresh(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel'])
         ]);
     }
 
