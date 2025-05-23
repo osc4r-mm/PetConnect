@@ -47,7 +47,6 @@ PetConnect es una plataforma web para la gestión integral de mascotas, que perm
 
 - `/frontend` — Código fuente del cliente React.
 - `/backend` — Código fuente de la API Laravel.
-- `/docs` — (Opcional) Carpeta para documentación adicional.
 - `README.md` — Este archivo.
 - Otros archivos y carpetas propios del proyecto.
 
@@ -55,7 +54,7 @@ PetConnect es una plataforma web para la gestión integral de mascotas, que perm
 
 ## ✨ Créditos
 
-Desarrollado por [Tu Nombre o Equipo].
+Desarrollado por Oscar.
 
 ---
 
