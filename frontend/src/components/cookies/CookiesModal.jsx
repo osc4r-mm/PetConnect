@@ -42,7 +42,7 @@ export default function CookiesModal({ onAccept }) {
       <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 relative">
         <h2 className="text-xl font-semibold mb-2">Tu privacidad es importante</h2>
         <p className="mb-4 text-gray-700">
-          Utilizamos cookies para mejorar tu experiencia. Puedes aceptar todas las cookies o solo las opcionales.
+          Utilizamos cookies para mejorar tu experiencia. Puedes aceptar todas las cookies o solo las necesarias para el buen funcionamiento de la web.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
@@ -55,7 +55,7 @@ export default function CookiesModal({ onAccept }) {
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded flex-1"
             onClick={handleAccept}
           >
-            Acepto opcionales
+            Acepto necesarias
           </button>
         </div>
         <p className="text-xs mt-4 text-gray-400">
