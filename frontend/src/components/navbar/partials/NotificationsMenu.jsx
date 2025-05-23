@@ -218,7 +218,8 @@ const NotificationsMenu = () => {
 
             {tab === 'sent' && sent.map(req => (
               <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-purple-50/40">
-                Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
+                <div className="font-semibold text-purple-700">
+                  Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link
                       to={`/user/${req.receiver.id}`}
@@ -229,6 +230,7 @@ const NotificationsMenu = () => {
                     </Link>
                   ) : "el dueño"
                 }
+                </div>
                 {req.message && <div className="text-gray-600 mt-1">"{req.message}"</div>}
                 {/* MOSTRAR HORARIOS SI ES DE CUIDADO Y TIENE SCHEDULE */}
                 {req.type === 'care' && req.schedule && formatSchedule(req.schedule)}
