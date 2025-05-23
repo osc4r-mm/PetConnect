@@ -268,7 +268,7 @@ const UserInfoSection = ({ user }) => {
         {/* Botones cuidador */}
         {user.role?.name && isOwnProfile && (
           <div className="mt-4 space-y-2 w-full max-w-md">
-            {!userIsCaregiver && userIsAdmin && (
+            {!userIsCaregiver && !userIsAdmin && (
               <button
                 onClick={handleBecomeCaregiver}
                 disabled={isProcessing}
