@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 
 export default function FilterSection({
   showFilters,
@@ -8,7 +8,7 @@ export default function FilterSection({
   onFilterChange,
   renderSortButton,
   metaLists: { genderList, speciesList, breedList, sizeList, activityList, noiseList },
-  onClearFilters, // NUEVO PROP
+  onClearFilters,
 }) {
   // Ajuste para razas filtradas
   const filteredBreeds = filters.species_id
@@ -20,7 +20,6 @@ export default function FilterSection({
     { type: 'text', name: 'name', label: 'Buscar por nombre', colspan: 6 },
     { type: 'range', label: 'Edad (años)', sortKey: 'age', colspan: 2, fields: [ { name: 'age_min', placeholder: 'Min', min: 0, max: 20 }, { name: 'age_max', placeholder: 'Max', min: 0, max: 20 } ] },
     { type: 'range', label: 'Peso (kg)', sortKey: 'weight', colspan: 2, fields: [ { name: 'weight_min', placeholder: 'Min', min: 0, max: 100 }, { name: 'weight_max', placeholder: 'Max', min: 0, max: 100 } ] },
-    // Aquí combinamos adopción y cuidado en una sola celda
     { type: 'toggles', label: '', colspan: 2 },
     { type: 'select', name: 'gender_id', label: 'Género', sortKey: 'gender_id', colspan: 2, options: genderList.map(g => ({ value: g.id, label: g.name })) },
     { type: 'select', name: 'species_id', label: 'Especie', sortKey: 'species_id', colspan: 2, options: speciesList.map(s => ({ value: s.id, label: s.name })) },
@@ -32,7 +31,7 @@ export default function FilterSection({
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md mb-6 z-10">
-      {/* Buscador y toggle */}
+      {/* Buscador y toggle + limpiar */}
       <div className="flex items-center mb-4 gap-2 min-w-0">
         <input
           type="text"
@@ -48,27 +47,21 @@ export default function FilterSection({
         >
           Filtros {showFilters ? <ChevronUp /> : <ChevronDown />}
         </button>
+        <button
+          onClick={onClearFilters}
+          title="Limpiar filtros"
+          className="ml-1 p-2 rounded-full bg-gray-200 hover:bg-blue-100 text-blue-700 transition flex items-center justify-center"
+          type="button"
+        >
+          <RotateCcw size={20} />
+        </button>
       </div>
 
       {/* Sección de filtros */}
       <div className={`mt-2 overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[calc(100vh-200px)] opacity-100' : 'max-h-0 opacity-0'}`}>
-
-        {/* Botón limpiar filtros dentro de la pestaña de filtros */}
-        <div className="flex justify-end mb-2">
-          <button
-            onClick={onClearFilters}
-            className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition font-medium"
-            type="button"
-          >
-            Limpiar filtros
-          </button>
-        </div>
-
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           {fieldConfigs.map((cfg, i) => {
-            // Saltamos el text porque ya lo mostramos arriba
             if (cfg.type === 'text') return null;
-            // Rango numérico
             if (cfg.type === 'range') {
               return (
                 <div key={i} className={`col-span-${cfg.colspan}`}>
@@ -96,7 +89,6 @@ export default function FilterSection({
                 </div>
               );
             }
-            // Toggles combinados adopción + cuidado
             if (cfg.type === 'toggles') {
               return (
                 <div key={i} className="col-span-2 flex justify-around">
@@ -116,7 +108,6 @@ export default function FilterSection({
                       </span>
                     </label>
                   </div>
-
                   {/* Cuidado */}
                   <div className="flex flex-col items-center">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Cuidado</label>
