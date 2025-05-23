@@ -279,28 +279,30 @@ const PetDetail = () => {
               </div>
 
               {/* Botones de editar/eliminar mascota */}
-                {(isOwner || isAdminUser) && !editing && (
-                  <div className="flex gap-2 mt-4">
-                    {/* Solo el dueño puede editar */}
-                    {isOwner && !isAdminUser && (
-                      <button
-                        className="px-4 py-2 bg-purple-600 text-white rounded"
-                        onClick={() => setEditing(true)}
-                      >
-                        Editar mascota
-                      </button>
-                    )}
-                    {/* Eliminar: dueño o admin */}
+              {(isOwner || isAdminUser) && !editing && (
+                <div className="flex gap-2 mt-4 justify-center">
+                  {/* Solo el dueño puede editar */}
+                  {isOwner && !isAdminUser && (
                     <button
-                      onClick={handleDeletePet}
-                      disabled={deleting}
-                      className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded text-center"
+                      style={{ minWidth: 0 }}
+                      onClick={() => setEditing(true)}
                     >
-                      <Trash2 size={18} />
-                      {deleting ? 'Eliminando...' : 'Eliminar mascota'}
+                      Editar mascota
                     </button>
-                  </div>
-                )}
+                  )}
+                  {/* Eliminar: dueño o admin */}
+                  <button
+                    onClick={handleDeletePet}
+                    disabled={deleting}
+                    className="flex-1 flex items-center justify-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors text-center"
+                    style={{ minWidth: 0 }}
+                  >
+                    <Trash2 size={18} />
+                    {deleting ? 'Eliminando...' : 'Eliminar mascota'}
+                  </button>
+                </div>
+              )}
 
               {/* Sección del dueño */}
               <div className="mt-6">
