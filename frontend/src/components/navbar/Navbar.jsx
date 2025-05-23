@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, LogOut } from 'lucide-react';
@@ -53,7 +52,7 @@ export default function Navbar() {
     return (
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center">
-          <Link to="/" className="text-xl font-bold text-green-600">
+          <Link to="/" className="text-xl font-bold text-purple-700">
             <img src="/uploads/default/logo.png" alt="" />
           </Link>
         </div>
@@ -62,13 +61,13 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow relative z-30">
+    <nav className="bg-white shadow relative z-30 border-b-4 border-purple-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo + enlaces desktop */}
           <div className="flex">
-            <Link to="/" className="self-center text-xl font-bold text-green-600">
-              <img className="h-12 w-auto" src="/uploads/default/logo.png" alt="" />
+            <Link to="/" className="self-center text-xl font-bold text-purple-700">
+              <img className="h-12 w-auto" src="/uploads/default/logo.png" alt="Logo PetConnect" />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {['/', '/about', '/contact'].map((path, idx) => {
@@ -78,10 +77,10 @@ export default function Navbar() {
                   <Link
                     key={path}
                     to={path}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-base font-semibold transition-all ${
                       active
-                        ? 'border-green-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                        ? 'border-purple-400 text-purple-700'
+                        : 'border-transparent text-gray-500 hover:border-purple-200 hover:text-purple-600'
                     }`}
                   >
                     {label}
@@ -102,30 +101,29 @@ export default function Navbar() {
                   <button
                     id="avatar-button"
                     onClick={() => setIsDropdownOpen(o => !o)}
-                    className="flex items-center gap-x-2 text-sm font-medium text-gray-700 hover:text-gray-800"
+                    className="flex items-center gap-x-2 text-base font-semibold text-purple-700 hover:text-purple-900"
                   >
-                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden border-2 border-purple-200">
                       <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
                     </div>
-                    <span>{user.name}</span>
-                    <ChevronDown size={16} className="text-gray-500" />
+                    <span className="truncate max-w-[120px]">{user.name}</span>
+                    <ChevronDown size={16} className="text-purple-400" />
                   </button>
                   {isDropdownOpen && (
                     <div 
                       id="user-dropdown"
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50"
-                      style={{ filter: 'drop-shadow(0 0 10px rgba(0, 0, 0, 0.1))' }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-1 ring-1 ring-purple-200 ring-opacity-80 z-50 border border-purple-100 animate-fadeIn"
                     >
                       <Link
                         to="/profile"
                         onClick={() => setIsDropdownOpen(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-base text-purple-700 font-medium hover:bg-purple-50 hover:text-purple-900"
                       >
                         Mi perfil
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                        className="w-full text-left px-4 py-2 text-base text-purple-700 font-medium hover:bg-purple-50 hover:text-purple-900 flex items-center"
                       >
                         <LogOut size={16} className="mr-2" />
                         Cerrar sesión
@@ -136,12 +134,12 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link to="/login" className="text-gray-700 hover:text-gray-900">
+                <Link to="/login" className="text-purple-700 font-medium hover:text-purple-900 transition">
                   Iniciar sesión
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow"
                 >
                   Registrarse
                 </Link>
@@ -153,7 +151,7 @@ export default function Navbar() {
           <div className="flex items-center sm:hidden">
             <button
               onClick={() => setIsOpen(o => !o)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              className="inline-flex items-center justify-center p-2 rounded-md text-purple-400 hover:text-purple-600 hover:bg-purple-100 transition"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -163,7 +161,7 @@ export default function Navbar() {
 
       {/* Menú móvil */}
       {isOpen && (
-        <div className="sm:hidden">
+        <div className="sm:hidden bg-white border-t-2 border-purple-200 shadow-md animate-fadeIn">
           <div className="pt-2 pb-3 space-y-1">
             {['/','/about','/contact'].map((path, idx) => {
               const label = ['Inicio','Acerca de','Contacto'][idx];
@@ -172,10 +170,10 @@ export default function Navbar() {
                 <Link
                   key={path}
                   to={path}
-                  className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                  className={`block pl-3 pr-4 py-2 border-l-4 text-base font-semibold transition-all ${
                     active
-                      ? 'bg-green-50 border-green-500 text-green-700'
-                      : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                      ? 'bg-purple-50 border-purple-400 text-purple-700'
+                      : 'border-transparent text-gray-600 hover:bg-purple-100 hover:border-purple-200 hover:text-purple-800'
                   }`}
                 >
                   {label}
@@ -183,28 +181,28 @@ export default function Navbar() {
               );
             })}
           </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          <div className="pt-4 pb-3 border-t border-purple-100">
             {isAuthenticated ? (
               <>
                 <div className="flex items-center px-4">
-                  <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                  <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden border-2 border-purple-200">
                     <img src={getUserImageUrl(user.image)} alt="Avatar" className="h-full w-full object-cover" />
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user.name}</div>
+                    <div className="text-base font-semibold text-purple-700">{user.name}</div>
                     <div className="text-sm font-medium text-gray-500">{user.email}</div>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    className="block px-4 py-2 text-base font-medium text-purple-600 hover:bg-purple-50 hover:text-purple-900"
                   >
                     Mi perfil
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 flex items-center"
+                    className="w-full text-left block px-4 py-2 text-base font-medium text-purple-600 hover:bg-purple-50 hover:text-purple-900 flex items-center"
                   >
                     <LogOut size={16} className="mr-2" />
                     Cerrar sesión
@@ -215,13 +213,13 @@ export default function Navbar() {
               <div className="mt-3 space-y-1 px-2">
                 <Link
                   to="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-purple-700 hover:text-purple-900 hover:bg-purple-50 transition"
                 >
                   Iniciar sesión
                 </Link>
                 <Link
                   to="/register"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-purple-700 hover:to-blue-700 shadow"
                 >
                   Registrarse
                 </Link>

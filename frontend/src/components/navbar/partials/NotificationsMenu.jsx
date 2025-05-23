@@ -122,24 +122,32 @@ const NotificationsMenu = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button className="relative" onClick={() => setOpen(!open)}>
-        <Bell size={22} className="text-gray-600" />
+        <Bell size={22} className="text-purple-600" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg border-2 border-white">
             {unreadCount}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-96 bg-white shadow-lg rounded-md z-50">
-          <div className="flex border-b">
+        <div className="absolute right-0 mt-2 w-96 bg-white shadow-2xl rounded-2xl z-50 border-2 border-purple-100 animate-fadeIn">
+          <div className="flex border-b border-purple-100">
             <button
-              className={`flex-1 py-2 text-sm font-bold ${tab === 'received' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
+              className={`flex-1 py-2 text-base font-bold rounded-tl-2xl transition-colors ${
+                tab === 'received'
+                  ? 'border-b-2 border-purple-400 text-purple-700 bg-purple-50'
+                  : 'text-gray-500 hover:bg-purple-50'
+              }`}
               onClick={() => setTab('received')}
             >
               Recibidas
             </button>
             <button
-              className={`flex-1 py-2 text-sm font-bold ${tab === 'sent' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
+              className={`flex-1 py-2 text-base font-bold rounded-tr-2xl transition-colors ${
+                tab === 'sent'
+                  ? 'border-b-2 border-purple-400 text-purple-700 bg-purple-50'
+                  : 'text-gray-500 hover:bg-purple-50'
+              }`}
               onClick={() => setTab('sent')}
             >
               Enviadas
@@ -147,21 +155,21 @@ const NotificationsMenu = () => {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {tab === 'received' && received.length === 0 && (
-              <div className="p-4 text-gray-500">No tienes solicitudes recibidas.</div>
+              <div className="p-6 text-purple-400 text-center">No tienes solicitudes recibidas.</div>
             )}
             {tab === 'sent' && sent.length === 0 && (
-              <div className="p-4 text-gray-500">No has enviado solicitudes.</div>
+              <div className="p-6 text-purple-400 text-center">No has enviado solicitudes.</div>
             )}
             {/* Recibidas */}
             {tab === 'received' && received.map(req => (
-              <div key={req.id} className="p-4 border-b text-sm">
-                <div className="font-semibold">
+              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-purple-50/40">
+                <div className="font-semibold text-purple-700">
                   {req.sender && req.sender.name
                     ? (
                       <span>
                         <Link
                           to={`/user/${req.sender.id}`}
-                          className="text-green-700 hover:underline font-bold"
+                          className="text-blue-700 hover:underline font-bold"
                           onClick={() => setOpen(false)}
                         >
                           {req.sender.name}
@@ -181,11 +189,11 @@ const NotificationsMenu = () => {
                   {req.status === 'pending' && (
                     <>
                       <button
-                        className="bg-green-500 text-white rounded px-2 py-1 text-xs"
+                        className="bg-green-500 text-white rounded px-2 py-1 text-xs shadow hover:bg-green-600"
                         onClick={() => handleAccept(req.id)}
                       >Aceptar</button>
                       <button
-                        className="bg-red-500 text-white rounded px-2 py-1 text-xs"
+                        className="bg-red-500 text-white rounded px-2 py-1 text-xs shadow hover:bg-red-600"
                         onClick={() => handleReject(req.id)}
                       >Rechazar</button>
                     </>
@@ -193,7 +201,7 @@ const NotificationsMenu = () => {
                   {/* Mostrar botón de anular solo si es aceptada y NO es adopt */}
                   {req.status === 'accepted' && req.type !== 'adopt' && (
                     <button
-                      className="bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                      className="bg-yellow-500 text-white rounded px-2 py-1 text-xs shadow hover:bg-yellow-600"
                       onClick={() => handleCancel(req.id)}
                     >Anular contrato</button>
                   )}
@@ -209,12 +217,12 @@ const NotificationsMenu = () => {
             ))}
 
             {tab === 'sent' && sent.map(req => (
-              <div key={req.id} className="p-4 border-b text-sm">
+              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-blue-50/40">
                 Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link
                       to={`/user/${req.receiver.id}`}
-                      className="text-green-700 hover:underline font-bold"
+                      className="text-blue-700 hover:underline font-bold"
                       onClick={() => setOpen(false)}
                     >
                       {req.receiver.name}
@@ -234,7 +242,7 @@ const NotificationsMenu = () => {
                 {/* Botón de anular solo si aceptada y NO es adopt */}
                 {req.status === 'accepted' && req.type !== 'adopt' && (
                   <button
-                    className="mt-2 bg-yellow-500 text-white rounded px-2 py-1 text-xs"
+                    className="mt-2 bg-yellow-500 text-white rounded px-2 py-1 text-xs shadow hover:bg-yellow-600"
                     onClick={() => handleCancel(req.id)}
                   >
                     Anular contrato
