@@ -1,64 +1,63 @@
-# 🐾 Proyecto de Gestión de Mascotas
+# PetConnect
 
-¡Bienvenido/a! Este repositorio contiene el código y los recursos de la aplicación de gestión de mascotas, desarrollada como entrega final de proyecto. Aquí encontrarás la documentación técnica, manuales y memoria del desarrollo.
+¡Bienvenido a **PetConnect**!  
+Esta es la plataforma de gestión, adopción y cuidado de mascotas desarrollada para el proyecto final.
+
+---
+
+## 📚 Manuales y Documentación
+
+En este repositorio encontrarás toda la documentación necesaria para comprender, desplegar y utilizar la aplicación.  
+Puedes acceder a cada manual en línea a través de los siguientes enlaces:
+
+### 📖 Manual Técnico
+
+- [Leer manual técnico en Google Docs](https://docs.google.com/document/d/19n3cdv8SIki5xUVnsCqqOttQ5ahIerpMn220yzWhJK8/edit?usp=drive_link)
+
+### 👩‍💻 Manual de Usuario
+
+- [Leer manual de usuario en Google Docs](https://docs.google.com/document/d/1H-5wtTwli7z2WAB2-HGhLEQ2BDdumL6ydvroxZvutQI/edit?usp=drive_link)
+
+### 📝 Memoria
+
+- [Leer memoria del proyecto en Google Docs](https://docs.google.com/document/d/1Wvyo040fV6GMq049A2P9pXVpwLJGsTdEqXpLLo4fLLI/edit?usp=drive_link)
+
+---
+
+## 🚀 ¿Qué es PetConnect?
+
+PetConnect es una plataforma web para la gestión integral de mascotas, que permite:
+
+- Publicar y gestionar mascotas para adopción o cuidado temporal.
+- Solicitar la adopción o cuidado de mascotas.
+- Gestionar usuarios, cuidadores y solicitudes.
+- Visualizar información detallada de cada mascota y usuario.
+
+---
+
+## 🛠️ Cómo empezar
+
+1. **Clona este repositorio**
+2. Sigue los pasos del [Manual Técnico](https://docs.google.com/document/d/19n3cdv8SIki5xUVnsCqqOttQ5ahIerpMn220yzWhJK8/edit?usp=drive_link) para instalar y ejecutar el proyecto.
+3. Consulta el [Manual de Usuario](https://docs.google.com/document/d/1H-5wtTwli7z2WAB2-HGhLEQ2BDdumL6ydvroxZvutQI/edit?usp=drive_link) para aprender a usar la plataforma.
 
 ---
 
 ## 📂 Estructura del repositorio
 
-- `/src` — Código fuente de la aplicación (frontend y backend si aplica)
-- `/docs` — Documentación adicional (manuales, memoria, esquemas)
-- `/public` — Recursos estáticos e imágenes
-- Otros archivos de configuración y dependencias
+- `/frontend` — Código fuente del cliente React.
+- `/backend` — Código fuente de la API Laravel.
+- `/docs` — (Opcional) Carpeta para documentación adicional.
+- `README.md` — Este archivo.
+- Otros archivos y carpetas propios del proyecto.
 
 ---
 
-## 📄 Documentación y Manuales
+## ✨ Créditos
 
-Si necesitas información detallada sobre el funcionamiento, uso o desarrollo de este proyecto, consulta los siguientes documentos:
-
-### 🛠 Manual Técnico
-
-Explica la arquitectura, tecnologías empleadas, despliegue, configuración y detalles para desarrolladores y administradores del sistema.
-
-[➡️ Manual Técnico (Google Docs)](https://docs.google.com/document/d/19n3cdv8SIki5xUVnsCqqOttQ5ahIerpMn220yzWhJK8/edit?usp=drive_link)
+Desarrollado por [Tu Nombre o Equipo].
 
 ---
 
-### 👩‍💻 Manual de Usuario
-
-Guía paso a paso para usuarios finales sobre cómo utilizar la aplicación y todas sus funcionalidades.
-
-[➡️ Manual de Usuario (Google Docs)](https://docs.google.com/document/d/1H-5wtTwli7z2WAB2-HGhLEQ2BDdumL6ydvroxZvutQI/edit?usp=drive_link)
-
----
-
-### 📚 Memoria
-
-Documento completo del proceso de desarrollo, análisis, diseño, pruebas y conclusiones del proyecto.
-
-[➡️ Memoria (Google Docs)](https://docs.google.com/document/d/1Wvyo040fV6GMq049A2P9pXVpwLJGsTdEqXpLLo4fLLI/edit?usp=drive_link)
-
----
-
-## 🚀 ¿Cómo empezar?
-
-1. **Clona el repositorio:**  
-   ```bash
-   git clone https://github.com/tu-usuario/tu-repo.git
-   cd tu-repo
-   ```
-
-2. **Lee el [Manual Técnico](https://docs.google.com/document/d/19n3cdv8SIki5xUVnsCqqOttQ5ahIerpMn220yzWhJK8/edit?usp=drive_link)** para instrucciones de instalación y despliegue.
-
-3. **Consulta el [Manual de Usuario](https://docs.google.com/document/d/1H-5wtTwli7z2WAB2-HGhLEQ2BDdumL6ydvroxZvutQI/edit?usp=drive_link)** si eres usuario final.
-
----
-
-## 📬 Contacto
-
-Para dudas, sugerencias o incidencias, contacta con el autor a través de GitHub o consulta los datos de contacto en los manuales.
-
----
-
-¡Gracias por visitar el proyecto y no dudes en contribuir o consultar la documentación enlazada! 🐶🐱
+> Si tienes cualquier duda, consulta los manuales enlazados arriba.  
+> ¡Gracias por usar PetConnect!
