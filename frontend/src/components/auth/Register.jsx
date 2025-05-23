@@ -200,14 +200,14 @@ const Register = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-300 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-purple-700 hover:to-blue-700 font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-green-300 disabled:opacity-50"
           >
             {isSubmitting ? 'Registrando...' : 'Registrarse'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-purple-700 hover:text-purple-900 hover:underline">
             Iniciar Sesión
           </Link>
         </p>

@@ -100,14 +100,14 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-blue-300 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 disabled:opacity-50"
           >
             {isLoading ? 'Ingresando...' : 'Iniciar Sesión'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-purple-700 hover:text-purple-900 hover:underline">
             Regístrate
           </Link>
         </p>
