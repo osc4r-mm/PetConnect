@@ -10,17 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class CaregiverAvailabilityController extends Controller
 {
-    // Mapeo de nombres de días a valores numéricos
-    private $dayMapping = [
-        'monday' => 1,
-        'tuesday' => 2,
-        'wednesday' => 3,
-        'thursday' => 4,
-        'friday' => 5,
-        'saturday' => 6,
-        'sunday' => 7
-    ];
-
     public function get($userId)
     {
         $caregiver = Caregiver::where('user_id', $userId)->first();

@@ -28,8 +28,8 @@ const UserInfoSection = ({ user }) => {
 
   useEffect(() => {
     let mounted = true;
-    // Solo consulta si el user es cuidador y no es tu propio perfil
-    if (userIsCaregiver && !isOwnProfile && user.caregiver_id) {
+    // Solo consulta si el user es cuidador, NO es tu propio perfil y HAY sesión
+    if (userIsCaregiver && !isOwnProfile && user.caregiver_id && currentUser) {
       api.get(`/caregivers/${user.caregiver_id}/can_be_reviewed`)
         .then(res => {
           if (mounted) setCanVote(res.data.canBeReviewedByMe);
@@ -41,7 +41,7 @@ const UserInfoSection = ({ user }) => {
       setCanVote(false);
     }
     return () => { mounted = false; }
-  }, [userIsCaregiver, isOwnProfile, user.caregiver_id]);
+  }, [userIsCaregiver, isOwnProfile, user.caregiver_id, currentUser]);
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
