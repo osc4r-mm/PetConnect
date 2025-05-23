@@ -278,17 +278,29 @@ const PetDetail = () => {
                 )}
               </div>
 
-              {/* Botón eliminar mascota (dueño o admin) */}
-              {(isOwner || isAdminUser) && (
-                <button
-                  onClick={handleDeletePet}
-                  disabled={deleting}
-                  className="w-full mt-4 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded transition-colors"
-                >
-                  <Trash2 size={18} />
-                  {deleting ? 'Eliminando...' : 'Eliminar mascota'}
-                </button>
-              )}
+              {/* Botones de editar/eliminar mascota */}
+                {(isOwner || isAdminUser) && !editing && (
+                  <div className="flex gap-2 mt-4">
+                    {/* Solo el dueño puede editar */}
+                    {isOwner && !isAdminUser && (
+                      <button
+                        className="px-4 py-2 bg-purple-600 text-white rounded"
+                        onClick={() => setEditing(true)}
+                      >
+                        Editar mascota
+                      </button>
+                    )}
+                    {/* Eliminar: dueño o admin */}
+                    <button
+                      onClick={handleDeletePet}
+                      disabled={deleting}
+                      className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                    >
+                      <Trash2 size={18} />
+                      {deleting ? 'Eliminando...' : 'Eliminar mascota'}
+                    </button>
+                  </div>
+                )}
 
               {/* Sección del dueño */}
               <div className="mt-6">
@@ -298,15 +310,6 @@ const PetDetail = () => {
             </div>
           )}
 
-          {/* Botón de editar mascota */}
-          {isOwner && !editing && (
-            <button
-              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded"
-              onClick={() => setEditing(true)}
-            >
-              Editar mascota
-            </button>
-          )}
           {isOwner && editing && (
             <EditPetForm
               pet={pet}
