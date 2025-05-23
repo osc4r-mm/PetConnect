@@ -30,7 +30,7 @@ export default function FilterSection({
   ];
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-6 z-10">
+    <div className="bg-white p-5 rounded-2xl shadow-lg mb-8 z-10 border-2 border-purple-100">
       {/* Buscador y toggle + limpiar */}
       <div className="flex items-center mb-4 gap-2 min-w-0">
         <input
@@ -39,18 +39,18 @@ export default function FilterSection({
           value={filters.name}
           onChange={onFilterChange}
           placeholder="Buscar por nombre..."
-          className="flex-grow min-w-0 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 transition-all"
+          className="flex-grow min-w-0 border border-purple-200 rounded-xl p-2 focus:ring-2 focus:ring-purple-500 transition-all bg-purple-50"
         />
         <button
           onClick={onToggleFilters}
-          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md flex items-center"
+          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl flex items-center font-bold shadow"
         >
           Filtros {showFilters ? <ChevronUp /> : <ChevronDown />}
         </button>
         <button
           onClick={onClearFilters}
           title="Limpiar filtros"
-          className="ml-1 p-2 rounded-full bg-gray-200 hover:bg-blue-100 text-blue-700 transition flex items-center justify-center"
+          className="ml-1 p-2 rounded-full bg-purple-100 hover:bg-blue-100 text-purple-700 hover:text-blue-700 transition flex items-center justify-center shadow"
           type="button"
         >
           <RotateCcw size={20} />
@@ -66,7 +66,7 @@ export default function FilterSection({
               return (
                 <div key={i} className={`col-span-${cfg.colspan}`}>
                   <div className="flex items-center">
-                    <label className="block text-sm font-medium text-gray-700">{cfg.label}</label>
+                    <label className="block text-sm font-medium text-purple-700">{cfg.label}</label>
                     {renderSortButton(cfg.sortKey, cfg.label)}
                   </div>
                   <div className="flex items-center space-x-2 mt-1 min-w-0">
@@ -80,9 +80,9 @@ export default function FilterSection({
                           value={filters[f.name]}
                           onChange={onFilterChange}
                           placeholder={f.placeholder}
-                          className="w-1/2 border border-gray-300 rounded-md p-1 focus:ring-2 focus:ring-blue-500 transition-all"
+                          className="w-1/2 border border-purple-200 rounded-md p-1 focus:ring-2 focus:ring-purple-400 transition-all bg-purple-50"
                         />
-                        {idx === 0 && <span className="text-gray-500">&lt;</span>}
+                        {idx === 0 && <span className="text-purple-300">&lt;</span>}
                       </React.Fragment>
                     ))}
                   </div>
@@ -94,7 +94,7 @@ export default function FilterSection({
                 <div key={i} className="col-span-2 flex justify-around">
                   {/* Adopción */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Adopción</label>
+                    <label className="block text-sm font-medium text-purple-700 mb-1">Adopción</label>
                     <label className="inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -110,7 +110,7 @@ export default function FilterSection({
                   </div>
                   {/* Cuidado */}
                   <div className="flex flex-col items-center">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cuidado</label>
+                    <label className="block text-sm font-medium text-purple-700 mb-1">Cuidado</label>
                     <label className="inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -131,14 +131,14 @@ export default function FilterSection({
             return (
               <div key={i} className={`col-span-1 md:col-span-${cfg.colspan}`}>  
                 <div className="flex items-center">
-                  <label className="block text-sm font-medium text-gray-700">{cfg.label}</label>
+                  <label className="block text-sm font-medium text-purple-700">{cfg.label}</label>
                   {renderSortButton(cfg.sortKey, cfg.label)}
                 </div>
                 <select
                   name={cfg.name}
                   value={filters[cfg.name]}
                   onChange={onFilterChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-1.5 focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="mt-1 block w-full border border-purple-200 rounded-md p-1.5 focus:ring-2 focus:ring-purple-400 transition-all bg-purple-50"
                 >
                   <option value="">Todos</option>
                   {cfg.options.map(o => (

@@ -22,7 +22,6 @@ function saveMetaList(key, data) {
 }
 
 export default function Home() {
-  
   const [showFilters, setShowFilters] = useState(false);
   const [animatingCards, setAnimatingCards] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -146,7 +145,6 @@ export default function Home() {
     setTimeout(() => setAnimatingCards(false), 300);
   };
 
-
   const renderSortButton = (field, label) => {
     const isActive = sortConfig.key === field;
     const isAsc = sortConfig.direction === 'asc';
@@ -164,11 +162,10 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-full p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50 flex flex-col h-full p-6">
+      <h1 className="text-4xl font-extrabold mb-6 text-center text-purple-700 tracking-tight">
         Encuentra tu compañero
       </h1>
-
       <FilterSection
         showFilters={showFilters}
         onToggleFilters={() => setShowFilters(s => !s)}
@@ -176,42 +173,38 @@ export default function Home() {
         onFilterChange={handleChange}
         renderSortButton={renderSortButton}
         metaLists={{ genderList, speciesList, breedList, sizeList, activityList, noiseList }}
-        onClearFilters={clearFilters} // <--- PASA EL PROP
+        onClearFilters={clearFilters}
       />
       {
-      loading ? (
-        <LoadingScreen message="Cargando mascotas..." />
-      ) : error ? (
-        <NotFoundData />
-      ) : pets.length === 0 ? (
-        <NoResults onReset={clearFilters} />
-      ) : (
-        <div className='p-1'>
-          {/* Pagination arriba */}
-          <div className="flex flex-col xxs:flex-row items-center justify-center mb-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
-
-            <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-30 disabled:cursor-not-allowed">&lt;</button>
-            <span className="px-4 py-2">{page} / {lastPage}</span>
-            <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-30 disabled:cursor-not-allowed">&gt;</button>
-          </div>
-
-          {/* Grid de mascotas */}
-          <div className={`grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-500 ${animatingCards ? 'opacity-20 blur-xxs' : 'opacity-100 blur-0'}`}>
-            {pets.map(pet => <PetCard key={pet.id} pet={pet} />)}
-          </div>
-
-          {/* Pagination abajo */}
-          {(pets.length > 8 || (pets.length > 4 && showFilters)) && (
-            <div className="flex flex-col xxs:flex-row items-center justify-center m-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
-              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-30 disabled:cursor-not-allowed">&lt;</button>
-              <span className="px-4 py-2">{page} / {lastPage}</span>
-              <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-gray-300 rounded disabled:opacity-30 disabled:cursor-not-allowed">&gt;</button>
+        loading ? (
+          <LoadingScreen message="Cargando mascotas..." />
+        ) : error ? (
+          <NotFoundData />
+        ) : pets.length === 0 ? (
+          <NoResults onReset={clearFilters} />
+        ) : (
+          <div className='p-1'>
+            {/* Pagination arriba */}
+            <div className="flex flex-col xxs:flex-row items-center justify-center mb-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
+              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&lt;</button>
+              <span className="px-4 py-2 font-bold text-purple-800">{page} / {lastPage}</span>
+              <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&gt;</button>
             </div>
-          )}
-        </div>
-      )
-    }
-
+            {/* Grid de mascotas */}
+            <div className={`grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-500 ${animatingCards ? 'opacity-20 blur-xxs' : 'opacity-100 blur-0'}`}>
+              {pets.map(pet => <PetCard key={pet.id} pet={pet} />)}
+            </div>
+            {/* Pagination abajo */}
+            {(pets.length > 8 || (pets.length > 4 && showFilters)) && (
+              <div className="flex flex-col xxs:flex-row items-center justify-center m-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
+                <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&lt;</button>
+                <span className="px-4 py-2 font-bold text-purple-800">{page} / {lastPage}</span>
+                <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&gt;</button>
+              </div>
+            )}
+          </div>
+        )
+      }
     </div>
   );
 }
@@ -237,32 +230,30 @@ function PetCard({ pet }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-xl hover:z-10 cursor-pointer"
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:z-10 cursor-pointer border-2 border-purple-100 hover:border-purple-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}>
       
       <div className="relative">
         <div className="absolute top-2 right-2 flex space-x-2">
-          {pet.for_adoption && <div className="bg-red-500 p-1 rounded-full"><Heart size={20} className="text-white" /></div>}
-          {pet.for_sitting && <div className="bg-blue-500 p-1 rounded-full"><PawPrint size={20} className="text-white" /></div>}
+          {pet.for_adoption && <div className="bg-red-500 p-1 rounded-full shadow"><Heart size={20} className="text-white" /></div>}
+          {pet.for_sitting && <div className="bg-blue-500 p-1 rounded-full shadow"><PawPrint size={20} className="text-white" /></div>}
         </div>
         <img src={getPetImageUrl(pet.profile_path)} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:rotate-1" 
         onMouseEnter={() => setIsHovered(false)}  
         onMouseLeave={() => setIsHovered(true)}/>
         {isHovered && pet.species && (
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent p-2">
+          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-2">
             <span className="text-white text-xs font-medium">
               {pet.species.name}
             </span>
           </div>
         )}
       </div>
-
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="font-bold text-lg">{pet.name}</h2>
-          
+          <h2 className="font-bold text-lg text-purple-700">{pet.name}</h2>
           {/* Género con icono */}
           {pet.gender && (
             <div 
@@ -275,7 +266,6 @@ function PetCard({ pet }) {
             </div>
           )}
         </div>
-
         <div className="flex flex-wrap gap-1 mb-2">
           {pet.breed?.name && <Tag label={pet.breed.name} />}
           {formatAge(pet.age) && <Tag label={formatAge(pet.age)} />}
@@ -290,13 +280,13 @@ function PetCard({ pet }) {
 }
 
 function Tag({ label }) {
-  return <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{label}</span>;
+  return <span className="text-xs bg-purple-50 text-purple-800 px-2 py-1 rounded-full border border-purple-200">{label}</span>;
 }
 
 const NoResults = ({ onReset }) => (
-  <div className="text-center py-8">
-    <p className="text-gray-500 text-lg">No se encontraron mascotas.</p>
-    <p className="text-gray-500 text-md">Prueba a limpiar los filtros</p>
-    <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
+  <div className="text-center py-12">
+    <p className="text-purple-500 text-2xl font-semibold mb-2">No se encontraron mascotas.</p>
+    <p className="text-purple-400 mb-4">Prueba a limpiar los filtros</p>
+    <button onClick={onReset} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow">Limpiar filtros</button>
   </div>
 );
