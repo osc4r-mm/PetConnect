@@ -20,7 +20,7 @@ function PrivateRoute() {
   const { user, loading: authLoading } = useAuth();
 
   if (authLoading) {
-    return <LoadingScreen message="Verificando sesión….........." />;
+    return <LoadingScreen message="Verificando sesión…" />;
   }
   
   return user ? <Outlet /> : <Navigate to="/login" replace />;

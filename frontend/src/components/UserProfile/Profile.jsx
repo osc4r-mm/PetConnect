@@ -25,13 +25,12 @@ export default function Profile() {
   // Fetch profile data
   useEffect(() => {
     if (authLoading) return;
-    if (!currentUser) return;
+    if (!targetId) return;
 
     setLoading(true);
     getUser(targetId)
       .then(data => {
         setUser(data);
-        // 2) Tras usuario, cargamos mascotas
         return getPetsFromUser(targetId);
       })
       .then(petsData => {
@@ -42,7 +41,7 @@ export default function Profile() {
         setError(true);
       })
       .finally(() => setLoading(false));
-  }, [targetId, currentUser, authLoading]);
+  }, [targetId, authLoading]);
 
   const handleUpdateLocation = async (lat, lng) => {
     if (!isOwnProfile) return;
@@ -58,7 +57,6 @@ export default function Profile() {
   const userIsCaregiver = isCaregiver(user);
 
   if (authLoading || loading) return <LoadingScreen message={'Verificando sesión...'} />;
-  if (!currentUser) return <Navigate to="/login" replace />;
   if (error || !user) return <NotFoundData message1="Usuario no encontrado" message2="No se ha podido acceder al perfil de este usuario" />;
 
   return (
