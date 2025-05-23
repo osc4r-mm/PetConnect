@@ -6,7 +6,7 @@ import { becomeCaregiver, quitCaregiver, isCaregiver } from '../../../services/c
 import CaregiverReviewStars from './CaregiverReviewStars';
 import api from '../../../services/api';
 
-const UserInfoSection = ({ user }) => {
+const UserInfoSection = ({ user, onUserUpdated }) => {
   const { user: currentUser, updateUserData } = useAuth();
   // Estado local para mostrar SIEMPRE datos frescos tras cambios de rol
   const [displayUser, setDisplayUser] = useState(user);
@@ -69,6 +69,7 @@ const UserInfoSection = ({ user }) => {
         const refreshed = await getUser(displayUser.id);
         setDisplayUser(refreshed);
         if (isOwnProfile) updateUserData(refreshed);
+        if (onUserUpdated) onUserUpdated(refreshed);
       }
     } catch (error) {
       console.error('Error al subir la imagen de perfil:', error);
@@ -111,6 +112,7 @@ const UserInfoSection = ({ user }) => {
       const refreshed = await getUser(displayUser.id);
       setDisplayUser(refreshed);
       if (isOwnProfile && updateUserData) updateUserData(refreshed);
+      if (onUserUpdated) onUserUpdated(refreshed);
       setEditMode(false);
     } catch (err) {
       setFormError("No se pudo actualizar el perfil. Comprueba los datos.");
@@ -127,6 +129,7 @@ const UserInfoSection = ({ user }) => {
         const refreshed = await getUser(result.user.id);
         setDisplayUser(refreshed);
         if (isOwnProfile && updateUserData) updateUserData(refreshed);
+        if (onUserUpdated) onUserUpdated(refreshed);
       }
     } catch (error) {
       console.error('Error al convertirse en cuidador:', error);
@@ -147,6 +150,7 @@ const UserInfoSection = ({ user }) => {
           const refreshed = await getUser(result.user.id);
           setDisplayUser(refreshed);
           if (isOwnProfile && updateUserData) updateUserData(refreshed);
+          if (onUserUpdated) onUserUpdated(refreshed);
         }
       } catch (error) {
         console.error('Error al darse de baja como cuidador:', error);

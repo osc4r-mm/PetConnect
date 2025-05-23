@@ -7,7 +7,8 @@ export default function FilterSection({
   filters,
   onFilterChange,
   renderSortButton,
-  metaLists: { genderList, speciesList, breedList, sizeList, activityList, noiseList }
+  metaLists: { genderList, speciesList, breedList, sizeList, activityList, noiseList },
+  onClearFilters, // NUEVO PROP
 }) {
   // Ajuste para razas filtradas
   const filteredBreeds = filters.species_id
@@ -51,6 +52,17 @@ export default function FilterSection({
 
       {/* Sección de filtros */}
       <div className={`mt-2 overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[calc(100vh-200px)] opacity-100' : 'max-h-0 opacity-0'}`}>
+
+        {/* Botón limpiar filtros dentro de la pestaña de filtros */}
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={onClearFilters}
+            className="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition font-medium"
+            type="button"
+          >
+            Limpiar filtros
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           {fieldConfigs.map((cfg, i) => {

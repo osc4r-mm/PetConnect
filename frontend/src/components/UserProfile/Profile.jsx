@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getUser, updateUser, getPetsFromUser } from '../../services/userService';
 import { isCaregiver } from '../../services/caregiverService';
@@ -56,6 +56,11 @@ export default function Profile() {
   // Verificar si el usuario es cuidador
   const userIsCaregiver = isCaregiver(user);
 
+  // Se actualiza cuando UserInfoSection avisa de un cambio de usuario (cuidador, no-cuidador, etc)
+  const handleUserUpdated = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
   if (authLoading || loading) return <LoadingScreen message={'Verificando sesión...'} />;
   if (error || !user) return <NotFoundData message1="Usuario no encontrado" message2="No se ha podido acceder al perfil de este usuario" />;
 
@@ -63,7 +68,7 @@ export default function Profile() {
     <div className="container mx-auto p-6 bg-white rounded-xl shadow-md space-y-8">
       <div className="flex flex-col md:flex-row md:space-x-6">
         <div className='flex-1'>
-          <UserInfoSection user={user} />
+          <UserInfoSection user={user} onUserUpdated={handleUserUpdated} />
         </div>
         <div className='flex-1'>
           <MapSection

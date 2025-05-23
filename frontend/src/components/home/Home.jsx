@@ -176,6 +176,7 @@ export default function Home() {
         onFilterChange={handleChange}
         renderSortButton={renderSortButton}
         metaLists={{ genderList, speciesList, breedList, sizeList, activityList, noiseList }}
+        onClearFilters={clearFilters} // <--- PASA EL PROP
       />
       {
       loading ? (
@@ -292,10 +293,10 @@ function Tag({ label }) {
   return <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">{label}</span>;
 }
 
-const NoResults = ({ clearFilters }) => (
+const NoResults = ({ onReset }) => (
   <div className="text-center py-8">
     <p className="text-gray-500 text-lg">No se encontraron mascotas.</p>
     <p className="text-gray-500 text-md">Prueba a limpiar los filtros</p>
-    <button onClick={clearFilters} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
+    <button onClick={onReset} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Limpiar filtros</button>
   </div>
 );
