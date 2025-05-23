@@ -57,6 +57,7 @@ class UserController extends Controller
         ]);
 
         $user->update($data);
+        $user->load('role');
         return response()->json($user);
     }
 
