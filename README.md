@@ -266,7 +266,6 @@ RUN chown -R www-data:www-data /var/www && chmod -R 775 /var/www/storage
 
 # Crea el symlink para /uploads
 RUN ln -s /var/www/storage/app/public /var/www/public/uploads
-#COPY default /var/www/storage/app/public/default
 
 RUN php artisan migrate --force
 
