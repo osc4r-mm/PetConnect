@@ -41,7 +41,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   const [selectionEnd, setSelectionEnd] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState('add'); // 'add' | 'delete'
+  const [mode, setMode] = useState('add');
   const calendarRef = useRef(null);
 
   // Tooltip state
@@ -214,7 +214,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     }
     try {
       if (mode === 'delete') {
-        await deleteAvailability(currentUser.id, slots);
+        await deleteAvailability(userId, slots);
         setAvailability((prev) =>
           prev.filter(
             (slot) =>
@@ -225,7 +225,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
           )
         );
       } else {
-        await saveAvailability(currentUser.id, slots);
+        await saveAvailability(userId, slots);
         setAvailability((prev) => [...prev, ...slots]);
       }
     } catch (error) {
