@@ -88,26 +88,26 @@ class PetsController extends Controller
             'profile_image' => 'nullable|image|max:2048',
             'additional_photos.*' => 'nullable|image|max:2048',
         ]);
-        
-        // Create pet with user ID
+
         $petData = $request->except('profile_image', 'additional_photos');
         $petData['user_id'] = Auth::id();
         $petData['registered_at'] = now();
-        
-        // Handle profile image if provided
+
+        // 1. Crea la mascota primero, sin la imagen
+        $pet = Pet::create($petData);
+
+        // 2. Guarda la imagen de perfil en la carpeta pets/{id}
         if ($request->hasFile('profile_image')) {
             $profileImage = $request->file('profile_image');
-            $profilePath = $profileImage->store('pets/profiles', 'public');
-            $petData['profile_path'] = $profilePath;
+            $profilePath = $profileImage->store("pets/{$pet->id}", 'public');
+            $pet->profile_path = $profilePath;
+            $pet->save();
         }
-        
-        $pet = Pet::create($petData);
-        
-        // Handle additional photos if provided
+
+        // 3. Guarda las fotos extra en pets/{id}/extras
         if ($request->hasFile('additional_photos')) {
             foreach ($request->file('additional_photos') as $photo) {
-                $path = $photo->store('pets/photos', 'public');
-                
+                $path = $photo->store("pets/{$pet->id}/extras", 'public');
                 PetPhoto::create([
                     'pet_id' => $pet->id,
                     'image_path' => $path,
@@ -115,7 +115,7 @@ class PetsController extends Controller
                 ]);
             }
         }
-        
+
         return response()->json([
             'message' => 'Mascota creada exitosamente',
             'pet' => $pet->load(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel', 'photos'])
