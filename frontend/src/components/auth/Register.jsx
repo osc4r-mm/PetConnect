@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext'; // ✅ usar el contexto
+import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
-  const { register } = useAuth(); // ✅ accedemos al método desde el contexto
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,17 +25,14 @@ const Register = () => {
       number: /[0-9]/.test(password),
       symbol: /[^A-Za-z0-9]/.test(password),
     };
-
-    const score = Object.values(requirements).filter(Boolean).length-1;
-
-    return {
-      score,
-      requirements
-    };
+    const score = Object.values(requirements).filter(Boolean).length - 1;
+    return { score, requirements };
   };
 
-
-  const { score: strength, requirements } = useMemo( () => evaluatePasswordStrength(formData.password), [formData.password]);
+  const { score: strength, requirements } = useMemo(
+    () => evaluatePasswordStrength(formData.password),
+    [formData.password]
+  );
   const strengthLabels = ['Muy débil', 'Débil', 'Media', 'Fuerte', 'Muy fuerte'];
   const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
   const strengthLabel = strengthLabels[strength];
@@ -67,7 +64,7 @@ const Register = () => {
       });
       navigate('/');
     } catch (err) {
-        if (err.response?.status === 422 && err.response.data.errors) {
+      if (err.response?.status === 422 && err.response.data.errors) {
         const fieldErrors = Object.values(err.response.data.errors).flat();
         setErrors(fieldErrors);
       } else {
@@ -79,10 +76,9 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Crear Cuenta</h2>
-
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
+      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm border-2 border-purple-100">
+        <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Crear Cuenta</h2>
         {errorMessage.length > 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <ul className="list-disc list-inside space-y-1">
@@ -92,7 +88,6 @@ const Register = () => {
             </ul>
           </div>
         )}
-
         <form onSubmit={handleFormSubmit} noValidate>
           {/* Nombre */}
           <div className="mb-4">
@@ -107,10 +102,9 @@ const Register = () => {
               onChange={handleInputChange}
               required
               placeholder="Tu nombre"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
+              className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
             />
           </div>
-
           {/* Email */}
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">
@@ -124,10 +118,9 @@ const Register = () => {
               onChange={handleInputChange}
               required
               placeholder="correo@ejemplo.com"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring"
+              className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
             />
           </div>
-
           {/* Contraseña */}
           <div className="mb-4">
             <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-1">
@@ -142,7 +135,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 placeholder="********"
                 required
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring pr-10"
+                className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300 pr-10"
               />
               <button
                 type="button"
@@ -152,7 +145,6 @@ const Register = () => {
                 {showPassword ? <EyeOff size={16} className="text-gray-500" /> : <Eye size={16} className="text-gray-500" />}
               </button>
             </div>
-
             {/* Medidor de seguridad */}
             {formData.password && (
               <div className="mt-2">
@@ -165,7 +157,6 @@ const Register = () => {
                 <p className="text-xs mt-1 text-gray-600">
                   Seguridad: <span className={`font-medium ${strength === 0 ? 'text-red-500' : strength < 3 ? 'text-yellow-600' : 'text-green-600'}`}>{strengthLabel}</span>
                 </p>
-                {formData.password && (
                 <ul className="text-xs mt-1 text-gray-600 space-y-1">
                   {!requirements.length && <li>❌ Mínimo 8 caracteres</li>}
                   {!requirements.lowercase && <li>❌ Al menos una letra minúscula</li>}
@@ -173,12 +164,9 @@ const Register = () => {
                   {!requirements.number && <li>❌ Al menos un número</li>}
                   {!requirements.symbol && <li>❌ Al menos un carácter especial</li>}
                 </ul>
-              )}
-
               </div>
             )}
           </div>
-
           {/* Confirmar contraseña */}
           <div className="mb-4">
             <label htmlFor="password_confirmation" className="block text-gray-700 text-sm font-medium mb-1">
@@ -193,7 +181,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 placeholder="********"
                 required
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring pr-10"
+                className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300 pr-10"
               />
               <button
                 type="button"
@@ -203,23 +191,20 @@ const Register = () => {
                 {showConfirmPassword ? <EyeOff size={16} className="text-gray-500" /> : <Eye size={16} className="text-gray-500" />}
               </button>
             </div>
-
             {formData.password_confirmation && formData.password !== formData.password_confirmation && (
               <p className="text-xs mt-1 text-red-500">
                 Las contraseñas no coinciden
               </p>
             )}
           </div>
-
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring disabled:opacity-50"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-300 disabled:opacity-50"
           >
             {isSubmitting ? 'Registrando...' : 'Registrarse'}
           </button>
         </form>
-
         <p className="mt-4 text-center text-sm">
           ¿Ya tienes cuenta?{' '}
           <Link to="/login" className="text-blue-600 hover:underline">
