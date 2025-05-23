@@ -217,7 +217,7 @@ const NotificationsMenu = () => {
             ))}
 
             {tab === 'sent' && sent.map(req => (
-              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-blue-50/40">
+              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-purple-50/40">
                 Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link
