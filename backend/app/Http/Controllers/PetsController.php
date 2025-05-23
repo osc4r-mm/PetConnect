@@ -261,6 +261,13 @@ class PetsController extends Controller
             return response()->json(['message' => 'Propietario no encontrado'], 404);
     }
     
-    return response()->json($owner);
+    return response()->json([
+        'id' => $owner->id,
+        'name' => $owner->name,
+        'email' => $owner->email,
+        'profile_path' => $owner->profile_path,
+        'phone' => $owner->phone,
+        'location' => $owner->location,
+    ]);
 }
 }
