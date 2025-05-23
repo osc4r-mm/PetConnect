@@ -166,7 +166,7 @@ const PetDetail = () => {
       />
       
       {/* Página de detalle */}
-      <div className="container mx-auto pb-12">
+      <div className="container mx-auto mt-4 pb-12">
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
           <div className="absolute top-4 right-4 flex space-x-2">

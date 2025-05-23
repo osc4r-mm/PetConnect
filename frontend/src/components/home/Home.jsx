@@ -165,7 +165,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+      <h1 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent">
         Encuentra tu compañero
       </h1>
 

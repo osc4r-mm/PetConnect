@@ -48,7 +48,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex flex-col h-screen bg-gray-100">
+        <div className="flex flex-col h-screen bg-gradient-to-br from-purple-100 to-blue-50">
           <Navbar />
           <main className="flex-1 overflow-auto">
           <Routes>
