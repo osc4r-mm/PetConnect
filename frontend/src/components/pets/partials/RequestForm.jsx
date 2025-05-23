@@ -4,7 +4,6 @@ import { request } from '../../../services/petService';
 import { getAvailability, getMyAvailability } from '../../../services/availabilityService';
 import { useAuth } from '../../../context/AuthContext';
 
-// Días en español y su mapping
 const DAY_LABELS = {
   monday: 'Lunes',
   tuesday: 'Martes',
@@ -18,7 +17,6 @@ const WEEK_DAYS_ORDER = [
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
 ];
 
-// Función para ordenar slots por día y hora
 function sortSlots(a, b) {
   const dayA = WEEK_DAYS_ORDER.indexOf(a.day_of_week);
   const dayB = WEEK_DAYS_ORDER.indexOf(b.day_of_week);
@@ -44,32 +42,28 @@ const RequestForm = ({
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
   const { user: currentUser } = useAuth();
-
-  // Disponibilidad del cuidador (usuario autenticado para "care")
   const [availability, setAvailability] = useState([]);
-  // Día y hora seleccionados
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
 
   useEffect(() => {
-  if (formData.type === 'care') {
-    if (currentUser) {
-      getMyAvailability()
+    if (formData.type === 'care') {
+      if (currentUser) {
+        getMyAvailability()
+          .then(data => setAvailability(data ?? []))
+          .catch(() => setAvailability([]));
+      } else {
+        setAvailability([]);
+      }
+    } else if (formData.type === 'adopt' && pet && pet.user_id) {
+      getAvailability(pet.user_id)
         .then(data => setAvailability(data ?? []))
         .catch(() => setAvailability([]));
     } else {
       setAvailability([]);
     }
-  } else if (formData.type === 'adopt' && pet && pet.user_id) {
-    getAvailability(pet.user_id)
-      .then(data => setAvailability(data ?? []))
-      .catch(() => setAvailability([]));
-  } else {
-    setAvailability([]);
-  }
-}, [formData.type, pet, currentUser]);
+  }, [formData.type, pet, currentUser]);
 
-  // Reiniciar el form al abrir
   useEffect(() => {
     if (isOpen) {
       setFormData({ type: initialType, message: '', slots: [] });
@@ -79,23 +73,19 @@ const RequestForm = ({
     }
   }, [isOpen, initialType]);
 
-  // Agrupa disponibilidad por día
   const slotsByDay = {};
   availability.forEach(slot => {
     if (!slotsByDay[slot.day_of_week]) slotsByDay[slot.day_of_week] = [];
     slotsByDay[slot.day_of_week].push(slot.time_slot);
   });
 
-  // Cuando cambia el día, resetea la hora
   const handleDayChange = (e) => {
     setSelectedDay(e.target.value);
     setSelectedHour('');
   };
 
-  // Añadir slot seleccionado (y mantener ordenados los slots)
   const handleAddSlot = () => {
     if (!selectedDay || !selectedHour) return;
-    // Prevenir duplicados
     if (
       formData.slots.some(
         s => s.day_of_week === selectedDay && s.time_slot === selectedHour
@@ -114,7 +104,6 @@ const RequestForm = ({
     setSelectedHour('');
   };
 
-  // Quitar slot
   const handleRemoveSlot = idx => {
     const newSlots = formData.slots.slice();
     newSlots.splice(idx, 1);
@@ -130,11 +119,8 @@ const RequestForm = ({
     if (formErrors[name]) setFormErrors(prev => ({ ...prev, [name]: null }));
   };
 
-  // Enviar
   const handleSubmit = () => {
     setFormSubmitting(true);
-
-    // Validar que haya al menos un slot para "care"
     if (
       formData.type === 'care' &&
       (!formData.slots || formData.slots.length === 0)
@@ -145,7 +131,6 @@ const RequestForm = ({
       setFormSubmitting(false);
       return;
     }
-
     const sendData = {
       ...formData,
       agreement_data: formData.type === 'care' ? JSON.stringify(formData.slots) : null,
@@ -160,7 +145,7 @@ const RequestForm = ({
           setFormData({ type: initialType, message: '', slots: [] });
         }, 2000);
       })
-      .catch(error => {
+      .catch(() => {
         setFormErrors({
           submit: 'Ha ocurrido un error. Inténtalo de nuevo.',
         });
@@ -176,7 +161,7 @@ const RequestForm = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl w-full max-w-md p-6"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-purple-100"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -186,11 +171,11 @@ const RequestForm = ({
             ) : (
               <PawPrint size={24} className="text-blue-500" />
             )}
-            <h3 className="text-xl font-bold ml-2">Nueva solicitud</h3>
+            <h3 className="text-xl font-bold ml-2 text-purple-700">Nueva solicitud</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-purple-500"
           >
             <X size={20} />
           </button>
@@ -200,7 +185,7 @@ const RequestForm = ({
             <div className="mx-auto h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
               <Check className="h-6 w-6 text-green-600" />
             </div>
-            <h3 className="mt-3 text-lg font-medium">¡Solicitud enviada!</h3>
+            <h3 className="mt-3 text-lg font-medium text-green-700">¡Solicitud enviada!</h3>
             <p className="mt-2 text-sm text-gray-500">
               Gracias por tu interés en {pet.name}. El dueño se pondrá en contacto contigo pronto.
             </p>
@@ -216,32 +201,30 @@ const RequestForm = ({
             >
               {/* Selector tipo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-purple-700 mb-1">
                   Tipo de solicitud
                 </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-purple-200 rounded-md bg-white"
                 >
                   {isForAdoption && <option value="adopt">Adoptar</option>}
                   {isForSitting && isCaregiverUser && <option value="care">Cuidar</option>}
                 </select>
               </div>
-
               {/* Si es care, seleccionar slots */}
               {formData.type === 'care' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-purple-700 mb-1">
                     Selecciona horarios para el cuidado
                   </label>
                   <div className="flex space-x-2 mb-2">
-                    {/* Día */}
                     <select
                       value={selectedDay}
                       onChange={handleDayChange}
-                      className="p-2 border border-gray-300 rounded-md"
+                      className="p-2 border border-purple-200 rounded-md bg-white"
                     >
                       <option value="">Día</option>
                       {Object.keys(slotsByDay).map(day => (
@@ -250,17 +233,15 @@ const RequestForm = ({
                         </option>
                       ))}
                     </select>
-                    {/* Hora */}
                     <select
                       value={selectedHour}
                       onChange={e => setSelectedHour(e.target.value)}
                       disabled={!selectedDay}
-                      className="p-2 border border-gray-300 rounded-md"
+                      className="p-2 border border-purple-200 rounded-md bg-white"
                     >
                       <option value="">Hora</option>
                       {selectedDay &&
                         slotsByDay[selectedDay]
-                          // Filtra las horas ya seleccionadas para ese día
                           .filter(hour =>
                             !formData.slots.some(
                               s => s.day_of_week === selectedDay && s.time_slot === hour
@@ -273,7 +254,6 @@ const RequestForm = ({
                             </option>
                           ))}
                     </select>
-                    {/* Botón añadir */}
                     <button
                       type="button"
                       className="bg-blue-500 text-white px-3 rounded disabled:opacity-50"
@@ -283,7 +263,6 @@ const RequestForm = ({
                       Añadir
                     </button>
                   </div>
-                  {/* Lista de slots seleccionados, ordenados */}
                   <div>
                     {formData.slots.length > 0 && (
                       <ul className="mb-2">
@@ -314,10 +293,9 @@ const RequestForm = ({
                   </div>
                 </div>
               )}
-
               {/* Mensaje opcional */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-purple-700 mb-1">
                   Mensaje (opcional)
                 </label>
                 <textarea
@@ -325,29 +303,27 @@ const RequestForm = ({
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-purple-200 rounded-md bg-white"
                   placeholder={`Cuéntanos por qué te gustaría ${
                     formData.type === 'adopt' ? 'adoptar' : 'cuidar'
                   } a ${pet.name}`}
                 />
               </div>
-
               {formErrors.submit && (
                 <p className="text-red-500 text-sm">{formErrors.submit}</p>
               )}
-
               <div className="flex justify-end pt-3 space-x-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="py-2 px-4 border rounded-md text-gray-700 hover:bg-gray-50"
+                  className="py-2 px-4 border rounded-md text-purple-700 border-purple-200 hover:bg-purple-50"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className={`py-2 px-4 text-white rounded-md ${
+                  className={`py-2 px-4 text-white rounded-md shadow ${
                     formData.type === 'adopt'
                       ? 'bg-red-500 hover:bg-red-600 focus:ring-red-500'
                       : 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-500'

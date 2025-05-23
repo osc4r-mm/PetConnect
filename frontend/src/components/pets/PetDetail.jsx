@@ -7,8 +7,6 @@ import { getPet, getOwner, deletePet } from '../../services/petService';
 import { isCaregiver } from '../../services/caregiverService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import { useAuth } from '../../context/AuthContext';
-
-// Importar componentes parciales
 import GallerySection from './partials/GallerySection';
 import OwnerCard from './partials/OwnerCard';
 import PetCharacteristics from './partials/PetCharacteristics';
@@ -153,7 +151,7 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
   
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50">
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
@@ -164,8 +162,6 @@ const PetDetail = () => {
         isForSitting={isForSitting}
         isCaregiverUser={isCaregiverUser}
       />
-      
-      {/* Página de detalle */}
       <div className="container mx-auto mt-4 pb-12">
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
@@ -199,7 +195,6 @@ const PetDetail = () => {
             </div>
           </div>
         </div>
-        
         {/* Contenido principal */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8 bg-white shadow-md rounded-b-xl">
           {/* Columna izquierda: fotos y descripción */}
@@ -212,16 +207,14 @@ const PetDetail = () => {
               petId={pet.id}
               onPhotosUpdate={handlePhotosUpdate}
             />
-
             {/* Descripción */}
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Acerca de {pet.name}</h2>
+              <h2 className="text-xl font-semibold mb-4 text-purple-700">Acerca de {pet.name}</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                 {pet.description || `¡Hola! Soy ${pet.name} y estoy buscando un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme?`}
               </p>
             </div>
           </div>
-          
           <div className="md:col-span-1">
           {!editing && (
             <div>
@@ -233,7 +226,7 @@ const PetDetail = () => {
                     {isForAdoption && (
                       <button
                         onClick={() => openRequestModal('adopt')}
-                        className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center"
+                        className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center shadow"
                       >
                         <Heart size={18} className="mr-2" /> Solicitar adopción
                       </button>
@@ -242,7 +235,7 @@ const PetDetail = () => {
                     {isForSitting && (
                       <button
                         onClick={() => openRequestModal('care')}
-                        className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed shadow"
                         disabled={!isCaregiverUser}
                         title={
                           !isCaregiverUser
@@ -277,14 +270,13 @@ const PetDetail = () => {
                   </div>
                 )}
               </div>
-
               {/* Botones de editar/eliminar mascota */}
               {(isOwner || isAdminUser) && !editing && (
                 <div className="flex gap-2 mt-4 justify-center">
                   {/* Solo el dueño puede editar */}
                   {isOwner && !isAdminUser && (
                     <button
-                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded text-center"
+                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded text-center hover:bg-purple-700 shadow"
                       style={{ minWidth: 0 }}
                       onClick={() => setEditing(true)}
                     >
@@ -295,7 +287,7 @@ const PetDetail = () => {
                   <button
                     onClick={handleDeletePet}
                     disabled={deleting}
-                    className="flex-1 flex items-center justify-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors text-center"
+                    className="flex-1 flex items-center justify-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors text-center shadow"
                     style={{ minWidth: 0 }}
                   >
                     <Trash2 size={18} />
@@ -306,7 +298,7 @@ const PetDetail = () => {
 
               {/* Sección del dueño */}
               <div className="mt-6">
-                <h3 className="text-lg font-medium mb-3">Contactar con el dueño</h3>
+                <h3 className="text-lg font-medium mb-3 text-purple-700">Contactar con el dueño</h3>
                 <OwnerCard owner={owner} />
               </div>
             </div>

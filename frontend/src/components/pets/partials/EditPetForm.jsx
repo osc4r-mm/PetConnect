@@ -76,22 +76,23 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-4 bg-gray-50 rounded-xl">
+    <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-100 shadow">
+      <h3 className="text-2xl font-bold text-purple-700 mb-4">Editar mascota</h3>
       <div>
-        <label className="block text-sm font-medium">Nombre</label>
-        <input name="name" value={form.name} onChange={handleChange} className="w-full border rounded p-2" required />
+        <label className="block text-sm font-medium text-purple-700">Nombre</label>
+        <input name="name" value={form.name} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" required />
       </div>
       <div>
-        <label className="block text-sm font-medium">Edad</label>
-        <input name="age" type="number" value={form.age} onChange={handleChange} className="w-full border rounded p-2" min="0" required />
+        <label className="block text-sm font-medium text-purple-700">Edad</label>
+        <input name="age" type="number" value={form.age} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" min="0" required />
       </div>
       <div>
-        <label className="block text-sm font-medium">Peso (kg)</label>
-        <input name="weight" type="number" step="0.1" value={form.weight} onChange={handleChange} className="w-full border rounded p-2" min="0" required />
+        <label className="block text-sm font-medium text-purple-700">Peso (kg)</label>
+        <input name="weight" type="number" step="0.1" value={form.weight} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" min="0" required />
       </div>
       <div>
-        <label className="block text-sm font-medium">Género</label>
-        <select name="gender_id" value={form.gender_id} onChange={handleChange} className="w-full border rounded p-2" required>
+        <label className="block text-sm font-medium text-purple-700">Género</label>
+        <select name="gender_id" value={form.gender_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" required>
           <option value="">Selecciona</option>
           {genderList.map(g => (
             <option key={g.id} value={g.id}>{g.name}</option>
@@ -99,8 +100,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Especie</label>
-        <select name="species_id" value={form.species_id} onChange={handleChange} className="w-full border rounded p-2" required>
+        <label className="block text-sm font-medium text-purple-700">Especie</label>
+        <select name="species_id" value={form.species_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" required>
           <option value="">Selecciona</option>
           {speciesList.map(s => (
             <option key={s.id} value={s.id}>{s.name}</option>
@@ -108,8 +109,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Raza</label>
-        <select name="breed_id" value={form.breed_id} onChange={handleChange} className="w-full border rounded p-2">
+        <label className="block text-sm font-medium text-purple-700">Raza</label>
+        <select name="breed_id" value={form.breed_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white">
           <option value="">Sin especificar</option>
           {filteredBreeds.map(b => (
             <option key={b.id} value={b.id}>{b.name}</option>
@@ -117,8 +118,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Tamaño</label>
-        <select name="size_id" value={form.size_id} onChange={handleChange} className="w-full border rounded p-2">
+        <label className="block text-sm font-medium text-purple-700">Tamaño</label>
+        <select name="size_id" value={form.size_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white">
           <option value="">Sin especificar</option>
           {sizeList.map(s => (
             <option key={s.id} value={s.id}>{s.name}</option>
@@ -126,8 +127,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Nivel de actividad</label>
-        <select name="activity_level_id" value={form.activity_level_id} onChange={handleChange} className="w-full border rounded p-2">
+        <label className="block text-sm font-medium text-purple-700">Nivel de actividad</label>
+        <select name="activity_level_id" value={form.activity_level_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white">
           <option value="">Sin especificar</option>
           {activityList.map(a => (
             <option key={a.id} value={a.id}>{a.name}</option>
@@ -135,8 +136,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Nivel de ruido</label>
-        <select name="noise_level_id" value={form.noise_level_id} onChange={handleChange} className="w-full border rounded p-2">
+        <label className="block text-sm font-medium text-purple-700">Nivel de ruido</label>
+        <select name="noise_level_id" value={form.noise_level_id} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white">
           <option value="">Sin especificar</option>
           {noiseList.map(n => (
             <option key={n.id} value={n.id}>{n.name}</option>
@@ -144,25 +145,25 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Descripción</label>
-        <textarea name="description" value={form.description} onChange={handleChange} className="w-full border rounded p-2" />
+        <label className="block text-sm font-medium text-purple-700">Descripción</label>
+        <textarea name="description" value={form.description} onChange={handleChange} className="w-full border border-purple-200 rounded p-2 bg-white" />
       </div>
       <div className="flex space-x-6">
-        <label>
+        <label className="text-purple-700">
           <input type="checkbox" name="for_adoption" checked={form.for_adoption} onChange={handleChange} />
           <span className="ml-2">Disponible para adopción</span>
         </label>
-        <label>
+        <label className="text-purple-700">
           <input type="checkbox" name="for_sitting" checked={form.for_sitting} onChange={handleChange} />
           <span className="ml-2">Disponible para cuidado</span>
         </label>
       </div>
       {error && <div className="text-red-600">{error}</div>}
-      <div className="flex space-x-3">
-        <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded" disabled={saving}>
+      <div className="flex space-x-3 pt-2">
+        <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 shadow" disabled={saving}>
           Guardar
         </button>
-        <button type="button" className="bg-gray-300 px-4 py-2 rounded" onClick={onCancel} disabled={saving}>
+        <button type="button" className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400" onClick={onCancel} disabled={saving}>
           Cancelar
         </button>
       </div>
