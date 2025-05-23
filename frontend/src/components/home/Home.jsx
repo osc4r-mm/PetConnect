@@ -240,7 +240,7 @@ function PetCard({ pet }) {
           {pet.for_adoption && <div className="bg-red-500 p-1 rounded-full shadow"><Heart size={20} className="text-white" /></div>}
           {pet.for_sitting && <div className="bg-blue-500 p-1 rounded-full shadow"><PawPrint size={20} className="text-white" /></div>}
         </div>
-        <img src={getPetImageUrl(pet.profile_path)} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:rotate-1" 
+        <img src={getPetImageUrl(pet.profile_path)} alt={pet.name} className="w-full h-48 object-cover transition-all duration-700 hover:rotate-1 hover:scale-105" 
         onMouseEnter={() => setIsHovered(false)}  
         onMouseLeave={() => setIsHovered(true)}/>
         {isHovered && pet.species && (
