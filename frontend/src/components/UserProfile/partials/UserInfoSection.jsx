@@ -72,7 +72,6 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
         if (onUserUpdated) onUserUpdated(refreshed);
       }
     } catch (error) {
-      console.error('Error al subir la imagen de perfil:', error);
       alert('No se pudo actualizar la imagen de perfil');
     } finally {
       setIsUploading(false);
@@ -132,7 +131,6 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
         if (onUserUpdated) onUserUpdated(refreshed);
       }
     } catch (error) {
-      console.error('Error al convertirse en cuidador:', error);
       alert('No se pudo convertir en cuidador');
     } finally {
       setIsProcessing(false);
@@ -153,7 +151,6 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
           if (onUserUpdated) onUserUpdated(refreshed);
         }
       } catch (error) {
-        console.error('Error al darse de baja como cuidador:', error);
         alert('No se pudo dar de baja como cuidador');
       } finally {
         setIsProcessing(false);
@@ -162,7 +159,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow">
       <div className="flex flex-col items-center">
         <div className="relative rounded-full overflow-hidden h-32 w-32 mx-auto border-4 border-white shadow-lg">
           <img 
@@ -191,18 +188,18 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
 
         {/* Botón editar perfil */}
         {isOwnProfile && !editMode && (
-          <button className="flex gap-2 items-center mt-2 px-4 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition text-sm"
+          <button className="flex gap-2 items-center mt-2 px-4 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition text-sm shadow"
             onClick={handleEdit}>
             <Edit3 size={18} /> Editar perfil
           </button>
         )}
         {editMode && (
           <div className="flex gap-2 mt-2">
-            <button className="flex gap-2 items-center px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition text-sm"
+            <button className="flex gap-2 items-center px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600 transition text-sm shadow"
               onClick={handleSave}>
               <Save size={18} />Guardar
             </button>
-            <button className="flex gap-2 items-center px-4 py-1 rounded bg-gray-400 text-white hover:bg-gray-500 transition text-sm"
+            <button className="flex gap-2 items-center px-4 py-1 rounded bg-gray-400 text-white hover:bg-gray-500 transition text-sm shadow"
               onClick={handleCancel}>
               <X size={18} />Cancelar
             </button>
@@ -226,10 +223,10 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 name="name"
                 value={form.name}
                 onChange={handleFieldChange}
-                className="w-full border rounded px-3 py-1 mt-1"
+                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
               />
             ) : (
-              <div className="text-xl font-bold">{displayUser.name}</div>
+              <div className="text-xl font-bold text-purple-700">{displayUser.name}</div>
             )}
           </div>
           {/* Email */}
@@ -241,7 +238,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 type="email"
                 value={form.email}
                 onChange={handleFieldChange}
-                className="w-full border rounded px-3 py-1 mt-1"
+                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
               />
             ) : (
               <div className="flex items-center">
@@ -268,7 +265,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 rows={3}
                 value={form.description}
                 onChange={handleFieldChange}
-                className="w-full border rounded px-3 py-1 mt-1"
+                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
               />
             ) : (
               <p className="text-gray-700">
@@ -289,7 +286,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
               <button
                 onClick={handleBecomeCaregiver}
                 disabled={isProcessing}
-                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 shadow"
               >
                 <UserPlus size={18} />
                 {isProcessing ? 'Procesando...' : 'Hacerse cuidador'}
@@ -299,7 +296,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
               <button
                 onClick={handleQuitCaregiver}
                 disabled={isProcessing}
-                className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+                className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 shadow"
               >
                 <UserMinus size={18} />
                 {isProcessing ? 'Procesando...' : 'Darse de baja como cuidador'}

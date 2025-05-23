@@ -23,14 +23,12 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
   const debounceRef = useRef();
   const dropdownRef = useRef(null);
 
-  // Cada vez que cambie `position`, movemos el mapa
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.setView(viewPosition, mapRef.current.getZoom());
     }
   }, [viewPosition]);
 
-  // Cerrar el dropdown al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -43,7 +41,6 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     };
   }, []);
 
-  // Busqueda
   useEffect(() => {
     clearTimeout(debounceRef.current);
     if (searchTerm.length >= 2) {
@@ -86,21 +83,18 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     setShowDropdown(false);
   };
 
-   useEffect(() => {
-      // Actualizar posición cuando cambian las props
-      if (latitude && longitude) {
-        setViewPosition([latitude, longitude]);
-        
-        // Centrar el mapa en la nueva posición si el mapa está inicializado
-        if (mapRef.current) {
-          mapRef.current.setView([latitude, longitude], mapRef.current.getZoom());
-        }
+  useEffect(() => {
+    if (latitude && longitude) {
+      setViewPosition([latitude, longitude]);
+      if (mapRef.current) {
+        mapRef.current.setView([latitude, longitude], mapRef.current.getZoom());
       }
-    }, [latitude, longitude]);
+    }
+  }, [latitude, longitude]);
 
   return (
-    <section>
-      <h2 className="text-2xl font-semibold mb-4 flex items-center">
+    <section className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow mb-6">
+      <h2 className="text-2xl font-semibold mb-4 flex items-center text-purple-700">
         <Search className="mr-2 text-blue-600" /> Ubicación en el mapa
       </h2>
       <div className="flex mb-2 relative" ref={dropdownRef}>
@@ -110,7 +104,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Buscar ciudad..."
-            className="border p-2 rounded-l-md w-full pr-8"
+            className="border border-purple-200 p-2 rounded-l-md w-full pr-8 bg-white focus:ring-2 focus:ring-purple-400 outline-none"
           />
           {isSearching && (
             <span className="absolute right-2 top-2 animate-spin text-gray-400">
@@ -119,7 +113,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
           )}
         </div>
         {showDropdown && (
-          <ul className="absolute z-20 w-full top-10 bg-white border rounded-md mt-1 max-h-60 overflow-auto">
+          <ul className="absolute z-20 w-full top-10 bg-white border border-purple-200 rounded-md mt-1 max-h-60 overflow-auto shadow">
             {searchResults.map((city,i) => (
               <li key={i} className="p-2 hover:bg-blue-50 cursor-pointer flex items-center"
                   onClick={() => handleSelectCity(city)}>
@@ -130,9 +124,9 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
           </ul>
         )}
       </div>
-      <div className="relative" style={{ zIndex: 0 }}>
+      <div className="relative rounded-lg overflow-hidden shadow" style={{ zIndex: 0 }}>
         <MapContainer
-        key={viewPosition.join(',')}
+          key={viewPosition.join(',')}
           center={viewPosition}
           zoom={13}
           scrollWheelZoom={true}
@@ -153,7 +147,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
           </Marker>
         </MapContainer>
       </div>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 mt-1">
         {editable
           ? 'Puedes acercar/alejar con la rueda del ratón y actualizar la ubicación arrastrando el marcador o haciendo doble clic.'
           : 'Solo puedes ver la ubicación.'}

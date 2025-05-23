@@ -79,7 +79,6 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
         // Solo paseos aceptados para el USUARIO DEL PERFIL (targetId)
         const walksMap = {};
         (walksResp.data.requests || []).forEach(req => {
-          // Aquí cambiamos: antes era req.sender_id !== currentUser.id
           if (req.sender_id !== targetId) return;
           if (req.status !== 'accepted') return;
           let agreement = {};
@@ -98,7 +97,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
         });
         setWalks(walksMap);
       } catch (error) {
-        console.error('Error al cargar datos:', error);
+        // fail silently
       } finally {
         setLoading(false);
       }
@@ -249,10 +248,9 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     setTooltip(tooltip => ({ ...tooltip, visible: false }));
   };
 
-  // ---- Render ----
   return (
-    <div className="mt-8 w-full">
-      <h3 className="text-xl font-bold mb-4 flex items-center">
+    <div className="mt-8 w-full bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow">
+      <h3 className="text-xl font-bold mb-4 flex items-center text-purple-700">
         <Clock className="mr-2" size={20} />
         Disponibilidad semanal
       </h3>

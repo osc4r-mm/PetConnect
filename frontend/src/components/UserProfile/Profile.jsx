@@ -65,7 +65,7 @@ export default function Profile() {
   if (error || !user) return <NotFoundData message1="Usuario no encontrado" message2="No se ha podido acceder al perfil de este usuario" />;
 
   return (
-    <div className="container mx-auto p-6 bg-white rounded-xl shadow-md space-y-8">
+    <div className="container mx-auto p-6 bg-gradient-to-br from-purple-100 to-blue-50 rounded-xl shadow-md space-y-8">
       <div className="flex flex-col md:flex-row md:space-x-6">
         <div className='flex-1'>
           <UserInfoSection user={user} onUserUpdated={handleUserUpdated} />

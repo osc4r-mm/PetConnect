@@ -5,8 +5,8 @@ import { getPetImageUrl } from '../../../services/petService';
 
 export default function PetsSection({ pets, onAdd, editable }) {
     return (
-        <section className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4 flex items-center">
+        <section className="mb-8 bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow">
+            <h2 className="text-2xl font-semibold mb-4 flex items-center text-purple-700">
                 <Plus className="mr-2 text-blue-600" /> Mascotas
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import { getReviews, voteReview, canBeReviewed } from '../../../services/reviewService';
+import { getReviews, voteReview } from '../../../services/reviewService';
 
 const STAR_COLOR = '#FFD700';
 const STAR_HOVER = '#FFE066';
@@ -19,7 +19,6 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
   const fetchData = async () => {
     setLoading(true);
     const data = await getReviews(caregiverId);
-    console.log("Reviews data:", data); // <-- Añade esto
     setAvgRating(data.avg);
     setTotalVotes(data.count);
     setMyRating(data.user_review ? data.user_review.rating : null);
