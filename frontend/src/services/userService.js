@@ -67,6 +67,13 @@ export const deleteUser = async (id) => {
   }
 };
 
+
+// Verificar si un usuario es cuidador
+export const isAdmin = (user) => {
+  return user && user.role?.name === 'admin';
+};
+
+
 export const getDefaultUserImageUrl = () =>
   `/uploads/default/default_user.jpg`;
 

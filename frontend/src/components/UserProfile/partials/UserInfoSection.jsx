@@ -3,6 +3,7 @@ import { Mail, Camera, UserPlus, UserMinus, Edit3, Save, X } from 'lucide-react'
 import { useAuth } from '../../../context/AuthContext';
 import { updateUser, getUserImageUrl, uploadUserProfileImage } from '../../../services/userService';
 import { becomeCaregiver, quitCaregiver, isCaregiver } from '../../../services/caregiverService';
+import { isAdmin } from '../../../services/userService';
 import CaregiverReviewStars from './CaregiverReviewStars';
 import api from '../../../services/api';
 
@@ -22,6 +23,7 @@ const UserInfoSection = ({ user }) => {
 
   const isOwnProfile = currentUser && user.id === currentUser.id;
   const userIsCaregiver = isCaregiver(user);
+  const userIsAdmin = isAdmin(user);
 
   // Nuevo estado para canVote
   const [canVote, setCanVote] = useState(false);
@@ -266,7 +268,7 @@ const UserInfoSection = ({ user }) => {
         {/* Botones cuidador */}
         {user.role?.name && isOwnProfile && (
           <div className="mt-4 space-y-2 w-full max-w-md">
-            {!userIsCaregiver && user.role.name != 'admin' && (
+            {!userIsCaregiver && userIsAdmin && (
               <button
                 onClick={handleBecomeCaregiver}
                 disabled={isProcessing}
