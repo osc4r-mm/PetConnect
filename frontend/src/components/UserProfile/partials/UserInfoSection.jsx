@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Camera, UserPlus, UserMinus, Edit3, Save, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { updateUser, getUserImageUrl, uploadUserProfileImage } from '../../../services/userService';
+import { updateUser, getUserImageUrl, uploadUserProfileImage, getUser, isAdmin } from '../../../services/userService';
 import { becomeCaregiver, quitCaregiver, isCaregiver } from '../../../services/caregiverService';
-import { isAdmin } from '../../../services/userService';
 import CaregiverReviewStars from './CaregiverReviewStars';
 import api from '../../../services/api';
 
 const UserInfoSection = ({ user }) => {
   const { user: currentUser, updateUserData } = useAuth();
+  // Estado local para mostrar SIEMPRE datos frescos tras cambios de rol
+  const [displayUser, setDisplayUser] = useState(user);
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -21,18 +22,21 @@ const UserInfoSection = ({ user }) => {
   });
   const [formError, setFormError] = useState(null);
 
-  const isOwnProfile = currentUser && user.id === currentUser.id;
-  const userIsCaregiver = isCaregiver(user);
-  const userIsAdmin = isAdmin(user);
-
   // Nuevo estado para canVote
   const [canVote, setCanVote] = useState(false);
 
   useEffect(() => {
+    setDisplayUser(user);
+  }, [user]);
+
+  const isOwnProfile = currentUser && displayUser.id === currentUser.id;
+  const userIsCaregiver = isCaregiver(displayUser);
+  const userIsAdmin = isAdmin(displayUser);
+
+  useEffect(() => {
     let mounted = true;
-    // Solo consulta si el user es cuidador, NO es tu propio perfil y HAY sesión
-    if (userIsCaregiver && !isOwnProfile && user.caregiver_id && currentUser) {
-      api.get(`/caregivers/${user.caregiver_id}/can_be_reviewed`)
+    if (userIsCaregiver && !isOwnProfile && displayUser.caregiver_id && currentUser) {
+      api.get(`/caregivers/${displayUser.caregiver_id}/can_be_reviewed`)
         .then(res => {
           if (mounted) setCanVote(res.data.canBeReviewedByMe);
         })
@@ -43,7 +47,7 @@ const UserInfoSection = ({ user }) => {
       setCanVote(false);
     }
     return () => { mounted = false; }
-  }, [userIsCaregiver, isOwnProfile, user.caregiver_id, currentUser]);
+  }, [userIsCaregiver, isOwnProfile, displayUser.caregiver_id, currentUser]);
 
   const getRoleBadgeColor = (roleName) => {
     if (!roleName) return 'bg-gray-500';
@@ -59,12 +63,12 @@ const UserInfoSection = ({ user }) => {
     const file = e.target.files[0];
     setIsUploading(true);
     try {
-      const response = await uploadUserProfileImage(user.id, file);
+      const response = await uploadUserProfileImage(displayUser.id, file);
       if (response && response.path && updateUserData) {
-        updateUserData({
-          ...user,
-          image: response.path
-        });
+        // Recarga usuario tras cambiar imagen
+        const refreshed = await getUser(displayUser.id);
+        setDisplayUser(refreshed);
+        if (isOwnProfile) updateUserData(refreshed);
       }
     } catch (error) {
       console.error('Error al subir la imagen de perfil:', error);
@@ -82,9 +86,9 @@ const UserInfoSection = ({ user }) => {
 
   const handleEdit = () => {
     setForm({
-      name: user.name || "",
-      email: user.email || "",
-      description: user.description || ""
+      name: displayUser.name || "",
+      email: displayUser.email || "",
+      description: displayUser.description || ""
     });
     setFormError(null);
     setEditMode(true);
@@ -98,12 +102,15 @@ const UserInfoSection = ({ user }) => {
   const handleSave = async () => {
     setFormError(null);
     try {
-      const updatedUser = await updateUser(user.id, {
+      const updatedUser = await updateUser(displayUser.id, {
         name: form.name,
         email: form.email,
         description: form.description
       });
-      if (updateUserData) updateUserData(updatedUser);
+      // Recarga usuario tras editar
+      const refreshed = await getUser(displayUser.id);
+      setDisplayUser(refreshed);
+      if (isOwnProfile && updateUserData) updateUserData(refreshed);
       setEditMode(false);
     } catch (err) {
       setFormError("No se pudo actualizar el perfil. Comprueba los datos.");
@@ -116,7 +123,10 @@ const UserInfoSection = ({ user }) => {
     try {
       const result = await becomeCaregiver();
       if (result && result.user) {
-        updateUserData(result.user);
+        // Recarga usuario tras el cambio
+        const refreshed = await getUser(result.user.id);
+        setDisplayUser(refreshed);
+        if (isOwnProfile && updateUserData) updateUserData(refreshed);
       }
     } catch (error) {
       console.error('Error al convertirse en cuidador:', error);
@@ -133,7 +143,10 @@ const UserInfoSection = ({ user }) => {
       try {
         const result = await quitCaregiver();
         if (result && result.user) {
-          updateUserData(result.user);
+          // Recarga usuario tras el cambio
+          const refreshed = await getUser(result.user.id);
+          setDisplayUser(refreshed);
+          if (isOwnProfile && updateUserData) updateUserData(refreshed);
         }
       } catch (error) {
         console.error('Error al darse de baja como cuidador:', error);
@@ -149,7 +162,7 @@ const UserInfoSection = ({ user }) => {
       <div className="flex flex-col items-center">
         <div className="relative rounded-full overflow-hidden h-32 w-32 mx-auto border-4 border-white shadow-lg">
           <img 
-            src={getUserImageUrl(user.image)} 
+            src={getUserImageUrl(displayUser.image)} 
             alt="Imagen de perfil" 
             className="h-full w-full object-cover"
           />
@@ -195,7 +208,7 @@ const UserInfoSection = ({ user }) => {
         {/* Review de cuidador: bajo nombre/email/rol */}
         {userIsCaregiver && (
           <CaregiverReviewStars
-            caregiverId={user.caregiver_id}
+            caregiverId={displayUser.caregiver_id}
             canVote={canVote}
           />
         )}
@@ -212,7 +225,7 @@ const UserInfoSection = ({ user }) => {
                 className="w-full border rounded px-3 py-1 mt-1"
               />
             ) : (
-              <div className="text-xl font-bold">{user.name}</div>
+              <div className="text-xl font-bold">{displayUser.name}</div>
             )}
           </div>
           {/* Email */}
@@ -229,16 +242,16 @@ const UserInfoSection = ({ user }) => {
             ) : (
               <div className="flex items-center">
                 <Mail className="h-5 w-5 text-blue-500 mr-2" />
-                <span>{user.email}</span>
+                <span>{displayUser.email}</span>
               </div>
             )}
           </div>
           {/* Rol */}
-          {user.role?.name && (
+          {displayUser.role?.name && (
             <div className="mb-2">
               <label className="block text-gray-600 font-medium">Rol</label>
-              <span className={`${getRoleBadgeColor(user.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
-                {user.role.name}
+              <span className={`${getRoleBadgeColor(displayUser.role.name)} text-white text-sm px-3 py-1 rounded-full`}>
+                {displayUser.role.name}
               </span>
             </div>
           )}
@@ -255,7 +268,7 @@ const UserInfoSection = ({ user }) => {
               />
             ) : (
               <p className="text-gray-700">
-                {user.description || 'Sin descripción disponible.'}
+                {displayUser.description || 'Sin descripción disponible.'}
               </p>
             )}
           </div>
@@ -266,7 +279,7 @@ const UserInfoSection = ({ user }) => {
         </div>
 
         {/* Botones cuidador */}
-        {user.role?.name && isOwnProfile && (
+        {displayUser.role?.name && isOwnProfile && (
           <div className="mt-4 space-y-2 w-full max-w-md">
             {!userIsCaregiver && !userIsAdmin && (
               <button
