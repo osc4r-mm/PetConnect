@@ -251,23 +251,16 @@ class PetsController extends Controller
         return response()->json(['message' => 'Mascota eliminada exitosamente']);
     }
 
-    public function getOwner($petId){
-    $pet = Pet::findOrFail($petId);
-    
-    // Obtener el usuario dueño de la mascota
-    $owner = $pet->user;
-    
-    if (!$owner) {
-        return response()->json(['message' => 'Propietario no encontrado'], 404);
+    public function getOwner($petId) {
+        $pet = Pet::findOrFail($petId);
+        
+        // Obtener el usuario dueño de la mascota
+        $owner = $pet->user;
+        
+        if (!$owner) {
+            return response()->json(['message' => 'Propietario no encontrado'], 404);
     }
     
-    return response()->json([
-        'id' => $owner->id,
-        'name' => $owner->name,
-        'email' => $owner->email,
-        'profile_path' => $owner->profile_path,
-        'phone' => $owner->phone,
-        'location' => $owner->location,
-    ]);
+    return response()->json($owner);
 }
 }
