@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Heart, PawPrint
+  Heart, PawPrint, Trash2
 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
-import { getPet, getOwner } from '../../services/petService';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getPet, getOwner, deletePet } from '../../services/petService';
 import { isCaregiver } from '../../services/caregiverService';
 import { LoadingScreen, NotFoundData } from '../Util';
 import { useAuth } from '../../context/AuthContext';
@@ -19,12 +19,9 @@ import EditPetForm from './partials/EditPetForm';
 const formatHelpers = {
   age: (age) => {
     if (!age) return null;
-    
-    // Si es un número entero o decimal, asumimos que son años
     if (!isNaN(age)) {
       const years = parseInt(age);
       const remainingMonths = Math.round((age - years) * 12);
-      
       if (years > 0) {
         return remainingMonths > 0 
           ? `${years} año${years > 1 ? 's' : ''} y ${remainingMonths} mes${remainingMonths > 1 ? 'es' : ''}`
@@ -32,11 +29,8 @@ const formatHelpers = {
       } else if (remainingMonths > 0) {
         return `${remainingMonths} mes${remainingMonths > 1 ? 'es' : ''}`;
       }
-      
-      // Si llegamos aquí, es solo un año
       return `${years} año${years > 1 ? 's' : ''}`;
     }
-    
     return `${age}`;
   },
   date: (dateString) => {
@@ -50,11 +44,15 @@ const formatHelpers = {
   }
 };
 
-// Componente principal
+const isAdmin = (user) => {
+  return user && user.role?.name === 'admin';
+};
+
 const PetDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-  
+
   const [pet, setPet] = useState(null);
   const [owner, setOwner] = useState(null);
   const isCaregiverUser = currentUser && isCaregiver(currentUser);
@@ -63,21 +61,16 @@ const PetDetail = () => {
   const [requestType, setRequestType] = useState('adopt');
   const [notFound, setNotFound] = useState(false);
   const [hasError, setHasError] = useState(false);
-  
-  // Obtener mascota y su dueño al cargar
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     const fetchPetAndOwner = async () => {
       try {
         const petData = await getPet(id);
-        console.log("Pet data:", petData);
         setPet(petData);
-        
-        // Luego de obtener la mascota, obtenemos su dueño
         const ownerData = await getOwner(petData.id);
-        console.log("Owner data:", ownerData);
         setOwner(ownerData);
       } catch (err) {
-        console.error('Error cargando datos:', err);
         if (err.response?.status === 404) {
           setNotFound(true);
         } else {
@@ -87,41 +80,51 @@ const PetDetail = () => {
         setLoading(false);
       }
     };
-
     fetchPetAndOwner();
   }, [id]);
 
   const [editing, setEditing] = useState(false);
 
-  // Función para abrir el modal con tipo preseleccionado
   const openRequestModal = (type) => {
-    console.log(`Abriendo modal para ${type}`);
     setRequestType(type);
     setShowRequestModal(true);
   };
 
-  // Manejar actualizaciones de fotos
   const handlePhotosUpdate = (type, data) => {
     if (type === 'thumbnail') {
-      // Actualizar la miniatura principal
       setPet(prevPet => ({
         ...prevPet,
         profile_path: data
       }));
     } 
     else if (type === 'extra') {
-      // Añadir una nueva foto a las extras
       setPet(prevPet => ({
         ...prevPet,
         photos: [...(prevPet.photos || []), data]
       }));
     }
     else if (type === 'delete') {
-      // Eliminar una foto por su ID
       setPet(prevPet => ({
         ...prevPet,
         photos: (prevPet.photos || []).filter(photo => photo.id !== data)
       }));
+    }
+  };
+
+  // Verifica si es el dueño o admin
+  const isOwner = currentUser && owner && currentUser.id === owner.id;
+  const isAdminUser = isAdmin(currentUser);
+
+  const handleDeletePet = async () => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta mascota? La acción no se puede deshacer.')) return;
+    setDeleting(true);
+    try {
+      await deletePet(pet.id);
+      navigate('/profile');
+    } catch (err) {
+      alert('Error al eliminar la mascota.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -146,10 +149,6 @@ const PetDetail = () => {
       />
     );
 
-  // Verificar si el usuario actual es el dueño (después de cargar los datos)
-  const isOwner = currentUser && owner && currentUser.id === owner.id;
-
-  // Usar directamente las propiedades como booleanos
   const isForAdoption = pet.for_adoption === true;
   const isForSitting = pet.for_sitting === true;
   
@@ -170,7 +169,6 @@ const PetDetail = () => {
       <div className="container mx-auto pb-12">
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
-          {/* Iconos de disponibilidad en posición absoluta */}
           <div className="absolute top-4 right-4 flex space-x-2">
             {isForAdoption && (
               <div className="bg-red-500 p-2 rounded-full shadow-md" title="Disponible para adopción">
@@ -183,13 +181,10 @@ const PetDetail = () => {
               </div>
             )}
           </div>
-
-          {/* Contenido reorganizado del encabezado */}
           <div className="flex flex-col">
             <div className="flex items-center mb-3">
               <h1 className="text-3xl md:text-4xl font-bold mr-3">{pet.name}</h1>
             </div>
-            
             <div className="flex flex-wrap gap-2">
               {pet.species?.name && (
                 <span className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">
@@ -232,8 +227,6 @@ const PetDetail = () => {
             <div>
               {/* Características */}
               <PetCharacteristics pet={pet} formatHelpers={formatHelpers} />
-
-              {/* Botones de acción */}
               <div className="mt-8 space-y-4">
                 {currentUser && !isOwner && (
                   <>
@@ -284,6 +277,18 @@ const PetDetail = () => {
                   </div>
                 )}
               </div>
+
+              {/* Botón eliminar mascota (dueño o admin) */}
+              {(isOwner || isAdminUser) && (
+                <button
+                  onClick={handleDeletePet}
+                  disabled={deleting}
+                  className="w-full mt-4 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-2 rounded transition-colors"
+                >
+                  <Trash2 size={18} />
+                  {deleting ? 'Eliminando...' : 'Eliminar mascota'}
+                </button>
+              )}
 
               {/* Sección del dueño */}
               <div className="mt-6">
