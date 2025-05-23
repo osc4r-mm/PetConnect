@@ -37,6 +37,9 @@ Route::delete('/user/{userId}', [UserController::class, 'delete']);
 Route::get('/caregiver/{userId}/availability', [CaregiverAvailabilityController::class, 'get']);
 Route::get('/caregivers/{caregiverId}/reviews', [CaregiverReviewController::class, 'getAll']);
 
+// Rutas de solicitudes
+Route::get('/user/{userId}/requests', [UserRequestController::class, 'getMy']);
+
 // Rutas complementarias
 Route::get('/species', [PetDataController::class, 'getSpecies']);
 Route::get('/breeds', [PetDataController::class, 'getBreeds']);
@@ -74,7 +77,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rutas de solicitudes
     Route::get('/requests', [NotificationController::class, 'getAll']);
-    Route::get('/user/{userId}/requests', [UserRequestController::class, 'getMy']);
     Route::patch('/request/{requestId}/accept', [NotificationController::class, 'accept']);
     Route::patch('/request/{requestId}/reject', [NotificationController::class, 'reject']);
     Route::delete('/request/{id}/cancel', [NotificationController::class, 'cancel']);
