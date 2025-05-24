@@ -159,7 +159,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow">
+    <div className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl border-2 border-green-100 shadow">
       <div className="flex flex-col items-center">
         <div className="relative rounded-full overflow-hidden h-32 w-32 mx-auto border-4 border-white shadow-lg">
           <img 
@@ -223,10 +223,10 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 name="name"
                 value={form.name}
                 onChange={handleFieldChange}
-                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
+                className="w-full border border-green-200 rounded px-3 py-1 mt-1"
               />
             ) : (
-              <div className="text-xl font-bold text-purple-700">{displayUser.name}</div>
+              <div className="text-xl font-bold text-green-700">{displayUser.name}</div>
             )}
           </div>
           {/* Email */}
@@ -238,7 +238,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 type="email"
                 value={form.email}
                 onChange={handleFieldChange}
-                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
+                className="w-full border border-green-200 rounded px-3 py-1 mt-1"
               />
             ) : (
               <div className="flex items-center">
@@ -265,7 +265,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
                 rows={3}
                 value={form.description}
                 onChange={handleFieldChange}
-                className="w-full border border-purple-200 rounded px-3 py-1 mt-1"
+                className="w-full border border-green-200 rounded px-3 py-1 mt-1"
               />
             ) : (
               <p className="text-gray-700">

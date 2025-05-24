@@ -162,8 +162,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50 flex flex-col h-full p-6">
-      <h1 className="text-4xl font-extrabold mb-6 text-center text-purple-700 tracking-tight">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-50 flex flex-col h-full p-6">
+      <h1 className="text-4xl font-extrabold mb-6 text-center text-green-700 tracking-tight">
         Encuentra tu compañero
       </h1>
       <FilterSection
@@ -186,9 +186,9 @@ export default function Home() {
           <div className='p-1'>
             {/* Pagination arriba */}
             <div className="flex flex-col xxs:flex-row items-center justify-center mb-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
-              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&lt;</button>
-              <span className="px-4 py-2 font-bold text-purple-800">{page} / {lastPage}</span>
-              <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&gt;</button>
+              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-green-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-green-700 hover:bg-green-300 transition-all">&lt;</button>
+              <span className="px-4 py-2 font-bold text-green-800">{page} / {lastPage}</span>
+              <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-green-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-green-700 hover:bg-green-300 transition-all">&gt;</button>
             </div>
             {/* Grid de mascotas */}
             <div className={`grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-500 ${animatingCards ? 'opacity-20 blur-xxs' : 'opacity-100 blur-0'}`}>
@@ -197,9 +197,9 @@ export default function Home() {
             {/* Pagination abajo */}
             {(pets.length > 8 || (pets.length > 4 && showFilters)) && (
               <div className="flex flex-col xxs:flex-row items-center justify-center m-6 space-y-2 xxs:space-y-0 xxs:space-x-2">
-                <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&lt;</button>
-                <span className="px-4 py-2 font-bold text-purple-800">{page} / {lastPage}</span>
-                <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-purple-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-purple-700 hover:bg-purple-300 transition-all">&gt;</button>
+                <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 bg-green-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-green-700 hover:bg-green-300 transition-all">&lt;</button>
+                <span className="px-4 py-2 font-bold text-green-800">{page} / {lastPage}</span>
+                <button onClick={() => setPage(p => Math.min(lastPage, p+1))} disabled={page === lastPage} className="px-4 py-2 bg-green-200 rounded disabled:opacity-30 disabled:cursor-not-allowed font-semibold text-green-700 hover:bg-green-300 transition-all">&gt;</button>
               </div>
             )}
           </div>
@@ -230,7 +230,7 @@ function PetCard({ pet }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:z-10 cursor-pointer border-2 border-purple-100 hover:border-purple-300"
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden relative transform transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:z-10 cursor-pointer border-2 border-green-100 hover:border-green-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}>
@@ -253,7 +253,7 @@ function PetCard({ pet }) {
       </div>
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="font-bold text-lg text-purple-700">{pet.name}</h2>
+          <h2 className="font-bold text-lg text-green-700">{pet.name}</h2>
           {/* Género con icono */}
           {pet.gender && (
             <div 
@@ -280,13 +280,13 @@ function PetCard({ pet }) {
 }
 
 function Tag({ label }) {
-  return <span className="text-xs bg-purple-50 text-purple-800 px-2 py-1 rounded-full border border-purple-200">{label}</span>;
+  return <span className="text-xs bg-green-50 text-green-800 px-2 py-1 rounded-full border border-green-200">{label}</span>;
 }
 
 const NoResults = ({ onReset }) => (
   <div className="text-center py-12">
-    <p className="text-purple-500 text-2xl font-semibold mb-2">No se encontraron mascotas.</p>
-    <p className="text-purple-400 mb-4">Prueba a limpiar los filtros</p>
+    <p className="text-green-500 text-2xl font-semibold mb-2">No se encontraron mascotas.</p>
+    <p className="text-green-400 mb-4">Prueba a limpiar los filtros</p>
     <button onClick={onReset} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow">Limpiar filtros</button>
   </div>
 );

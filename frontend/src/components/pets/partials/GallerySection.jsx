@@ -80,8 +80,8 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
   // Si no hay fotos, mostramos un placeholder
   if (allPhotos.length === 0) {
     return (
-      <div className="relative rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center" style={{height: '400px'}}>
-        <div className="flex flex-col items-center justify-center text-purple-300 h-full">
+      <div className="relative rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center" style={{height: '400px'}}>
+        <div className="flex flex-col items-center justify-center text-green-300 h-full">
           <ImagePlus size={48} />
           <p className="mt-2">Sin fotografías disponibles</p>
           {editable && (
@@ -102,7 +102,7 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
   
   return (
     <>
-      <div className="relative rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center" style={{height: '400px'}}>
+      <div className="relative rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center" style={{height: '400px'}}>
         <img 
           src={getPetImageUrl(allPhotos[activePhoto])} 
           alt={`${name} - foto ${activePhoto + 1}`} 

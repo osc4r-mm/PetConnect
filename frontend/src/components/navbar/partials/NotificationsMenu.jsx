@@ -122,7 +122,7 @@ const NotificationsMenu = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button className="relative" onClick={() => setOpen(!open)}>
-        <Bell size={22} className="text-purple-600" />
+        <Bell size={22} className="text-green-600" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg border-2 border-white">
             {unreadCount}
@@ -130,13 +130,13 @@ const NotificationsMenu = () => {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-96 bg-white shadow-2xl rounded-2xl z-50 border-2 border-purple-100 animate-fadeIn">
-          <div className="flex border-b border-purple-100">
+        <div className="absolute right-0 mt-2 w-96 bg-white shadow-2xl rounded-2xl z-50 border-2 border-green-100 animate-fadeIn">
+          <div className="flex border-b border-green-100">
             <button
               className={`flex-1 py-2 text-base font-bold rounded-tl-2xl transition-colors ${
                 tab === 'received'
-                  ? 'border-b-2 border-purple-400 text-purple-700 bg-purple-50'
-                  : 'text-gray-500 hover:bg-purple-50'
+                  ? 'border-b-2 border-green-400 text-green-700 bg-green-50'
+                  : 'text-gray-500 hover:bg-green-50'
               }`}
               onClick={() => setTab('received')}
             >
@@ -145,8 +145,8 @@ const NotificationsMenu = () => {
             <button
               className={`flex-1 py-2 text-base font-bold rounded-tr-2xl transition-colors ${
                 tab === 'sent'
-                  ? 'border-b-2 border-purple-400 text-purple-700 bg-purple-50'
-                  : 'text-gray-500 hover:bg-purple-50'
+                  ? 'border-b-2 border-green-400 text-green-700 bg-green-50'
+                  : 'text-gray-500 hover:bg-green-50'
               }`}
               onClick={() => setTab('sent')}
             >
@@ -155,15 +155,15 @@ const NotificationsMenu = () => {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {tab === 'received' && received.length === 0 && (
-              <div className="p-6 text-purple-400 text-center">No tienes solicitudes recibidas.</div>
+              <div className="p-6 text-green-400 text-center">No tienes solicitudes recibidas.</div>
             )}
             {tab === 'sent' && sent.length === 0 && (
-              <div className="p-6 text-purple-400 text-center">No has enviado solicitudes.</div>
+              <div className="p-6 text-green-400 text-center">No has enviado solicitudes.</div>
             )}
             {/* Recibidas */}
             {tab === 'received' && received.map(req => (
-              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-purple-50/40">
-                <div className="font-semibold text-purple-700">
+              <div key={req.id} className="p-4 border-b border-green-50 text-sm bg-green-50/40">
+                <div className="font-semibold text-green-700">
                   {req.sender && req.sender.name
                     ? (
                       <span>
@@ -217,8 +217,8 @@ const NotificationsMenu = () => {
             ))}
 
             {tab === 'sent' && sent.map(req => (
-              <div key={req.id} className="p-4 border-b border-purple-50 text-sm bg-purple-50/40">
-                <div className="font-semibold text-purple-700">
+              <div key={req.id} className="p-4 border-b border-green-50 text-sm bg-green-50/40">
+                <div className="font-semibold text-green-700">
                   Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link

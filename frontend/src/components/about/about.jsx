@@ -13,7 +13,7 @@ const values = [
     desc: "Fomentamos la colaboración entre adoptantes, dueños y cuidadores para el bienestar común."
   },
   {
-    icon: <PawPrint className="text-purple-500" size={32} />,
+    icon: <PawPrint className="text-green-500" size={32} />,
     title: "Adopción Responsable",
     desc: "Facilitamos la adopción y el cuidado temporal, promoviendo la responsabilidad y el compromiso."
   },
@@ -30,10 +30,10 @@ const values = [
 ];
 
 const About = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50 px-4">
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-50 px-4">
     <div className="bg-white shadow-xl rounded-2xl p-4 max-w-3xl w-full animate-fadeIn">
 
-      <h1 className="text-4xl font-extrabold mb-2 text-center text-purple-700 tracking-tight">
+      <h1 className="text-4xl font-extrabold mb-2 text-center text-green-700 tracking-tight">
         Acerca de PetConnect
       </h1>
 
@@ -46,10 +46,10 @@ const About = () => (
         {values.map((v, i) => (
           <div
             key={i}
-            className="flex flex-col items-center bg-gradient-to-t from-purple-50 to-white rounded-xl shadow-md p-4 w-48 hover:scale-105 transition"
+            className="flex flex-col items-center bg-gradient-to-t from-green-50 to-white rounded-xl shadow-md p-4 w-48 hover:scale-105 transition"
           >
             {v.icon}
-            <h3 className="font-bold text-md mt-2 mb-1 text-center text-purple-800">{v.title}</h3>
+            <h3 className="font-bold text-md mt-2 mb-1 text-center text-green-800">{v.title}</h3>
             <p className="text-xs text-gray-600 text-center">{v.desc}</p>
           </div>
         ))}
@@ -66,11 +66,11 @@ const About = () => (
 
       <div className="mb-3 text-center">
         <span className="inline-block text-gray-600 mb-2">
-          Proyecto realizado por <a className="text-purple-700 underline font-medium" href="https://github.com/osc4r-mm" target="_blank" rel="noopener noreferrer">Oscar M.M.</a>
+          Proyecto realizado por <a className="text-green-700 underline font-medium" href="https://github.com/osc4r-mm" target="_blank" rel="noopener noreferrer">Oscar M.M.</a>
         </span>
         <br />
         <span className="inline-block text-gray-600">
-          ¿Tienes sugerencias o quieres colaborar? Visita la página de <a href="/contact" className="text-purple-600 underline font-medium">contacto</a>.
+          ¿Tienes sugerencias o quieres colaborar? Visita la página de <a href="/contact" className="text-green-600 underline font-medium">contacto</a>.
         </span>
       </div>
     </div>

@@ -49,9 +49,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
-      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm border-2 border-purple-100">
-        <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Iniciar Sesión</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-50">
+      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm border-2 border-green-100">
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-700">Iniciar Sesión</h2>
         {errorMessage && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {errorMessage}
@@ -70,7 +70,7 @@ const Login = () => {
               onChange={handleInputChange}
               placeholder="correo@ejemplo.com"
               required
-              className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+              className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
             />
           </div>
           <div className="mb-4">
@@ -86,7 +86,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 placeholder="********"
                 required
-                className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300 pr-10"
+                className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300 pr-10"
               />
               <button
                 type="button"
@@ -100,14 +100,14 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 disabled:opacity-50"
           >
             {isLoading ? 'Ingresando...' : 'Iniciar Sesión'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-purple-700 hover:text-purple-900 hover:underline">
+          <Link to="/register" className="text-green-700 hover:text-green-900 hover:underline">
             Regístrate
           </Link>
         </p>

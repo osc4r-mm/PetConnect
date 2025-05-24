@@ -7,15 +7,15 @@ const OwnerCard = ({ owner }) => {
   if (!owner) return null;
   
   return (
-    <div className="flex items-center bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-xl shadow p-3 hover:scale-105 transition-transform duration-200 cursor-pointer">
+    <div className="flex items-center bg-gradient-to-r from-green-50 to-blue-50 border border-green-100 rounded-xl shadow p-3 hover:scale-105 transition-transform duration-200 cursor-pointer">
       <div className="flex-shrink-0 mr-3">
-        <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 border-2 border-purple-200">
+        <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 border-2 border-green-200">
             <img src={getUserImageUrl(owner.image)} alt="Perfil" className="w-full h-full object-cover" />
         </div>
       </div>
       <div className="flex-1 min-w-0">
         <Link to={`/user/${owner.id}`}>
-          <h3 className="text-md font-bold text-purple-700 truncate">{owner.name}</h3>
+          <h3 className="text-md font-bold text-green-700 truncate">{owner.name}</h3>
         </Link>
         <p className="text-xs text-gray-500 truncate">
           {owner.email}

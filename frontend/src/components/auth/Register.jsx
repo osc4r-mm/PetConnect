@@ -76,9 +76,9 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
-      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm border-2 border-purple-100">
-        <h2 className="text-2xl font-bold mb-6 text-center text-purple-700">Crear Cuenta</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-50">
+      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm border-2 border-green-100">
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-700">Crear Cuenta</h2>
         {errorMessage.length > 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <ul className="list-disc list-inside space-y-1">
@@ -102,7 +102,7 @@ const Register = () => {
               onChange={handleInputChange}
               required
               placeholder="Tu nombre"
-              className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+              className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
             />
           </div>
           {/* Email */}
@@ -118,7 +118,7 @@ const Register = () => {
               onChange={handleInputChange}
               required
               placeholder="correo@ejemplo.com"
-              className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+              className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
             />
           </div>
           {/* Contraseña */}
@@ -135,7 +135,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 placeholder="********"
                 required
-                className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300 pr-10"
+                className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300 pr-10"
               />
               <button
                 type="button"
@@ -181,7 +181,7 @@ const Register = () => {
                 onChange={handleInputChange}
                 placeholder="********"
                 required
-                className="w-full border border-purple-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300 pr-10"
+                className="w-full border border-green-200 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300 pr-10"
               />
               <button
                 type="button"
@@ -200,14 +200,14 @@ const Register = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-purple-700 hover:to-blue-700 font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-green-300 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white hover:from-green-700 hover:to-blue-700 font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:ring-green-300 disabled:opacity-50"
           >
             {isSubmitting ? 'Registrando...' : 'Registrarse'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-purple-700 hover:text-purple-900 hover:underline">
+          <Link to="/login" className="text-green-700 hover:text-green-900 hover:underline">
             Iniciar Sesión
           </Link>
         </p>

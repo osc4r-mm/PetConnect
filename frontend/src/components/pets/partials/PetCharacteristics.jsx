@@ -10,7 +10,7 @@ const CharacteristicItem = ({ icon, title, value }) => {
     <div className="flex items-center mb-3">
       {icon}
       <div className="ml-2">
-        <p className="font-medium text-purple-700">{title}</p>
+        <p className="font-medium text-green-700">{title}</p>
         <p className="text-gray-700">{value}</p>
       </div>
     </div>
@@ -20,8 +20,8 @@ const CharacteristicItem = ({ icon, title, value }) => {
 const PetCharacteristics = ({ pet, formatHelpers }) => {
   const genderIsMale = pet.gender?.name?.toLowerCase() === 'macho';
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border-2 border-purple-100 shadow">
-      <h2 className="text-xl font-semibold mb-4 text-purple-700">Características</h2>
+    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-5 border-2 border-green-100 shadow">
+      <h2 className="text-xl font-semibold mb-4 text-green-700">Características</h2>
       <div className="space-y-1">
         <CharacteristicItem
           icon={genderIsMale 

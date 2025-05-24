@@ -161,7 +161,7 @@ const RequestForm = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-purple-100"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border-2 border-green-100"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -171,11 +171,11 @@ const RequestForm = ({
             ) : (
               <PawPrint size={24} className="text-blue-500" />
             )}
-            <h3 className="text-xl font-bold ml-2 text-purple-700">Nueva solicitud</h3>
+            <h3 className="text-xl font-bold ml-2 text-green-700">Nueva solicitud</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-purple-500"
+            className="text-gray-500 hover:text-green-500"
           >
             <X size={20} />
           </button>
@@ -201,14 +201,14 @@ const RequestForm = ({
             >
               {/* Selector tipo */}
               <div>
-                <label className="block text-sm font-medium text-purple-700 mb-1">
+                <label className="block text-sm font-medium text-green-700 mb-1">
                   Tipo de solicitud
                 </label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-purple-200 rounded-md bg-white"
+                  className="w-full p-2 border border-green-200 rounded-md bg-white"
                 >
                   {isForAdoption && <option value="adopt">Adoptar</option>}
                   {isForSitting && isCaregiverUser && <option value="care">Cuidar</option>}
@@ -217,14 +217,14 @@ const RequestForm = ({
               {/* Si es care, seleccionar slots */}
               {formData.type === 'care' && (
                 <div>
-                  <label className="block text-sm font-medium text-purple-700 mb-1">
+                  <label className="block text-sm font-medium text-green-700 mb-1">
                     Selecciona horarios para el cuidado
                   </label>
                   <div className="flex space-x-2 mb-2">
                     <select
                       value={selectedDay}
                       onChange={handleDayChange}
-                      className="p-2 border border-purple-200 rounded-md bg-white"
+                      className="p-2 border border-green-200 rounded-md bg-white"
                     >
                       <option value="">Día</option>
                       {Object.keys(slotsByDay).map(day => (
@@ -237,7 +237,7 @@ const RequestForm = ({
                       value={selectedHour}
                       onChange={e => setSelectedHour(e.target.value)}
                       disabled={!selectedDay}
-                      className="p-2 border border-purple-200 rounded-md bg-white"
+                      className="p-2 border border-green-200 rounded-md bg-white"
                     >
                       <option value="">Hora</option>
                       {selectedDay &&
@@ -295,7 +295,7 @@ const RequestForm = ({
               )}
               {/* Mensaje opcional */}
               <div>
-                <label className="block text-sm font-medium text-purple-700 mb-1">
+                <label className="block text-sm font-medium text-green-700 mb-1">
                   Mensaje (opcional)
                 </label>
                 <textarea
@@ -303,7 +303,7 @@ const RequestForm = ({
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full p-2 border border-purple-200 rounded-md bg-white"
+                  className="w-full p-2 border border-green-200 rounded-md bg-white"
                   placeholder={`Cuéntanos por qué te gustaría ${
                     formData.type === 'adopt' ? 'adoptar' : 'cuidar'
                   } a ${pet.name}`}
@@ -316,7 +316,7 @@ const RequestForm = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="py-2 px-4 border rounded-md text-purple-700 border-purple-200 hover:bg-purple-50"
+                  className="py-2 px-4 border rounded-md text-green-700 border-green-200 hover:bg-green-50"
                 >
                   Cancelar
                 </button>

@@ -249,8 +249,8 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   };
 
   return (
-    <div className="mt-8 w-full bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow">
-      <h3 className="text-xl font-bold mb-4 flex items-center text-purple-700">
+    <div className="mt-8 w-full bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl border-2 border-green-100 shadow">
+      <h3 className="text-xl font-bold mb-4 flex items-center text-green-700">
         <Clock className="mr-2" size={20} />
         Disponibilidad semanal
       </h3>

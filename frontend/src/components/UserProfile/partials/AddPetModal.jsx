@@ -228,7 +228,7 @@ export default function AddPetModal({ onClose, onAdd }) {
           <X size={20} />
         </button>
         
-        <h3 className="text-2xl font-bold mb-4 text-purple-700">Añadir mascota</h3>
+        <h3 className="text-2xl font-bold mb-4 text-green-700">Añadir mascota</h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Información básica */}
@@ -240,7 +240,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full border ${errors.name ? 'border-red-500' : 'border-purple-200'} p-2 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-transparent transition`}
+                className={`w-full border ${errors.name ? 'border-red-500' : 'border-green-200'} p-2 rounded-md focus:ring-2 focus:ring-green-400 focus:border-transparent transition`}
                 placeholder="Nombre de tu mascota"
               />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
@@ -251,7 +251,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full border border-purple-200 p-2 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                className="w-full border border-green-200 p-2 rounded-md focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
                 placeholder="Describe a tu mascota"
                 rows="1"
               />
@@ -268,7 +268,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 onChange={handleChange}
                 step="0.1"
                 min="0"
-                className={`w-full border ${errors.age ? 'border-red-500' : 'border-purple-200'} p-2 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-transparent transition`}
+                className={`w-full border ${errors.age ? 'border-red-500' : 'border-green-200'} p-2 rounded-md focus:ring-2 focus:ring-green-400 focus:border-transparent transition`}
                 placeholder="Ej: 2"
               />
               {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
@@ -282,7 +282,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 onChange={handleChange}
                 step="0.1"
                 min="0.1"
-                className={`w-full border ${errors.weight ? 'border-red-500' : 'border-purple-200'} p-2 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-transparent transition`}
+                className={`w-full border ${errors.weight ? 'border-red-500' : 'border-green-200'} p-2 rounded-md focus:ring-2 focus:ring-green-400 focus:border-transparent transition`}
                 placeholder="Ej: 5.2"
               />
               {errors.weight && <p className="text-red-500 text-xs mt-1">{errors.weight}</p>}
@@ -293,7 +293,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="gender_id"
                 value={formData.gender_id}
                 onChange={handleChange}
-                className={`w-full border ${errors.gender_id ? 'border-red-500' : 'border-purple-200'} p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition`}
+                className={`w-full border ${errors.gender_id ? 'border-red-500' : 'border-green-200'} p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition`}
               >
                 <option value="">Selecciona un género</option>
                 {genders.map(gender => (
@@ -311,7 +311,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="species_id"
                 value={formData.species_id}
                 onChange={handleChange}
-                className={`w-full border ${errors.species_id ? 'border-red-500' : 'border-purple-200'} p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition`}
+                className={`w-full border ${errors.species_id ? 'border-red-500' : 'border-green-200'} p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition`}
               >
                 <option value="">Selecciona una especie</option>
                 {species.map(item => (
@@ -326,7 +326,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="breed_id"
                 value={formData.breed_id}
                 onChange={handleChange}
-                className="w-full border border-purple-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                className="w-full border border-green-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
                 disabled={!formData.species_id}
               >
                 <option value="">Selecciona una raza</option>
@@ -346,7 +346,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="size_id"
                 value={formData.size_id}
                 onChange={handleChange}
-                className="w-full border border-purple-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                className="w-full border border-green-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
               >
                 <option value="">Selecciona un tamaño</option>
                 {sizes.map(size => (
@@ -360,7 +360,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="activity_level_id"
                 value={formData.activity_level_id}
                 onChange={handleChange}
-                className="w-full border border-purple-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                className="w-full border border-green-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
               >
                 <option value="">Selecciona un nivel</option>
                 {activityLevels.map(level => (
@@ -374,7 +374,7 @@ export default function AddPetModal({ onClose, onAdd }) {
                 name="noise_level_id"
                 value={formData.noise_level_id}
                 onChange={handleChange}
-                className="w-full border border-purple-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                className="w-full border border-green-200 p-2 rounded-md bg-white focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
               >
                 <option value="">Selecciona un nivel</option>
                 {noiseLevels.map(level => (
@@ -390,11 +390,11 @@ export default function AddPetModal({ onClose, onAdd }) {
               <div 
                 className={`flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer transition-all
                   ${formData.for_adoption 
-                    ? 'bg-purple-100 text-purple-800 border border-purple-300' 
+                    ? 'bg-green-100 text-green-800 border border-green-300' 
                     : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'}`}
                 onClick={() => handleToggle('for_adoption')}
               >
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${formData.for_adoption ? 'bg-purple-500' : 'bg-gray-300'}`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${formData.for_adoption ? 'bg-green-500' : 'bg-gray-300'}`}>
                   {formData.for_adoption && <Check size={12} className="text-white" />}
                 </div>
                 <span>Disponible para adopción</span>
@@ -420,9 +420,9 @@ export default function AddPetModal({ onClose, onAdd }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Foto de perfil</label>
               <div className="flex items-center space-x-4">
-                <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-purple-200 border-dashed rounded-lg cursor-pointer hover:bg-purple-50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-green-200 border-dashed rounded-lg cursor-pointer hover:bg-green-50 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-8 h-8 text-purple-400" />
+                    <Upload className="w-8 h-8 text-green-400" />
                     <p className="text-xs text-gray-500 mt-1">Subir imagen</p>
                   </div>
                   <input
@@ -456,9 +456,9 @@ export default function AddPetModal({ onClose, onAdd }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Fotos adicionales</label>
               <div className="flex flex-wrap gap-4">
-                <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-purple-200 border-dashed rounded-lg cursor-pointer hover:bg-purple-50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-green-200 border-dashed rounded-lg cursor-pointer hover:bg-green-50 transition-colors">
                   <div className="flex flex-col items-center justify-center">
-                    <Plus className="w-6 h-6 text-purple-400" />
+                    <Plus className="w-6 h-6 text-green-400" />
                     <p className="text-xs text-gray-500 mt-1">Añadir</p>
                   </div>
                   <input
@@ -499,7 +499,7 @@ export default function AddPetModal({ onClose, onAdd }) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (

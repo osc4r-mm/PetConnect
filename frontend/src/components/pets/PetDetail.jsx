@@ -151,7 +151,7 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-50">
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}
@@ -164,7 +164,7 @@ const PetDetail = () => {
       />
       <div className="container mx-auto mt-4 pb-12">
         {/* Encabezado */}
-        <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
+        <div className="bg-gradient-to-r from-green-500 to-green-700 text-white p-6 md:p-8 rounded-t-xl shadow-md relative">
           <div className="absolute top-4 right-4 flex space-x-2">
             {isForAdoption && (
               <div className="bg-red-500 p-2 rounded-full shadow-md" title="Disponible para adopción">
@@ -209,7 +209,7 @@ const PetDetail = () => {
             />
             {/* Descripción */}
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4 text-purple-700">Acerca de {pet.name}</h2>
+              <h2 className="text-xl font-semibold mb-4 text-green-700">Acerca de {pet.name}</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                 {pet.description || `¡Hola! Soy ${pet.name} y estoy buscando un hogar lleno de amor. Me encanta jugar, recibir mimos y hacer nuevos amigos. ¿Te gustaría conocerme?`}
               </p>
@@ -276,7 +276,7 @@ const PetDetail = () => {
                   {/* Solo el dueño puede editar */}
                   {isOwner && !isAdminUser && (
                     <button
-                      className="flex-1 px-4 py-2 bg-purple-600 text-white rounded text-center hover:bg-purple-700 shadow"
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded text-center hover:bg-green-700 shadow"
                       style={{ minWidth: 0 }}
                       onClick={() => setEditing(true)}
                     >
@@ -298,7 +298,7 @@ const PetDetail = () => {
 
               {/* Sección del dueño */}
               <div className="mt-6">
-                <h3 className="text-lg font-medium mb-3 text-purple-700">Contactar con el dueño</h3>
+                <h3 className="text-lg font-medium mb-3 text-green-700">Contactar con el dueño</h3>
                 <OwnerCard owner={owner} />
               </div>
             </div>

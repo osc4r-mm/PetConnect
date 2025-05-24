@@ -93,8 +93,8 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
   }, [latitude, longitude]);
 
   return (
-    <section className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-100 shadow mb-6">
-      <h2 className="text-2xl font-semibold mb-4 flex items-center text-purple-700">
+    <section className="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-xl border-2 border-green-100 shadow mb-6">
+      <h2 className="text-2xl font-semibold mb-4 flex items-center text-green-700">
         <Search className="mr-2 text-blue-600" /> Ubicación en el mapa
       </h2>
       <div className="flex mb-2 relative" ref={dropdownRef}>
@@ -104,7 +104,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Buscar ciudad..."
-            className="border border-purple-200 p-2 rounded-l-md w-full pr-8 bg-white focus:ring-2 focus:ring-purple-400 outline-none"
+            className="border border-green-200 p-2 rounded-l-md w-full pr-8 bg-white focus:ring-2 focus:ring-green-400 outline-none"
           />
           {isSearching && (
             <span className="absolute right-2 top-2 animate-spin text-gray-400">
@@ -113,7 +113,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
           )}
         </div>
         {showDropdown && (
-          <ul className="absolute z-20 w-full top-10 bg-white border border-purple-200 rounded-md mt-1 max-h-60 overflow-auto shadow">
+          <ul className="absolute z-20 w-full top-10 bg-white border border-green-200 rounded-md mt-1 max-h-60 overflow-auto shadow">
             {searchResults.map((city,i) => (
               <li key={i} className="p-2 hover:bg-blue-50 cursor-pointer flex items-center"
                   onClick={() => handleSelectCity(city)}>

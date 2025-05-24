@@ -33,14 +33,14 @@ export default function CookiesModal({ onAccept }) {
   // Fondo oscuro y modal centrado, el modal NO se puede cerrar de otra forma
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-100/90 to-blue-100/80"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-100/90 to-blue-100/80"
       style={{
         background: "rgba(80,70,180,0.10)",
         backdropFilter: "blur(3px)",
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-7 border-2 border-purple-100 animate-fadeIn">
-        <h2 className="text-2xl font-bold mb-2 text-purple-700">Tu privacidad es importante</h2>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-7 border-2 border-green-100 animate-fadeIn">
+        <h2 className="text-2xl font-bold mb-2 text-green-700">Tu privacidad es importante</h2>
         <p className="mb-5 text-gray-700">
           Utilizamos cookies para mejorar tu experiencia. Puedes aceptar todas las cookies o solo las necesarias para el buen funcionamiento de la web.
         </p>
