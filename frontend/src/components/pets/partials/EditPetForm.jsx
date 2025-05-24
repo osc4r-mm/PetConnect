@@ -90,59 +90,68 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         <label className="block text-sm font-medium text-green-700">Peso (kg)</label>
         <input name="weight" type="number" step="0.1" value={form.weight} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" min="0" required />
       </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Género</label>
-        <select name="gender_id" value={form.gender_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" required>
-          <option value="">Selecciona</option>
-          {genderList.map(g => (
-            <option key={g.id} value={g.id}>{g.name}</option>
-          ))}
-        </select>
+      {/* Género y Especie */}
+      <div className="flex flex-col md:flex-row md:space-x-4">
+        <div className="flex-1 mb-4 md:mb-0">
+          <label className="block text-sm font-medium text-green-700">Género</label>
+          <select name="gender_id" value={form.gender_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" required>
+            <option value="">Selecciona</option>
+            {genderList.map(g => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-green-700">Especie</label>
+          <select name="species_id" value={form.species_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" required>
+            <option value="">Selecciona</option>
+            {speciesList.map(s => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Especie</label>
-        <select name="species_id" value={form.species_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" required>
-          <option value="">Selecciona</option>
-          {speciesList.map(s => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
+      {/* Raza y Tamaño */}
+      <div className="flex flex-col md:flex-row md:space-x-4">
+        <div className="flex-1 mb-4 md:mb-0">
+          <label className="block text-sm font-medium text-green-700">Raza</label>
+          <select name="breed_id" value={form.breed_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
+            <option value="">Sin especificar</option>
+            {filteredBreeds.map(b => (
+              <option key={b.id} value={b.id}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-green-700">Tamaño</label>
+          <select name="size_id" value={form.size_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
+            <option value="">Sin especificar</option>
+            {sizeList.map(s => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Raza</label>
-        <select name="breed_id" value={form.breed_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
-          <option value="">Sin especificar</option>
-          {filteredBreeds.map(b => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Tamaño</label>
-        <select name="size_id" value={form.size_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
-          <option value="">Sin especificar</option>
-          {sizeList.map(s => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Nivel de actividad</label>
-        <select name="activity_level_id" value={form.activity_level_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
-          <option value="">Sin especificar</option>
-          {activityList.map(a => (
-            <option key={a.id} value={a.id}>{a.name}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-green-700">Nivel de ruido</label>
-        <select name="noise_level_id" value={form.noise_level_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
-          <option value="">Sin especificar</option>
-          {noiseList.map(n => (
-            <option key={n.id} value={n.id}>{n.name}</option>
-          ))}
-        </select>
+      {/* Nivel de actividad y Nivel de ruido */}
+      <div className="flex flex-col md:flex-row md:space-x-4">
+        <div className="flex-1 mb-4 md:mb-0">
+          <label className="block text-sm font-medium text-green-700">Nivel de actividad</label>
+          <select name="activity_level_id" value={form.activity_level_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
+            <option value="">Sin especificar</option>
+            {activityList.map(a => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-green-700">Nivel de ruido</label>
+          <select name="noise_level_id" value={form.noise_level_id} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white">
+            <option value="">Sin especificar</option>
+            {noiseList.map(n => (
+              <option key={n.id} value={n.id}>{n.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-green-700">Descripción</label>
