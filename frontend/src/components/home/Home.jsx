@@ -280,7 +280,7 @@ function PetCard({ pet }) {
 }
 
 function Tag({ label }) {
-  return <span className="text-xs bg-green-50 text-green-800 px-2 py-1 rounded-full border border-green-200">{label}</span>;
+  return <span className="text-xs bg-white-50 text-green-800 px-2 py-1 rounded-full border border-green-200">{label}</span>;
 }
 
 const NoResults = ({ onReset }) => (
