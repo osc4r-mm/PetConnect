@@ -50,7 +50,7 @@ export default function App() {
       <BrowserRouter>
         <div className="flex flex-col h-screen bg-gradient-to-br from-green-100 to-blue-50">
           <Navbar />
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto flex flex-col justify-center">
           <Routes>
             {/* Públicas */}
             <Route path="/" element={<Home />} />
