@@ -7,27 +7,46 @@ use App\Models\Caregiver;
 use App\Models\CaregiverReview;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\Auth;
+
+/**
+ * Controlador para la gestión de valoraciones de cuidadores.
+ * Permite consultar, crear o actualizar valoraciones y verificar si un usuario puede valorar a un cuidador.
+ */
 class CaregiverReviewController extends Controller
 {
-   public function getAll($caregiverId) {
-    $caregiver = Caregiver::findOrFail($caregiverId);
-    $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
-    $avg = $reviews->avg('rating') ?? 0;
-    $count = $reviews->count();
+    /**
+     * Devuelve la media, el conteo y, si existe, la valoración del usuario autenticado sobre un cuidador.
+     *
+     * @param int $caregiverId ID del cuidador.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAll($caregiverId) {
+        $caregiver = Caregiver::findOrFail($caregiverId);
+        $reviews = CaregiverReview::where('caregiver_id', $caregiverId)->get();
+        $avg = $reviews->avg('rating') ?? 0;
+        $count = $reviews->count();
 
-    $user = Auth::user();
-    $user_review = null;
-    if ($user) {
-        $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+        $user = Auth::user();
+        $user_review = null;
+        if ($user) {
+            $user_review = $reviews->firstWhere('reviewer_id', $user->id);
+        }
+
+        return response()->json([
+            'avg' => $avg,
+            'count' => $count,
+            'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
+        ]);
     }
 
-    return response()->json([
-        'avg' => $avg,
-        'count' => $count,
-        'user_review' => $user_review ? ['rating' => $user_review->rating] : null,
-    ]);
-}
-
+    /**
+     * Permite al usuario autenticado valorar a un cuidador si ha recibido un servicio de él.
+     * Valida la puntuación y actualiza o crea la valoración correspondiente.
+     * 
+     * @param Request $request
+     * @param int $caregiverId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function put(Request $request, $caregiverId) {
         $user = Auth::user();
         $caregiver = Caregiver::findOrFail($caregiverId);
@@ -63,6 +82,12 @@ class CaregiverReviewController extends Controller
         ]);
     }
 
+    /**
+     * Indica si el usuario autenticado puede valorar al cuidador (si ha recibido su servicio).
+     *
+     * @param int $caregiverId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function canBeReviewedByMe($caregiverId) {
         $user = Auth::user();
         $caregiver = Caregiver::findOrFail($caregiverId);

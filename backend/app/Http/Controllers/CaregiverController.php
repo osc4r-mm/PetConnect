@@ -9,32 +9,35 @@ use App\Models\Request as RequestModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Controlador para la gestión de cuidadores.
+ * Permite a un usuario convertirse en cuidador o darse de baja como tal.
+ */
 class CaregiverController extends Controller
 {
     /**
-     * Convertirse en cuidador
+     * Permite al usuario autenticado convertirse en cuidador.
+     * Cambia el rol del usuario y crea el registro Caregiver si no existe.
+     *
+     * @return \Illuminate\Http\JsonResponse Mensaje de éxito o error, usuario actualizado.
      */
     public function become()
     {
         $user = Auth::user();
         
-        // Si ya es cuidador, devolvemos mensaje
         if ($user->role && $user->role->name === 'caregiver') {
             return response()->json(['message' => 'El usuario ya es cuidador'], 400);
         }
         
-        // Buscar el rol de cuidador
         $caregiverRole = Role::where('name', 'caregiver')->first();
         
         if (!$caregiverRole) {
             return response()->json(['message' => 'Rol de cuidador no encontrado'], 404);
         }
         
-        // Cambiar rol a cuidador
         $user->role_id = $caregiverRole->id;
         $user->save();
         
-        // Crear registro de cuidador si no existe
         $caregiver = Caregiver::firstOrCreate(
             ['user_id' => $user->id],
             ['hourly_rate' => 10.00]
@@ -47,25 +50,25 @@ class CaregiverController extends Controller
     }
     
     /**
-     * Darse de baja como cuidador (volver a ser usuario normal)
+     * Permite al usuario autenticado dejar de ser cuidador y volver a ser usuario normal.
+     * Elimina el registro Caregiver y solicitudes pendientes/aceptadas de tipo "care".
+     *
+     * @return \Illuminate\Http\JsonResponse Mensaje de éxito o error, usuario actualizado.
      */
     public function quit()
     {
         $user = Auth::user();
         
-        // Verificar que el usuario es cuidador
         if (!$user->role || $user->role->name !== 'caregiver') {
             return response()->json(['message' => 'El usuario no es un cuidador'], 400);
         }
         
-        // Buscar el rol de usuario
         $userRole = Role::where('name', 'user')->first();
         
         if (!$userRole) {
             return response()->json(['message' => 'Rol de usuario no encontrado'], 404);
         }
         
-        // Eliminar registro de cuidador
         if ($user->caregiver) {
             $user->caregiver()->delete();
         }
@@ -75,7 +78,6 @@ class CaregiverController extends Controller
         ->whereIn('status', ['pending', 'accepted'])
         ->delete();
         
-        // Cambiar rol a usuario
         $user->role_id = $userRole->id;
         $user->save();
         

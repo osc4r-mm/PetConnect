@@ -9,8 +9,19 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 
+/**
+ * Controlador de autenticación de usuarios.
+ * Gestiona el registro, login, logout y recuperación de usuario autenticado mediante tokens.
+ */
 class AuthController extends Controller
 {
+    /**
+     * Registra un nuevo usuario con validación de datos, crea el usuario
+     * y genera un token de autenticación.
+     * 
+     * @param  Request  $request  Petición HTTP con nombre, email y contraseña (confirmada).
+     * @return \Illuminate\Http\JsonResponse  Respuesta con usuario creado y token.
+     */
     public function register(Request $request)
     {
          $request->validate([
@@ -45,6 +56,14 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Autentica un usuario existente usando email y contraseña.
+     * Si las credenciales son correctas, genera y devuelve un token.
+     * 
+     * @param  Request  $request  Petición HTTP con email y contraseña.
+     * @return \Illuminate\Http\JsonResponse  Respuesta con usuario autenticado y token.
+     * @throws ValidationException  Si las credenciales son incorrectas.
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -70,6 +89,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Cierra la sesión del usuario autenticado eliminando el token actual.
+     * 
+     * @param  Request  $request  Petición HTTP autenticada.
+     * @return \Illuminate\Http\JsonResponse  Respuesta de éxito.
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -80,6 +105,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Devuelve la información del usuario autenticado, incluyendo su rol.
+     * 
+     * @param  Request  $request  Petición HTTP autenticada.
+     * @return \Illuminate\Http\JsonResponse  Usuario autenticado.
+     */
     public function user(Request $request)
     {
         $user = $request->user()->load('role');

@@ -7,8 +7,21 @@ use App\Models\Pet;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Controlador para la gestión de solicitudes de adopción o cuidado de mascotas.
+ * Permite crear nuevas solicitudes asociadas a una mascota.
+ */
 class PetRequestController extends Controller
 {
+    /**
+     * Crea una solicitud de adopción o cuidado para una mascota específica.
+     * Valida los datos, comprueba el tipo de solicitud y asegura que hay
+     * un acuerdo válido para solicitudes de cuidado.
+     *
+     * @param  Request $httpRequest   Petición HTTP con los datos de la solicitud.
+     * @param  int     $id            ID de la mascota sobre la que se realiza la solicitud.
+     * @return \Illuminate\Http\JsonResponse  Solicitud creada o mensaje de error.
+     */
     public function put(Request $httpRequest, $id)
     {
         $pet = Pet::findOrFail($id);
@@ -20,7 +33,7 @@ class PetRequestController extends Controller
             'agreement_data' => 'required_if:type,care',
         ]);
 
-        // Validación extra para asegurar que hay al menos un slot si es "care"
+        // Validación adicional para asegurar que hay al menos un slot si el tipo es "care"
         if ($data['type'] === 'care') {
             $slots = json_decode($data['agreement_data'], true);
             if (empty($slots) || !is_array($slots)) {

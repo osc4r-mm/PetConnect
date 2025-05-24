@@ -6,10 +6,20 @@ use App\Models\Caregiver;
 use App\Models\CaregiverAvailability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
+/**
+ * Controlador para la gestión de la disponibilidad de los cuidadores.
+ * Permite consultar, añadir, actualizar y eliminar los horarios de disponibilidad.
+ */
 class CaregiverAvailabilityController extends Controller
 {
+    /**
+     * Devuelve la disponibilidad de un cuidador a partir del user_id.
+     * Si el usuario no es cuidador, devuelve un array vacío.
+     *
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function get($userId)
     {
         $caregiver = Caregiver::where('user_id', $userId)->first();
@@ -25,22 +35,31 @@ class CaregiverAvailabilityController extends Controller
         return response()->json($availability);
     }
 
+    /**
+     * Devuelve la disponibilidad del cuidador autenticado.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getMy(Request $request)
     {
-        $user = $request->user(); // Usuario autenticado por Sanctum
-
-        // Busca el registro de cuidador con el user_id del usuario autenticado
+        $user = $request->user();
         $caregiver = Caregiver::where('user_id', $user->id)->first();
         if (!$caregiver) {
             return response()->json([], 200);
         }
-
-        // Ahora busca las disponibilidades por el id del cuidador
         $availabilities = CaregiverAvailability::where('caregiver_id', $caregiver->id)->get();
-
         return response()->json($availabilities);
     }
 
+    /**
+     * Añade o actualiza los slots de disponibilidad para el cuidador autenticado.
+     * Solo el propio cuidador puede modificar su disponibilidad.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function put(Request $request, $userId)
     {
         $user = Auth::user();
@@ -70,6 +89,13 @@ class CaregiverAvailabilityController extends Controller
         return response()->json(['message' => 'Disponibilidad actualizada', 'slots' => $newSlots]);
     }
 
+    /**
+     * Elimina slots concretos de disponibilidad para el cuidador autenticado.
+     *
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete(Request $request, $userId)
     {
         $user = Auth::user();

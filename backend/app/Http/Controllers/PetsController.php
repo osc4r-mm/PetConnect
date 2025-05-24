@@ -8,12 +8,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Controlador para la gestión de mascotas.
+ * Permite operaciones CRUD, filtrado, gestión de imágenes de perfil y fotos adicionales.
+ */
 class PetsController extends Controller
 {
+    /**
+     * Devuelve una lista paginada de mascotas, permitiendo filtrar por
+     * nombre, edad, peso, género, características, y finalidad (adopción/cuidado).
+     * Incluye relaciones con tablas auxiliares y soporta orden dinámico.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getAll(Request $request) {
         $query = Pet::with(['species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel']);
 
-        // Filtros básicos
         if ($request->filled('name')) {
             $query->where('name', 'ILIKE', '%' . $request->name . '%');
         }
@@ -33,7 +44,6 @@ class PetsController extends Controller
             $query->where('gender_id', $request->gender_id);
         }
 
-        // Adopción y cuidado
         $forAdoption = $request->boolean('for_adoption');
         $forSitting = $request->boolean('for_sitting');
 
@@ -49,20 +59,24 @@ class PetsController extends Controller
             $query->where('for_adoption', false)->where('for_sitting', false);
         }
 
-        // Relaciones adicionales
         foreach (['species_id', 'breed_id', 'size_id', 'activity_level_id', 'noise_level_id'] as $filter) {
             if ($request->filled($filter)) {
                 $query->where($filter, $request->$filter);
             }
         }
 
-        // Orden y paginación
         $pets = $query->orderBy($request->input('sort_key', 'id'), $request->input('sort_direction', 'asc'))
                       ->paginate(16);
 
         return response()->json($pets);
     }
 
+    /**
+     * Recupera una mascota por su ID, incluyendo todas sus relaciones y fotos.
+     *
+     * @param int $petId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getOne($petId) {
         $pet = Pet::with([
             'species', 'breed', 'size', 'gender', 'activityLevel', 'noiseLevel', 'photos'
@@ -71,6 +85,12 @@ class PetsController extends Controller
         return response()->json($pet);
     }
 
+    /**
+     * Crea una nueva mascota, valida los datos y procesa subida de imágenes de perfil y adicionales.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function put(Request $request) {
         $request->validate([
             'name' => 'required|string|max:100',
@@ -93,10 +113,8 @@ class PetsController extends Controller
         $petData['user_id'] = Auth::id();
         $petData['registered_at'] = now();
 
-        // 1. Crea la mascota primero, sin la imagen
         $pet = Pet::create($petData);
 
-        // 2. Guarda la imagen de perfil en la carpeta pets/{id}
         if ($request->hasFile('profile_image')) {
             $profileImage = $request->file('profile_image');
             $profilePath = $profileImage->store("pets/{$pet->id}", 'public');
@@ -104,7 +122,6 @@ class PetsController extends Controller
             $pet->save();
         }
 
-        // 3. Guarda las fotos extra en pets/{id}/extras
         if ($request->hasFile('additional_photos')) {
             foreach ($request->file('additional_photos') as $photo) {
                 $path = $photo->store("pets/{$pet->id}/extras", 'public');
@@ -122,14 +139,20 @@ class PetsController extends Controller
         ], 201);
     }
 
+    /**
+     * Actualiza los datos de una mascota existente, validando y verificando autorización.
+     *
+     * @param Request $request
+     * @param int $petId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $petId) {
         $pet = Pet::findOrFail($petId);
-        
-        // Check if user owns this pet
+
         if ($pet->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
-        
+
         $request->validate([
             'name' => 'sometimes|string|max:100',
             'age' => 'sometimes|integer|min:0',
@@ -144,7 +167,7 @@ class PetsController extends Controller
             'activity_level_id' => 'nullable|exists:activity_levels,id',
             'noise_level_id' => 'nullable|exists:noise_levels,id',
         ]);
-        
+
         $petData = $request->all();
         $pet->update($petData);
 
@@ -154,19 +177,24 @@ class PetsController extends Controller
         ]);
     }
 
+    /**
+     * Sube o reemplaza la imagen de perfil (thumbnail) de una mascota.
+     * Elimina la anterior si no es la predeterminada.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function uploadThumbnail(Request $request) {
         $request->validate([
             'pet_id' => 'required|exists:pets,id',
             'image' => 'required|image|max:2048',
         ]);
 
-        // Verificar que el usuario actual es el dueño de la mascota
         $pet = Pet::findOrFail($request->pet_id);
         if (Auth::id() !== $pet->user_id) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        // Eliminar la imagen anterior si existe y no es la default
         if ($pet->profile_path && !str_contains($pet->profile_path, 'placeholder')) {
             Storage::disk('public')->delete($pet->profile_path);
         }
@@ -178,12 +206,18 @@ class PetsController extends Controller
         return response()->json(['message' => 'Thumbnail uploaded', 'path' => $path]);
     }
 
+    /**
+     * Añade una foto extra a la galería de una mascota.
+     *
+     * @param Request $request
+     * @param int $petId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function uploadExtraPhoto(Request $request, $petId) {
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
 
-        // Verificar que el usuario actual es el dueño de la mascota
         $pet = Pet::findOrFail($petId);
         if (Auth::id() !== $pet->user_id) {
             return response()->json(['message' => 'No autorizado'], 403);
@@ -204,63 +238,75 @@ class PetsController extends Controller
         ]);
     }
 
+    /**
+     * Elimina una foto extra de la galería de una mascota.
+     * Solo el dueño de la mascota puede eliminarla.
+     *
+     * @param int $photoId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteExtraPhoto($photoId) {
         $photo = PetPhoto::findOrFail($photoId);
-        
-        // Verificar que el usuario actual es el dueño de la mascota
+
         $pet = Pet::findOrFail($photo->pet_id);
         if (Auth::id() !== $pet->user_id) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
-        
-        // Extraer la ruta del archivo para eliminar del storage
+
         $path = str_replace(asset('storage/'), '', $photo->image_path);
-        
-        // Eliminar el archivo del almacenamiento
+
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
         }
-        
-        // Eliminar el registro de la base de datos
+
         $photo->delete();
-        
+
         return response()->json(['message' => 'Photo deleted successfully']);
     }
 
+    /**
+     * Elimina una mascota y todas sus imágenes asociadas.
+     * Solo el dueño o un administrador pueden eliminar.
+     *
+     * @param Pet $petId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete(Pet $petId) {
         $pet = Pet::findOrFail($petId);
-        
-        // Check if user owns this pet
+
         if ($pet->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
-        
-        // Delete profile image if exists
+
         if ($pet->profile_path) {
             Storage::disk('public')->delete($pet->profile_path);
         }
-        
-        // Delete all pet photos
+
         foreach ($pet->photos as $photo) {
             Storage::disk('public')->delete($photo->image_path);
             $photo->delete();
         }
-        
+
         $pet->delete();
-        
+
         return response()->json(['message' => 'Mascota eliminada exitosamente']);
     }
 
+    /**
+     * Devuelve el usuario propietario de una mascota.
+     *
+     * @param int $petId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getOwner($petId) {
         $pet = Pet::findOrFail($petId);
-        
-        // Obtener el usuario dueño de la mascota
+
         $owner = $pet->user;
-        
+
         if (!$owner) {
             return response()->json(['message' => 'Propietario no encontrado'], 404);
+        }
+
+        return response()->json($owner);
     }
-    
-    return response()->json($owner);
-}
 }
