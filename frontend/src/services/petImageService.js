@@ -1,5 +1,6 @@
 import api from './api';
 
+// subir imagen de miniatura para una mascota
 export const uploadPetThumbnail = async (petId, imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
@@ -18,6 +19,7 @@ export const uploadPetThumbnail = async (petId, imageFile) => {
   }
 };
 
+// subir foto adicional para una mascota
 export const uploadPetExtraPhoto = async (petId, imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
@@ -35,6 +37,7 @@ export const uploadPetExtraPhoto = async (petId, imageFile) => {
   }
 };
 
+// eliminar una foto de mascota por id de foto
 export const deletePetPhoto = async (photoId) => {
   try {
     const response = await api.delete(`/pet-photos/${photoId}`);

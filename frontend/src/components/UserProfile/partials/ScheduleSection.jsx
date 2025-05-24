@@ -44,7 +44,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
   const [mode, setMode] = useState('add');
   const calendarRef = useRef(null);
 
-  // Tooltip state
+  // Estado para el tooltip flotante
   const [tooltip, setTooltip] = useState({
     visible: false,
     text: '',
@@ -52,7 +52,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     y: 0,
   });
 
-  // Responsive: show short name for days if < 800px
+  // Responsive: muestra nombres cortos si el ancho es menor a 800px
   const [showShortDays, setShowShortDays] = useState(false);
   useEffect(() => {
     const handleResize = () => {
@@ -97,7 +97,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
         });
         setWalks(walksMap);
       } catch (error) {
-        // fail silently
+        // falla silenciosamente
       } finally {
         setLoading(false);
       }
@@ -123,7 +123,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     );
   };
 
-  // Clase de cada celda
+  // Clase de cada celda según estado de paseos, disponibilidad o selección
   const getSlotClassName = (day, hour, quarter) => {
     const walkPets = getWalkInfo(day, hour, quarter);
     if (walkPets && walkPets.length > 0) return 'bg-yellow-400';
@@ -151,7 +151,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     return 'bg-gray-100';
   };
 
-  // Tooltip por celda
+  // Muestra el tooltip correspondiente por celda
   const handleCellMouseEnter = (e, day, hour, quarter) => {
     const walkPets = getWalkInfo(day, hour, quarter);
     let text = '';
@@ -172,7 +172,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     setTooltip(tooltip => ({ ...tooltip, visible: false }));
   };
 
-  // --- Selección
+  // --- Selección de slots de disponibilidad con mouse
   const handleMouseDown = (day, hour, quarter) => {
     if (!isEditable) return;
     document.body.style.userSelect = 'none';
@@ -236,6 +236,7 @@ const ScheduleSection = ({ userId, isEditable = false }) => {
     setSelectedDay(null);
   };
 
+  // Limpia la selección y el tooltip si el mouse sale del calendario
   const handleMouseLeave = () => {
     document.body.style.userSelect = '';
     document.body.style.webkitUserSelect = '';

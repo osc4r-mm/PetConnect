@@ -16,19 +16,21 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
   const [submitting, setSubmitting] = useState(false);
   const stars = [1, 2, 3, 4, 5];
 
-  const fetchData = async () => {
-    setLoading(true);
-    const data = await getReviews(caregiverId);
-    setAvgRating(data.avg);
-    setTotalVotes(data.count);
-    setMyRating(data.user_review ? data.user_review.rating : null);
-    setLoading(false);
-  };
-
+  // Obtiene las reseñas del cuidador (promedio, total de votos y voto del usuario)
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await getReviews(caregiverId);
+      setAvgRating(data.avg);
+      setTotalVotes(data.count);
+      setMyRating(data.user_review ? data.user_review.rating : null);
+      setLoading(false);
+    };
     fetchData();
+    // eslint-disable-next-line
   }, [caregiverId]);
 
+  // Maneja el voto del usuario para una estrella específica
   const handleVote = async (value) => {
     if (!canVote || submitting || myRating === value) return;
     setSubmitting(true);
@@ -42,6 +44,7 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
     }
   };
 
+  // Determina el color de las estrellas según el estado (hover, seleccionada, deshabilitada)
   const getStarColor = (i) => {
     if (!canVote) {
       return (myRating && i <= myRating) ? STAR_DISABLED : STAR_EMPTY;
@@ -97,6 +100,7 @@ export default function CaregiverReviewStars({ caregiverId, canVote }) {
           <span className="ml-2 text-xs text-gray-500">({totalVotes} voto{totalVotes !== 1 ? 's' : ''})</span>
         )}
       </div>
+      {/* Mensaje informativo según si el usuario puede votar o no */}
       {!canVote && !myRating && (
         <span className="text-gray-500 text-xs">Solo puedes valorar si este cuidador ya ha cuidado una mascota tuya.</span>
       )}

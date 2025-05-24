@@ -19,6 +19,7 @@ export default function Profile() {
   const [error, setError] = useState(false);
   const [showAddPetModal, setShowAddPetModal] = useState(false);
 
+  // Determina el id del perfil a mostrar: si viene por URL usa ese, si no el usuario autenticado
   const targetId = routeId || currentUser?.id;
   const isOwnProfile = currentUser && Number(targetId) === currentUser.id;
 
@@ -43,6 +44,7 @@ export default function Profile() {
       .finally(() => setLoading(false));
   }, [targetId, authLoading]);
 
+  // Actualiza ubicación del usuario
   const handleUpdateLocation = async (lat, lng) => {
     if (!isOwnProfile) return;
     try {

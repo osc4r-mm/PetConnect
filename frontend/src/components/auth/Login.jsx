@@ -11,11 +11,20 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  /**
+   * handleInputChange: Actualiza el estado de los campos del formulario (email y contraseña)
+   * conforme el usuario escribe en los inputs.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * handleFormSubmit: Envía el formulario de inicio de sesión.
+   * Intenta loguear al usuario llamando a login. Si hay error,
+   * muestra mensajes según el código de error recibido.
+   */
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');

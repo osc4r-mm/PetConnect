@@ -1,6 +1,6 @@
 import api from './api';
 
-// Obtener disponibilidad del cuidador
+// obtener la disponibilidad de un cuidador por su id
 export const getAvailability = async (userId) => {
   try {
     const response = await api.get(`/caregiver/${userId}/availability`);
@@ -11,7 +11,7 @@ export const getAvailability = async (userId) => {
   }
 };
 
-// Obtener la disponibilidad del usuario autenticado (cuidador)
+// obtener la disponibilidad del cuidador autenticado
 export const getMyAvailability = async () => {
   try {
     const response = await api.get('/caregiver/availability');
@@ -22,7 +22,7 @@ export const getMyAvailability = async () => {
   }
 };
 
-// Guardar o actualizar slots de disponibilidad
+// guardar o actualizar los slots de disponibilidad de un cuidador
 export const saveAvailability = async (userId, slots) => {
   try {
     const response = await api.put(`/caregiver/${userId}/availability`, { slots });
@@ -33,7 +33,7 @@ export const saveAvailability = async (userId, slots) => {
   }
 };
 
-// Eliminar slots de disponibilidad
+// eliminar uno o varios slots de disponibilidad de un cuidador
 export const deleteAvailability = async (userId, slots) => {
   try {
     const response = await api.delete(`/caregiver/${userId}/availability`, { data: { slots } });

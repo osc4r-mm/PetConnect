@@ -4,11 +4,10 @@ const Contact = () => {
   const [form, setForm] = useState({ nombre: '', email: '', mensaje: '' });
   const [enviado, setEnviado] = useState(false);
 
-  // Para una app real deberías enviar esto a un backend o a un email
   const handleSubmit = (e) => {
     e.preventDefault();
     setEnviado(true);
-    // Aquí puedes implementar integración con un servicio de email o backend
+    // Implementar integración con un servicio de email o backend
   };
 
   const handleChange = (e) => {

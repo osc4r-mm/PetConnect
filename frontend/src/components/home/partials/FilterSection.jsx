@@ -10,12 +10,12 @@ export default function FilterSection({
   metaLists: { genderList, speciesList, breedList, sizeList, activityList, noiseList },
   onClearFilters,
 }) {
-  // Ajuste para razas filtradas
+  // filteredBreeds: Filtra la lista de razas según la especie seleccionada en los filtros.
   const filteredBreeds = filters.species_id
     ? breedList.filter(b => b.species_id === Number(filters.species_id))
     : breedList;
 
-  // Configuración de campos
+  // fieldConfigs: Configuración declarativa de los campos de filtro y sus opciones.
   const fieldConfigs = [
     { type: 'text', name: 'name', label: 'Buscar por nombre', colspan: 6 },
     { type: 'range', label: 'Edad (años)', sortKey: 'age', colspan: 2, fields: [ { name: 'age_min', placeholder: 'Min', min: 0, max: 20 }, { name: 'age_max', placeholder: 'Max', min: 0, max: 20 } ] },
@@ -33,6 +33,7 @@ export default function FilterSection({
     <div className="bg-white p-5 rounded-2xl shadow-lg mb-8 z-10 border-2 border-green-100">
       {/* Buscador y toggle + limpiar */}
       <div className="flex items-center mb-4 gap-2 min-w-0">
+        {/* Campo de texto para búsqueda directa por nombre */}
         <input
           type="text"
           name="name"
@@ -41,12 +42,14 @@ export default function FilterSection({
           placeholder="Buscar por nombre..."
           className="flex-grow min-w-0 border border-green-200 rounded-xl p-2 focus:ring-2 focus:ring-green-500 transition-all bg-green-50"
         />
+        {/* Botón para mostrar/ocultar filtros avanzados */}
         <button
           onClick={onToggleFilters}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-xl flex items-center font-bold shadow"
         >
           Filtros {showFilters ? <ChevronUp /> : <ChevronDown />}
         </button>
+        {/* Botón para limpiar todos los filtros */}
         <button
           onClick={onClearFilters}
           title="Limpiar filtros"
@@ -57,12 +60,13 @@ export default function FilterSection({
         </button>
       </div>
 
-      {/* Sección de filtros */}
+      {/* Sección de filtros avanzados, visible sólo si showFilters es true */}
       <div className={`mt-2 overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[calc(100vh-200px)] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           {fieldConfigs.map((cfg, i) => {
             if (cfg.type === 'text') return null;
             if (cfg.type === 'range') {
+              // Campos de rango (edad, peso)
               return (
                 <div key={i} className={`col-span-${cfg.colspan}`}>
                   <div className="flex items-center">
@@ -90,6 +94,7 @@ export default function FilterSection({
               );
             }
             if (cfg.type === 'toggles') {
+              // Campos toggle para adopción/cuidado
               return (
                 <div key={i} className="col-span-2 flex justify-around">
                   {/* Adopción */}
@@ -127,7 +132,7 @@ export default function FilterSection({
                 </div>
               );
             }
-            // Selects
+            // Campos select (género, especie, raza, tamaño, actividad, ruido)
             return (
               <div key={i} className={`col-span-1 md:col-span-${cfg.colspan}`}>  
                 <div className="flex items-center">

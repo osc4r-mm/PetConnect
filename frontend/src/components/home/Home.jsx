@@ -5,18 +5,25 @@ import { getPets, getSpecies, getBreeds, getGenders, getSizes, getActivityLevels
 import { LoadingScreen, NotFoundData } from '../Util';
 import FilterSection from './partials/FilterSection';
 
-/* Guardar filtros y ahorrar en la carga */
+// Guardar filtros y ahorrar en la carga */
 const FILTERS_KEY = 'pet_filters';
 const SORT_KEY = 'pet_sort';
+
+// Carga los filtros guardados en localStorage.
 function loadFilters() { try { return JSON.parse(localStorage.getItem(FILTERS_KEY)) || null; } catch { return null; } }
+// Guarda los filtros en localStorage.
 function saveFilters(f) { localStorage.setItem(FILTERS_KEY, JSON.stringify(f)); }
+// Carga la configuración de ordenamiento guardada en localStorage.
 function loadSort() { try { return JSON.parse(localStorage.getItem(SORT_KEY)) || null; } catch { return null; } }
+// Guarda la configuración de ordenamiento en localStorage.
 function saveSort(s) { localStorage.setItem(SORT_KEY, JSON.stringify(s)); }
+// Carga una lista de metadatos (especies, razas, etc.) desde localStorage según la clave dada.
 function loadMetaList(key) {
   try {
     return JSON.parse(localStorage.getItem(key)) || null;
   } catch { return null; }
 }
+// Guarda una lista de metadatos en localStorage según la clave dada.
 function saveMetaList(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
@@ -46,6 +53,11 @@ export default function Home() {
   const [filters, setFilters] = useState(() => loadFilters() || defaultFilters);
   const [sortConfig, setSortConfig] = useState(() => loadSort() || { key: null, direction: 'asc' });
 
+  /**
+   * useEffect: Al montar el componente, carga listas de metadatos (especies, razas, géneros, tamaños, niveles de actividad y ruido)
+   * desde la API solo si no están previamente en el estado/localStorage.
+   * Cuando las recibe, las guarda en el estado y en localStorage.
+   */
   useEffect(() => {
     if (speciesList.length === 0) {
       getSpecies().then(data => {
@@ -92,6 +104,10 @@ export default function Home() {
     noiseList.length
   ]);
 
+  /**
+   * useEffect: Carga la lista de mascotas desde la API cada vez que cambian la página, los filtros o el ordenamiento.
+   * Actualiza el estado de la lista de mascotas, la última página y el loading/error.
+   */
   useEffect(() => {
     setLoading(true);
     getPets(page, { ...filters, sort_key: sortConfig.key, sort_direction: sortConfig.direction })
@@ -106,6 +122,11 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, [page, filters, sortConfig]);
 
+  /**
+   * handleChange: Maneja los cambios en los filtros del formulario.
+   * Si se cambia la especie y la raza no corresponde, resetea la raza.
+   * Actualiza los filtros en el estado, los guarda en localStorage, reinicia la página y activa una animación corta.
+   */
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
 
@@ -136,6 +157,11 @@ export default function Home() {
     setTimeout(() => setAnimatingCards(false), 300);
   };
 
+  /**
+   * handleSort: Cambia el campo y la dirección de ordenamiento.
+   * Alterna entre 'asc' y 'desc' si se selecciona el mismo campo.
+   * Guarda la nueva configuración y activa la animación de las tarjetas.
+   */
   const handleSort = key => {
     const direction = (sortConfig.key === key && sortConfig.direction === 'asc') ? 'desc' : 'asc';
     const newSort = { key, direction };
@@ -145,6 +171,10 @@ export default function Home() {
     setTimeout(() => setAnimatingCards(false), 300);
   };
 
+  /**
+   * renderSortButton: Renderiza un botón de ordenamiento visual para un campo/columna.
+   * Cambia la apariencia si está activo y muestra el ícono correspondiente según la dirección.
+   */
   const renderSortButton = (field, label) => {
     const isActive = sortConfig.key === field;
     const isAsc = sortConfig.direction === 'asc';
@@ -155,6 +185,9 @@ export default function Home() {
     );
   };
   
+  /**
+   * clearFilters: Resetea los filtros al valor por defecto, los guarda y vuelve a la primera página.
+   */
   const clearFilters = () => {
     setFilters(defaultFilters);
     saveFilters(defaultFilters);
@@ -210,21 +243,35 @@ export default function Home() {
 }
 
 // ----- Componentes auxiliares ----- //
+
+/**
+ * Componente que muestra la tarjeta visual con información de una mascota.
+ * Permite navegar a la vista de detalle de la mascota al hacer click.
+ */
 function PetCard({ pet }) {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Devuelve la edad formateada en años para mostrar en la tarjeta.
+   */
   const formatAge = (age) => {
     if (age === null || age === undefined) return null;
     return age === 1 ? '1 año' : `${age} años`;
   };
 
+  /**
+   * Devuelve el peso formateado en kg para mostrar en la tarjeta.
+   */
   const formatWeight = (weight) => {
     if (weight == null) return null;
     const valueStr = weight.toString().replace(/\.0+$/, '');
     return `${valueStr} kg`;
   };
 
+  /**
+   * Navega a la página de detalle de la mascota seleccionada.
+   */
   const handleCardClick = () => {
     navigate(`/pet/${pet.id}`);
   };
@@ -279,10 +326,17 @@ function PetCard({ pet }) {
   );
 }
 
+/**
+ * Componente visual para mostrar una pequeña etiqueta de información.
+ */
 function Tag({ label }) {
   return <span className="text-xs bg-white-50 text-green-800 px-2 py-1 rounded-full border border-green-200">{label}</span>;
 }
 
+/**
+ * Componente visual que se muestra cuando no hay resultados de mascotas.
+ * Permite limpiar los filtros para intentar de nuevo.
+ */
 const NoResults = ({ onReset }) => (
   <div className="text-center py-12">
     <p className="text-green-500 text-2xl font-semibold mb-2">No se encontraron mascotas.</p>

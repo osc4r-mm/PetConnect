@@ -10,6 +10,7 @@ export default function PetsSection({ pets, onAdd, editable, onDelete }) {
                 <Plus className="mr-2 text-blue-600" /> Mascotas
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-96 overflow-y-auto pr-2">
+                {/* Botón para agregar mascota solo visible si el usuario puede editar */}
                 {editable && (
                     <div
                         className="flex items-center justify-center border-2 border-dashed border-blue-400 rounded-lg h-32 cursor-pointer hover:bg-blue-50 transition"
@@ -47,7 +48,7 @@ export default function PetsSection({ pets, onAdd, editable, onDelete }) {
                                     )}
                                 </div>
                             </Link>
-                            {/* Botón eliminar solo en editable */}
+                            {/* Botón eliminar solo visible si el usuario puede editar */}
                             {editable && (
                                 <button
                                     className="absolute top-2 left-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"

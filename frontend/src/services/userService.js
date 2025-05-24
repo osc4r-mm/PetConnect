@@ -1,5 +1,6 @@
 import api from './api';
 
+// obtener todos los usuarios
 export const getUsers = async () => {
   try {
     const response = await api.get('/users');
@@ -10,6 +11,7 @@ export const getUsers = async () => {
   }
 };
 
+// obtener un usuario por id
 export const getUser = async (id) => {
   try {
     const response = await api.get(`/user/${id}`);
@@ -20,6 +22,7 @@ export const getUser = async (id) => {
   }
 };
 
+// obtener las mascotas de un usuario por id
 export const getPetsFromUser = async (id) => {
   try {
     const response = await api.get(`/user/${id}/pets`)
@@ -30,6 +33,7 @@ export const getPetsFromUser = async (id) => {
   }
 }
 
+// subir imagen de perfil del usuario
 export const uploadUserProfileImage = async (userId, imageFile) => {
   const formData = new FormData();
   formData.append('image', imageFile);
@@ -47,6 +51,7 @@ export const uploadUserProfileImage = async (userId, imageFile) => {
   }
 };
 
+// actualizar datos de un usuario
 export const updateUser = async (id, userData) => {
   try {
     const response = await api.put(`/user/${id}`, userData);
@@ -57,6 +62,7 @@ export const updateUser = async (id, userData) => {
   }
 };
 
+// eliminar usuario
 export const deleteUser = async (id) => {
   try {
     const response = await api.delete(`/user/${id}`);
@@ -67,16 +73,16 @@ export const deleteUser = async (id) => {
   }
 };
 
-
-// Verificar si un usuario es cuidador
+// comprobar si el usuario es admin
 export const isAdmin = (user) => {
   return user && user.role?.name === 'admin';
 };
 
-
+// obtener la url de la imagen de usuario por defecto
 export const getDefaultUserImageUrl = () =>
   `/uploads/default/default_user.jpg`;
 
+// comprobar si una url de imagen es válida
 export const isValidImageUrl = (url) => {
   if (!url) return false;
   return (
@@ -86,6 +92,7 @@ export const isValidImageUrl = (url) => {
   );
 };
 
+// obtener la url de la imagen del usuario (o la de defecto)
 export const getUserImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultUserImageUrl();
   if (isValidImageUrl(imagePath)) return imagePath;

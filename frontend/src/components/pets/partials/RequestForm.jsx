@@ -46,6 +46,7 @@ const RequestForm = ({
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
 
+  // Cargar disponibilidad al cambiar tipo de solicitud o usuario/pet
   useEffect(() => {
     if (formData.type === 'care') {
       if (currentUser) {
@@ -64,6 +65,7 @@ const RequestForm = ({
     }
   }, [formData.type, pet, currentUser]);
 
+  // Resetear formulario al abrir el modal
   useEffect(() => {
     if (isOpen) {
       setFormData({ type: initialType, message: '', slots: [] });
@@ -73,6 +75,7 @@ const RequestForm = ({
     }
   }, [isOpen, initialType]);
 
+  // Agrupar slots de disponibilidad por día
   const slotsByDay = {};
   availability.forEach(slot => {
     if (!slotsByDay[slot.day_of_week]) slotsByDay[slot.day_of_week] = [];

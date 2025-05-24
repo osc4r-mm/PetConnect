@@ -23,12 +23,14 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
   const debounceRef = useRef();
   const dropdownRef = useRef(null);
 
+  // Actualiza la vista del mapa cuando cambia la posición de vista
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.setView(viewPosition, mapRef.current.getZoom());
     }
   }, [viewPosition]);
 
+  // Maneja el cierre del dropdown de resultados al hacer click fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -41,6 +43,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     };
   }, []);
 
+  // Busca ciudades con debounce al escribir
   useEffect(() => {
     clearTimeout(debounceRef.current);
     if (searchTerm.length >= 2) {
@@ -58,6 +61,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     return () => clearTimeout(debounceRef.current);
   }, [searchTerm]);
 
+  // Handler de eventos del mapa (doble click para actualizar ubicación)
   function MapEventsHandler() {
     useMapEvents({
       dblclick: e => {
@@ -73,6 +77,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     return null;
   }
 
+  // Cuando se selecciona una ciudad del buscador, se centra el mapa en esa ciudad
   const handleSelectCity = (city) => {
     const lat = parseFloat(city.lat);
     const lng = parseFloat(city.lon);
@@ -83,6 +88,7 @@ export default function MapSection({ latitude, longitude, editable, onUpdate }) 
     setShowDropdown(false);
   };
 
+  // Si cambian las props de latitud/longitud, se actualiza la vista y el marcador
   useEffect(() => {
     if (latitude && longitude) {
       setViewPosition([latitude, longitude]);

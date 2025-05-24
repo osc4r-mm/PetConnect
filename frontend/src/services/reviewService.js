@@ -1,5 +1,6 @@
 import api from './api';
 
+// obtener usuario por id
 export const getUser = async (id) => {
   try {
     const response = await api.get(`/user/${id}`);
@@ -10,6 +11,7 @@ export const getUser = async (id) => {
   }
 };
 
+// obtener reseñas de un cuidador
 export const getReviews = async (caregiverId) => {
   try {
     const response = await api.get(`/caregivers/${caregiverId}/reviews`);
@@ -19,6 +21,8 @@ export const getReviews = async (caregiverId) => {
     throw error;
   }
 };
+
+// votar (valorar) una reseña de un cuidador
 export const voteReview = async (caregiverId, rating) => {
   try {
     const response = await api.post(`/caregivers/${caregiverId}/reviews`, { rating });
@@ -28,6 +32,8 @@ export const voteReview = async (caregiverId, rating) => {
     throw error;
   }
 };
+
+// verificar si el usuario autenticado puede dejar una reseña a un cuidador
 export const canBeReviewed = async (caregiverId) => {
   try {
     const response = await api.get(`/caregivers/${caregiverId}/can_be_reviewed`);

@@ -9,7 +9,7 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
   const [isUploadingExtra, setIsUploadingExtra] = useState(false);
   const [isDeletingPhoto, setIsDeletingPhoto] = useState(null);
 
-  // Crear un array con todas las imágenes disponibles
+  // useMemo: Crea un array con todas las imágenes disponibles (foto principal + adicionales).
   const allPhotos = useMemo(() => {
     const images = profilePath ? [profilePath] : [];
     if (photos && photos.length > 0) {
@@ -20,7 +20,9 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
     return images;
   }, [profilePath, photos]);
 
-  // Actualizar la miniatura/imagen principal de la mascota
+  /**
+   * handleThumbnailChange: Actualiza la imagen principal de la mascota.
+   */
   const handleThumbnailChange = async (e) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
@@ -37,7 +39,9 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
     }
   };
 
-  // Añadir una foto adicional a la mascota
+  /**
+   * handleAddExtraPhoto: Añade una foto adicional a la galería de la mascota.
+   */
   const handleAddExtraPhoto = async (e) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
@@ -59,7 +63,9 @@ const GallerySection = ({ profilePath, photos, name, editable, petId, onPhotosUp
     }
   };
 
-  // Eliminar una foto adicional
+  /**
+   * handleDeletePhoto: Elimina una foto adicional de la galería.
+   */
   const handleDeletePhoto = async (photoId, index) => {
     setIsDeletingPhoto(photoId);
     try {

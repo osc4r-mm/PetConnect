@@ -4,6 +4,7 @@ import { Mail } from 'lucide-react';
 import { getUserImageUrl } from '../../../services/userService';
 
 const OwnerCard = ({ owner }) => {
+  // Si no hay datos del dueño, no renderizar nada
   if (!owner) return null;
   
   return (

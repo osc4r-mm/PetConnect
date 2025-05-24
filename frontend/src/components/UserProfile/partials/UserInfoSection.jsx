@@ -33,6 +33,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
   const userIsCaregiver = isCaregiver(displayUser);
   const userIsAdmin = isAdmin(displayUser);
 
+  // Verifica si el usuario autenticado puede votar a este cuidador
   useEffect(() => {
     let mounted = true;
     if (userIsCaregiver && !isOwnProfile && displayUser.caregiver_id && currentUser) {
@@ -58,6 +59,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
     return 'bg-gray-500';
   };
 
+  // Cambia la imagen de perfil y actualiza los datos tras subir
   const handleImageChange = async (e) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
@@ -99,6 +101,7 @@ const UserInfoSection = ({ user, onUserUpdated }) => {
     setFormError(null);
   };
 
+  // Guarda los cambios del perfil y actualiza usuario tras editar
   const handleSave = async () => {
     setFormError(null);
     try {

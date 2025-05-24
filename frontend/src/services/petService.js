@@ -1,7 +1,6 @@
 import api from './api';
 
-
-// Obtener mascotas con filtros opcionales
+// obtener mascotas con filtros opcionales y paginación
 export const getPets = async (page = 1, filters = {}) => {
   try {
     const response = await api.get('/pets', { params: { page, ...filters } });
@@ -12,7 +11,7 @@ export const getPets = async (page = 1, filters = {}) => {
   }
 };
 
-// Obtener una mascota por su ID
+// obtener una mascota por su ID
 export const getPet = async (id) => {
   try {
     const response = await api.get(`/pet/${id}`);
@@ -23,7 +22,7 @@ export const getPet = async (id) => {
   }
 };
 
-// Obtener el dueño de una mascota
+// obtener el dueño de una mascota
 export const getOwner = async (petId) => {
   try {
     const response = await api.get(`/pet/${petId}/owner`);
@@ -34,7 +33,7 @@ export const getOwner = async (petId) => {
   }
 };
 
-// Crear una nueva mascota
+// crear una nueva mascota
 export const createPet = async (petData) => {
   const formData = new FormData();
   
@@ -70,7 +69,7 @@ export const createPet = async (petData) => {
   }
 };
 
-// Actualizar una mascota existente
+// actualizar una mascota existente
 export const updatePet = async (id, petData) => {
   try {
     // Si algún campo opcional es "", conviértelo a null:
@@ -91,7 +90,7 @@ export const updatePet = async (id, petData) => {
   }
 };
 
-// Eliminar una mascota
+// eliminar una mascota
 export const deletePet = async (id) => {
   try {
     const response = await api.delete(`/pet/${id}`);
@@ -102,18 +101,18 @@ export const deletePet = async (id) => {
   }
 };
 
-// Hacer una solicitud
+// hacer una solicitud para una mascota (ej: adopción o cuidado)
 export const request = async (petId, formData) => {
   const response = await api.post(`/pet/${petId}/request`, { ...formData, pet_id: petId });
   return response.data;
 };
 
-// Función para obtener la URL de imagen predeterminada para mascota
+// función para obtener la URL de imagen predeterminada para mascota
 export const getDefaultPetImageUrl = () => {
   return `/uploads/default/default_pet.jpg`;
 };
 
-// Función para verificar si una URL es válida
+// función para verificar si una URL de imagen es válida
 export const isValidImageUrl = (url) => {
   if (!url) return false;
   return (
@@ -123,13 +122,14 @@ export const isValidImageUrl = (url) => {
   );
 };
 
+// obtener la URL de la imagen de la mascota (o la predeterminada)
 export const getPetImageUrl = (imagePath) => {
   if (!imagePath) return getDefaultPetImageUrl();
   if (isValidImageUrl(imagePath)) return imagePath;
   return `/uploads/${imagePath}`;
 };
 
-// Obtener datos para formularios de selección
+// obtener especies para formularios de selección
 export const getSpecies = async () => {
   try {
     const response = await api.get('/species');
@@ -140,6 +140,7 @@ export const getSpecies = async () => {
   }
 };
 
+// obtener razas para formularios de selección
 export const getBreeds = async () => {
   try {
     const response = await api.get('/breeds');
@@ -150,6 +151,7 @@ export const getBreeds = async () => {
   }
 };
 
+// obtener géneros para formularios de selección
 export const getGenders = async () => {
   try {
     const response = await api.get('/genders');
@@ -160,6 +162,7 @@ export const getGenders = async () => {
   }
 };
 
+// obtener tamaños para formularios de selección
 export const getSizes = async () => {
   try {
     const response = await api.get('/sizes');
@@ -170,6 +173,7 @@ export const getSizes = async () => {
   }
 };
 
+// obtener niveles de actividad para formularios de selección
 export const getActivityLevels = async () => {
   try {
     const response = await api.get('/activity-levels');
@@ -180,6 +184,7 @@ export const getActivityLevels = async () => {
   }
 };
 
+// obtener niveles de ruido para formularios de selección
 export const getNoiseLevels = async () => {
   try {
     const response = await api.get('/noise-levels');

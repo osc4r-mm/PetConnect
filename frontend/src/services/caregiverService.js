@@ -1,6 +1,6 @@
 import api from './api';
 
-// Convertirse en cuidador
+// convertirse en cuidador (usuario solicita el rol de cuidador)
 export const becomeCaregiver = async (userId) => {
   try {
     const response = await api.post(`/caregivers/${userId}/become`);
@@ -11,7 +11,7 @@ export const becomeCaregiver = async (userId) => {
   }
 };
 
-// Darse de baja como cuidador (vuelve a rol de usuario)
+// darse de baja como cuidador (volver al rol de usuario)
 export const quitCaregiver = async (userId) => {
   try {
     const response = await api.post(`/caregivers/${userId}/quit`);
@@ -22,12 +22,12 @@ export const quitCaregiver = async (userId) => {
   }
 };
 
-// Verificar si un usuario es cuidador
+// comprobar si un usuario es cuidador
 export const isCaregiver = (user) => {
   return user && user.role?.name === 'caregiver';
 };
 
-// Obtener cuidadores disponibles por horario
+// obtener cuidadores disponibles por fecha y ubicación
 export const getCaregiversBySchedule = async (date, location) => {
   try {
     const response = await api.get('/caregivers/available', {

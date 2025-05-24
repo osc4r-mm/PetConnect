@@ -13,10 +13,10 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Cierra menú móvil al cambiar de ruta
+  // useEffect: Cierra menú móvil al cambiar de ruta (actualiza isOpen).
   useEffect(() => setIsOpen(false), [location.pathname]);
   
-  // Cerrar dropdown al hacer clic fuera de él
+  // useEffect: Cierra el dropdown del usuario al hacer clic fuera del menú (actualiza isDropdownOpen).
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownElement = document.getElementById('user-dropdown');
@@ -41,6 +41,9 @@ export default function Navbar() {
     };
   }, [isDropdownOpen]);
 
+  /**
+   * handleLogout: Ejecuta el cierre de sesión, cierra el dropdown y redirige al login.
+   */
   const handleLogout = async () => {
     await logout();
     setIsDropdownOpen(false);

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const GEOAPIFY_API_KEY = 'e85af178730a46fc866762af6f129fd3';
 
+// buscar ciudades por nombre (autocompletar)
 export const searchCities = async (query) => {
   if (!query) return [];
 

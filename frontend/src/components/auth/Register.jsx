@@ -17,6 +17,10 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * evaluatePasswordStrength: Evalúa la fortaleza de la contraseña según requisitos mínimos.
+   * Devuelve un objeto con el score de fortaleza y el cumplimiento de cada requisito.
+   */
   const evaluatePasswordStrength = (password) => {
     const requirements = {
       length: password.length >= 8,
@@ -29,6 +33,7 @@ const Register = () => {
     return { score, requirements };
   };
 
+  // useMemo para recalcular la fortaleza sólo cuando cambia la contraseña
   const { score: strength, requirements } = useMemo(
     () => evaluatePasswordStrength(formData.password),
     [formData.password]
@@ -39,11 +44,18 @@ const Register = () => {
   const strengthColor = strengthColors[strength];
   const strengthPercent = (strength / (strengthLabels.length - 1)) * 100;
 
+  /**
+   * handleInputChange: Actualiza el estado del formulario conforme el usuario escribe.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * handleFormSubmit: Envía el formulario de registro.
+   * Valida coincidencia de contraseñas y muestra errores según la respuesta del backend.
+   */
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setErrors([]);

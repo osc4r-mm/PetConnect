@@ -4,6 +4,10 @@ import {
   VolumeX, Zap, Volume2, Ruler, Weight
 } from 'lucide-react';
 
+/**
+ * CharacteristicItem: Muestra una característica individual de la mascota con icono, título y valor.
+ * No renderiza nada si no hay valor.
+ */
 const CharacteristicItem = ({ icon, title, value }) => {
   if (!value) return null;
   return (
@@ -17,6 +21,10 @@ const CharacteristicItem = ({ icon, title, value }) => {
   );
 };
 
+/**
+ * PetCharacteristics: Muestra un panel con todas las características relevantes de la mascota:
+ * género, edad, peso, tamaño, nivel de actividad, nivel de ruido y fecha de registro.
+ */
 const PetCharacteristics = ({ pet, formatHelpers }) => {
   const genderIsMale = pet.gender?.name?.toLowerCase() === 'macho';
   return (
