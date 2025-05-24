@@ -31,7 +31,7 @@ const values = [
 
 const About = () => (
   <div className="flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-50">
-    <div className="bg-white shadow-xl p-4 rounded-2xl max-w-3xl w-full animate-fadeIn">
+    <div className="bg-white shadow-xl p-8 rounded-2xl max-w-3xl w-full animate-fadeIn">
 
       <h1 className="text-4xl font-extrabold mb-2 text-center text-green-700 tracking-tight">
         Acerca de PetConnect
