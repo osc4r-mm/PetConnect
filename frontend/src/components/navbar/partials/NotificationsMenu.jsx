@@ -163,7 +163,7 @@ const NotificationsMenu = () => {
             {/* Recibidas */}
             {tab === 'received' && received.map(req => (
               <div key={req.id} className="p-4 border-b border-green-50 text-sm bg-green-50/40">
-                <div className="font-semibold text-green-700">
+                <div className="font-semibold">
                   {req.sender && req.sender.name
                     ? (
                       <span>
@@ -218,7 +218,7 @@ const NotificationsMenu = () => {
 
             {tab === 'sent' && sent.map(req => (
               <div key={req.id} className="p-4 border-b border-green-50 text-sm bg-green-50/40">
-                <div className="font-semibold text-green-700">
+                <div className="font-semibold">
                   Has enviado una solicitud para {req.type === 'adopt' ? 'adoptar' : 'cuidar'} a {req.pet.name} de {
                   req.receiver?.name ? (
                     <Link
