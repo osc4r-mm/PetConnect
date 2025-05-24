@@ -151,7 +151,7 @@ const PetDetail = () => {
   const isForSitting = pet.for_sitting === true;
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-50">
+    <div className="bg-gradient-to-br from-green-100 to-blue-50">
       {/* Modal de adopción/cuidado */}
       <RequestForm 
         pet={pet}

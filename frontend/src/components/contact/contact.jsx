@@ -16,7 +16,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-green-100 to-blue-50">
+    <div className="flex items-center justify-center px-4 bg-gradient-to-br from-green-100 to-blue-50">
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-lg w-full border-2 border-green-100">
         <h1 className="text-3xl font-bold mb-2 text-center text-green-700">Contacto</h1>
         <p className="text-gray-700 mb-6 text-center">
