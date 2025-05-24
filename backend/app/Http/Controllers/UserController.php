@@ -51,6 +51,7 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email',
+            'description' => 'sometimes|string|max:500',
             'latitude' => 'sometimes|numeric',
             'longitude' => 'sometimes|numeric',
             'role_id' => 'sometimes|exists:roles,id',
