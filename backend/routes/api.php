@@ -79,5 +79,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/requests', [NotificationController::class, 'getAll']);
     Route::patch('/request/{requestId}/accept', [NotificationController::class, 'accept']);
     Route::patch('/request/{requestId}/reject', [NotificationController::class, 'reject']);
-    Route::delete('/request/{id}/cancel', [NotificationController::class, 'cancel']);
+    Route::patch('/request/{id}/cancel', [NotificationController::class, 'cancel']);
 });

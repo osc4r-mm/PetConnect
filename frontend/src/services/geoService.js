@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GEOAPIFY_API_KEY = 'e85af178730a46fc866762af6f129fd3';
+GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
 // buscar ciudades por nombre (autocompletar)
 export const searchCities = async (query) => {

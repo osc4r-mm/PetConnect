@@ -131,10 +131,7 @@ class NotificationController extends Controller
         $request = RequestModel::findOrFail($id);
 
         $userId = Auth::id();
-        if (
-            $request->status !== 'accepted' ||
-            ($request->receiver_id !== $userId && $request->sender_id !== $userId)
-        ) {
+        if ($request->status !== 'accepted' || ($request->receiver_id !== $userId && $request->sender_id !== $userId)) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
