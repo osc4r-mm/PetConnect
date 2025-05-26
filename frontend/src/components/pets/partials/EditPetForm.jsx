@@ -7,7 +7,6 @@ import {
   getSizes,
   getActivityLevels,
   getNoiseLevels,
-  getPet, // añadido para recarga tras actualización
 } from '../../../services/petService';
 
 const EditPetForm = ({ pet, onUpdated, onCancel }) => {
@@ -35,6 +34,10 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
   const [activityList, setActivityList] = useState([]);
   const [noiseList, setNoiseList] = useState([]);
 
+  /**
+   * useEffect: Al montar el componente, carga las listas de metadatos necesarias para los selects
+   * (especies, razas, géneros, tamaños, niveles de actividad y ruido).
+   */
   useEffect(() => {
     getSpecies().then(setSpeciesList);
     getBreeds().then(setBreedList);
@@ -49,6 +52,10 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     ? breedList.filter(b => b.species_id === Number(form.species_id))
     : breedList;
 
+  /**
+   * handleChange: Maneja los cambios en los campos del formulario.
+   * Actualiza el estado del formulario y reinicia la raza si se cambia la especie.
+   */
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
     setForm(f => ({
@@ -66,7 +73,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
 
   /**
    * handleSubmit: Envía el formulario para actualizar los datos de la mascota.
-   * Si tiene éxito, vuelve a cargar la mascota desde el backend y la pasa al padre.
+   * Si tiene éxito, llama a onUpdated; si falla, muestra un error.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,9 +81,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     setError('');
     try {
       await updatePet(pet.id, form);
-      // Vuelve a cargar la mascota para asegurar actualización en tiempo real
-      const updatedPet = await getPet(pet.id);
-      onUpdated(updatedPet);
+      onUpdated({ ...pet, ...form });
     } catch (err) {
       setError('Error actualizando mascota');
     }
