@@ -7,6 +7,7 @@ import {
   getSizes,
   getActivityLevels,
   getNoiseLevels,
+  getPet, // añadido para recarga tras actualización
 } from '../../../services/petService';
 
 const EditPetForm = ({ pet, onUpdated, onCancel }) => {
@@ -65,7 +66,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
 
   /**
    * handleSubmit: Envía el formulario para actualizar los datos de la mascota.
-   * Si tiene éxito, reconstruye el objeto mascota con objetos anidados y lo pasa al padre.
+   * Si tiene éxito, vuelve a cargar la mascota desde el backend y la pasa al padre.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,19 +74,8 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     setError('');
     try {
       await updatePet(pet.id, form);
-
-      // Reconstruir el objeto con los objetos anidados completos para que PetCharacteristics funcione en tiempo real
-      const updatedPet = {
-        ...pet,
-        ...form,
-        gender: genderList.find(g => String(g.id) === String(form.gender_id)) || null,
-        species: speciesList.find(s => String(s.id) === String(form.species_id)) || null,
-        breed: breedList.find(b => String(b.id) === String(form.breed_id)) || null,
-        size: sizeList.find(s => String(s.id) === String(form.size_id)) || null,
-        activity_level: activityList.find(a => String(a.id) === String(form.activity_level_id)) || null,
-        noise_level: noiseList.find(n => String(n.id) === String(form.noise_level_id)) || null,
-      };
-
+      // Vuelve a cargar la mascota para asegurar actualización en tiempo real
+      const updatedPet = await getPet(pet.id);
       onUpdated(updatedPet);
     } catch (err) {
       setError('Error actualizando mascota');
