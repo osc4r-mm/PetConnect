@@ -61,10 +61,6 @@ const PetDetail = () => {
   const [hasError, setHasError] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  /**
-   * useEffect: Obtiene los datos de la mascota y su dueño al montar el componente o cambiar el id de la mascota.
-   * Actualiza los estados de loading, pet, owner, notFound y hasError según corresponda.
-   */
   useEffect(() => {
     const fetchPetAndOwner = async () => {
       try {
@@ -87,18 +83,11 @@ const PetDetail = () => {
 
   const [editing, setEditing] = useState(false);
 
-  /**
-   * openRequestModal: Abre el modal para solicitar adopción o cuidado, estableciendo el tipo de solicitud.
-   */
   const openRequestModal = (type) => {
     setRequestType(type);
     setShowRequestModal(true);
   };
 
-  /**
-   * handlePhotosUpdate: Actualiza las fotos de la mascota en el estado local
-   * según el tipo de acción: cambio de thumbnail, agregar extra o eliminar foto.
-   */
   const handlePhotosUpdate = (type, data) => {
     if (type === 'thumbnail') {
       setPet(prevPet => ({
@@ -124,10 +113,6 @@ const PetDetail = () => {
   const isOwner = currentUser && owner && currentUser.id === owner.id;
   const isAdminUser = isAdmin(currentUser);
 
-  /**
-   * handleDeletePet: Elimina la mascota si el usuario confirma.
-   * Actualiza el estado de borrado y redirige al perfil.
-   */
   const handleDeletePet = async () => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar esta mascota? La acción no se puede deshacer.')) return;
     setDeleting(true);
@@ -319,7 +304,7 @@ const PetDetail = () => {
             </div>
           )}
 
-          {isOwner && editing && (
+          {isOwner && editing && pet && (
             <EditPetForm
               pet={pet}
               onUpdated={updatedPet => {
