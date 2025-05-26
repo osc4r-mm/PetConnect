@@ -170,10 +170,18 @@ class PetsController extends Controller
 
         $petData = $request->all();
         $pet->update($petData);
+        $updatedPet = Pet::with([
+            'gender', 
+            'species', 
+            'breed', 
+            'size', 
+            'activityLevel', 
+            'noiseLevel',
+        ])->find($pet->id);
 
         return response()->json([
             'message' => 'Mascota actualizada exitosamente',
-            'pet' => $pet->fresh(['gender', 'species', 'breed', 'size', 'activityLevel', 'noiseLevel'])
+            'pet' => $updatedPet
         ]);
     }
 

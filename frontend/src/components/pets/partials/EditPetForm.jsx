@@ -34,60 +34,72 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
   const [activityList, setActivityList] = useState([]);
   const [noiseList, setNoiseList] = useState([]);
 
-  /**
-   * useEffect: Al montar el componente, carga las listas de metadatos necesarias para los selects
-   * (especies, razas, géneros, tamaños, niveles de actividad y ruido).
-   */
   useEffect(() => {
-    getSpecies().then(setSpeciesList);
-    getBreeds().then(setBreedList);
-    getGenders().then(setGenderList);
-    getSizes().then(setSizeList);
-    getActivityLevels().then(setActivityList);
-    getNoiseLevels().then(setNoiseList);
+    const loadData = async () => {
+      try {
+        const [species, breeds, genders, sizes, activities, noises] = await Promise.all([
+          getSpecies(),
+          getBreeds(),
+          getGenders(),
+          getSizes(),
+          getActivityLevels(),
+          getNoiseLevels()
+        ]);
+        
+        setSpeciesList(species);
+        setBreedList(breeds);
+        setGenderList(genders);
+        setSizeList(sizes);
+        setActivityList(activities);
+        setNoiseList(noises);
+      } catch (error) {
+        setError('Error cargando datos del formulario');
+      }
+    };
+    
+    loadData();
   }, []);
 
-  // filteredBreeds: Filtra la lista de razas para mostrar sólo las que pertenecen a la especie seleccionada.
   const filteredBreeds = form.species_id
     ? breedList.filter(b => b.species_id === Number(form.species_id))
     : breedList;
 
-  /**
-   * handleChange: Maneja los cambios en los campos del formulario.
-   * Actualiza el estado del formulario y reinicia la raza si se cambia la especie.
-   */
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
     setForm(f => ({
       ...f,
       [name]: type === 'checkbox' ? checked : value
     }));
-    // Reset breed on species change
+    
     if (name === 'species_id') {
-      setForm(f => ({
-        ...f,
-        breed_id: ''
-      }));
+      setForm(f => ({ ...f, breed_id: '' }));
     }
   };
 
   /**
-   * handleSubmit: Envía el formulario para actualizar los datos de la mascota.
-   * Si tiene éxito, llama a onUpdated; si falla, muestra un error.
+   * VERSIÓN SIMPLIFICADA: El backend ya nos devuelve la mascota completa
+   * con todas las relaciones, así que solo necesitamos pasarla directamente
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError('');
+    
     try {
-      await updatePet(pet.id, form);
-      onUpdated({ ...pet, ...form });
+      const response = await updatePet(pet.id, form);
+      
+      // El backend devuelve { message, pet } donde pet ya tiene todas las relaciones
+      if (response && response.pet) {
+        onUpdated(response.pet); // ¡Así de simple!
+      }
     } catch (err) {
       setError('Error actualizando mascota');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
+  // ... resto del JSX igual que antes
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border-2 border-green-100 shadow">
       <h3 className="text-2xl font-bold text-green-700 mb-4">Editar mascota</h3>
@@ -103,7 +115,6 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
         <label className="block text-sm font-medium text-green-700">Peso (kg)</label>
         <input name="weight" type="number" step="0.1" value={form.weight} onChange={handleChange} className="w-full border border-green-200 rounded p-2 bg-white" min="0" required />
       </div>
-      {/* Género y Especie */}
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="flex-1 mb-4 md:mb-0">
           <label className="block text-sm font-medium text-green-700">Género</label>
@@ -124,7 +135,6 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
           </select>
         </div>
       </div>
-      {/* Raza y Tamaño */}
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="flex-1 mb-4 md:mb-0">
           <label className="block text-sm font-medium text-green-700">Raza</label>
@@ -145,7 +155,6 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
           </select>
         </div>
       </div>
-      {/* Nivel de actividad y Nivel de ruido */}
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="flex-1 mb-4 md:mb-0">
           <label className="block text-sm font-medium text-green-700">Nivel de actividad</label>
@@ -183,7 +192,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex space-x-3 pt-2">
         <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 shadow" disabled={saving}>
-          Guardar
+          {saving ? 'Guardando...' : 'Guardar'}
         </button>
         <button type="button" className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400" onClick={onCancel} disabled={saving}>
           Cancelar
