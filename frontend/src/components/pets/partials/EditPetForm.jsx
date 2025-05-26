@@ -10,7 +10,6 @@ import {
 } from '../../../services/petService';
 
 const EditPetForm = ({ pet, onUpdated, onCancel }) => {
-  // El form debe actualizarse SIEMPRE al cambiar la prop pet (por ejemplo tras guardar)
   const [form, setForm] = useState({
     name: pet.name || '',
     age: pet.age || '',
@@ -26,25 +25,6 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     noise_level_id: pet.noise_level?.id || '',
   });
 
-  // <--- Esto asegura que el formulario SIEMPRE refleje los cambios del pet recibido
-  useEffect(() => {
-    setForm({
-      name: pet.name || '',
-      age: pet.age || '',
-      gender_id: pet.gender?.id || '',
-      weight: pet.weight || '',
-      description: pet.description || '',
-      for_adoption: !!pet.for_adoption,
-      for_sitting: !!pet.for_sitting,
-      species_id: pet.species?.id || '',
-      breed_id: pet.breed?.id || '',
-      size_id: pet.size?.id || '',
-      activity_level_id: pet.activity_level?.id || '',
-      noise_level_id: pet.noise_level?.id || '',
-    });
-  }, [pet]);
-  // --->
-
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [speciesList, setSpeciesList] = useState([]);
@@ -54,6 +34,10 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
   const [activityList, setActivityList] = useState([]);
   const [noiseList, setNoiseList] = useState([]);
 
+  /**
+   * useEffect: Al montar el componente, carga las listas de metadatos necesarias para los selects
+   * (especies, razas, géneros, tamaños, niveles de actividad y ruido).
+   */
   useEffect(() => {
     getSpecies().then(setSpeciesList);
     getBreeds().then(setBreedList);
@@ -63,10 +47,15 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     getNoiseLevels().then(setNoiseList);
   }, []);
 
+  // filteredBreeds: Filtra la lista de razas para mostrar sólo las que pertenecen a la especie seleccionada.
   const filteredBreeds = form.species_id
     ? breedList.filter(b => b.species_id === Number(form.species_id))
     : breedList;
 
+  /**
+   * handleChange: Maneja los cambios en los campos del formulario.
+   * Actualiza el estado del formulario y reinicia la raza si se cambia la especie.
+   */
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
     setForm(f => ({
@@ -82,15 +71,17 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
     }
   };
 
+  /**
+   * handleSubmit: Envía el formulario para actualizar los datos de la mascota.
+   * Si tiene éxito, llama a onUpdated; si falla, muestra un error.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError('');
     try {
-      // Recibe la mascota ACTUALIZADA Y ANIDADA del backend
-      const res = await updatePet(pet.id, form);
-      // Usa el objeto pet actualizado y pásalo al padre
-      onUpdated(res.pet || res.data?.pet || res.data || {});
+      await updatePet(pet.id, form);
+      onUpdated({ ...pet, ...form });
     } catch (err) {
       setError('Error actualizando mascota');
     }
