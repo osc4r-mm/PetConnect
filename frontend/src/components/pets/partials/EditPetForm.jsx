@@ -39,12 +39,30 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
    * (especies, razas, géneros, tamaños, niveles de actividad y ruido).
    */
   useEffect(() => {
-    getSpecies().then(setSpeciesList);
-    getBreeds().then(setBreedList);
-    getGenders().then(setGenderList);
-    getSizes().then(setSizeList);
-    getActivityLevels().then(setActivityList);
-    getNoiseLevels().then(setNoiseList);
+    const loadData = async () => {
+      try {
+        const [species, breeds, genders, sizes, activities, noises] = await Promise.all([
+          getSpecies(),
+          getBreeds(),
+          getGenders(),
+          getSizes(),
+          getActivityLevels(),
+          getNoiseLevels()
+        ]);
+        
+        setSpeciesList(species);
+        setBreedList(breeds);
+        setGenderList(genders);
+        setSizeList(sizes);
+        setActivityList(activities);
+        setNoiseList(noises);
+      } catch (error) {
+        console.error('Error loading form data:', error);
+        setError('Error cargando datos del formulario');
+      }
+    };
+    
+    loadData();
   }, []);
 
   // filteredBreeds: Filtra la lista de razas para mostrar sólo las que pertenecen a la especie seleccionada.
@@ -73,19 +91,44 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
 
   /**
    * handleSubmit: Envía el formulario para actualizar los datos de la mascota.
-   * Si tiene éxito, llama a onUpdated; si falla, muestra un error.
+   * Si tiene éxito, llama a onUpdated con los datos actualizados del servidor.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError('');
+    
     try {
-      await updatePet(pet.id, form);
-      onUpdated({ ...pet, ...form });
+      // Llamada al API para actualizar
+      const response = await updatePet(pet.id, form);
+      
+      // La respuesta del servidor debe contener la mascota actualizada con todas las relaciones
+      // Si la respuesta contiene la mascota actualizada, la usamos
+      if (response && response.pet) {
+        onUpdated(response.pet);
+      } else {
+        // Si no viene la mascota en la respuesta, construimos el objeto actualizado
+        // mezclando los datos originales con los nuevos datos y las relaciones correctas
+        const updatedPet = {
+          ...pet,
+          ...form,
+          // Buscar las relaciones actualizadas en las listas cargadas
+          gender: genderList.find(g => g.id === Number(form.gender_id)) || pet.gender,
+          species: speciesList.find(s => s.id === Number(form.species_id)) || pet.species,
+          breed: form.breed_id ? breedList.find(b => b.id === Number(form.breed_id)) : null,
+          size: form.size_id ? sizeList.find(s => s.id === Number(form.size_id)) : null,
+          activity_level: form.activity_level_id ? activityList.find(a => a.id === Number(form.activity_level_id)) : null,
+          noise_level: form.noise_level_id ? noiseList.find(n => n.id === Number(form.noise_level_id)) : null,
+        };
+        
+        onUpdated(updatedPet);
+      }
     } catch (err) {
+      console.error('Error updating pet:', err);
       setError('Error actualizando mascota');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   return (
@@ -183,7 +226,7 @@ const EditPetForm = ({ pet, onUpdated, onCancel }) => {
       {error && <div className="text-red-600">{error}</div>}
       <div className="flex space-x-3 pt-2">
         <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 shadow" disabled={saving}>
-          Guardar
+          {saving ? 'Guardando...' : 'Guardar'}
         </button>
         <button type="button" className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400" onClick={onCancel} disabled={saving}>
           Cancelar
